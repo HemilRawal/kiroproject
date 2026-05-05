@@ -1,0 +1,100 @@
+// server.js
+// ─────────────────────────────────────────────────────────────
+// Main entry point for the Bharat Modules API server.
+//
+// Security layers applied here:
+//   1. helmet      — sets secure HTTP headers
+//   2. cors        — only allows requests from your frontend URL
+//   3. rate-limit  — blocks brute-force attacks
+//   4. express.json with size limit — prevents large payload attacks
+// ─────────────────────────────────────────────────────────────
+
+require('dotenv').config();
+
+const express = require('express');
+const helmet = require('helmet');
+const cors = require('cors');
+const rateLimit = require('express-rate-limit');
+const errorHandler = require('./middleware/errorHandler');
+
+const app = express();
+
+// ── 1. SECURITY HEADERS (helmet) ────────────────────────────
+// Sets headers like X-Content-Type-Options, X-Frame-Options, etc.
+app.use(helmet());
+
+// ── 2. CORS ──────────────────────────────────────────────────
+// Only allow requests from your frontend domain
+// Add any new frontend URLs here or in .env as ALLOWED_ORIGINS (comma-separated)
+// Example .env entry: ALLOWED_ORIGINS=https://bharatmodules.com,https://www.bharatmodules.com
+const allowedOrigins = [
+  process.env.FRONTEND_URL || 'http://localhost:3000',
+  'http://127.0.0.1:5500',   // VS Code Live Server
+  'http://localhost:5500',
+  ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : []),
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (e.g., mobile apps, Postman)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS: Origin ${origin} not allowed.`));
+    }
+  },
+  credentials: true,
+}));
+
+// ── 3. RATE LIMITING ─────────────────────────────────────────
+// General limit: 100 requests per 15 minutes per IP
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: { success: false, message: 'Too many requests. Please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Stricter limit for auth endpoints: 10 attempts per 15 minutes
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { success: false, message: 'Too many login attempts. Please try again in 15 minutes.' },
+});
+
+app.use(generalLimiter);
+
+// ── 4. BODY PARSING ──────────────────────────────────────────
+// Limit request body to 10kb to prevent large payload attacks
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+
+// ── 5. HEALTH CHECK ──────────────────────────────────────────
+app.get('/health', (req, res) => {
+  res.json({ success: true, message: 'Bharat Modules API is running.', timestamp: new Date() });
+});
+
+// ── 6. ROUTES ────────────────────────────────────────────────
+app.use('/api/auth',          authLimiter, require('./routes/auth'));
+app.use('/api/rfq',           require('./routes/rfq'));
+app.use('/api/products',      require('./routes/products'));
+app.use('/api/orders',        require('./routes/orders'));
+app.use('/api/manufacturers', require('./routes/manufacturers'));
+app.use('/api/contact',       require('./routes/contact'));
+
+// ── 7. 404 HANDLER ───────────────────────────────────────────
+app.use((req, res) => {
+  res.status(404).json({ success: false, message: `Route ${req.method} ${req.path} not found.` });
+});
+
+// ── 8. GLOBAL ERROR HANDLER ──────────────────────────────────
+app.use(errorHandler);
+
+// ── 9. START SERVER ──────────────────────────────────────────
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+  console.log(`\n✅ Bharat Modules API running on port ${PORT}`);
+  console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`   Health check: http://localhost:${PORT}/health\n`);
+});

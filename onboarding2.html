@@ -1,0 +1,4645 @@
+<!doctype html>
+<html lang="en">
+  <head>
+  <link rel="stylesheet" href="responsive.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Manufacturer Onboarding & Verification – Register Your OEM on Bharat
+      Modules
+    </title>
+    <meta
+      name="description"
+      content="Complete your manufacturer onboarding on Bharat Modules. Verify your profile, upload GST and MSME documents, accept platform terms, and sign the M-NDA to get listed on India's closed B2B industrial procurement network. 4-step process, 2-day approval."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://bharatmodules.com/onboarding" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <!-- Open Graph / Social Sharing -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://bharatmodules.com/onboarding" />
+    <meta
+      property="og:title"
+      content="Manufacturer Onboarding – Register Your OEM on Bharat Modules"
+    />
+    <meta
+      property="og:description"
+      content="Verify your profile, upload documents, and sign the M-NDA to list your Indian manufacturing business on Bharat Modules. 4-step process with 2-day approval."
+    />
+    <meta property="og:site_name" content="Bharat Modules" />
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Manufacturer Onboarding – Bharat Modules | OEM Verification"
+    />
+    <meta
+      name="twitter:description"
+      content="Register your Indian OEM on Bharat Modules. Upload GST, MSME, and manufacturing documents for Bharat Verified certification. 4-step onboarding, 2-day approval."
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      @font-face {
+        font-family: "Melete";
+        src: local("Melete Regular"), local("Melete-Regular"), local("Melete");
+        font-weight: 400;
+        font-style: normal;
+      }
+
+      :root {
+        --black: #0a0a0a;
+        --white: #ffffff;
+        --off-white: #f5f5f3;
+        --orange: #e85c0d;
+        --orange-light: rgba(232, 92, 13, 0.08);
+        --orange-mid: rgba(232, 92, 13, 0.18);
+        --green: #2e7d32;
+        --gray-100: #f0f0ee;
+        --gray-200: #e0e0dc;
+        --gray-400: #9a9a96;
+        --gray-600: #5a5a58;
+        --gray-700: #3a3a38;
+        --border: 1px solid #e0e0dc;
+        --error: #c62828;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: auto;
+      }
+
+      body {
+        font-family: "DM Sans", sans-serif;
+        background-color: transparent;
+        color: var(--black);
+        overflow-x: hidden;
+        min-height: 100vh;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+
+      /* ── ENTRANCE ANIMATIONS ── */
+      @keyframes headerSlide {
+        0% {
+          opacity: 0;
+          transform: translateY(-40px) translateZ(0);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0) translateZ(0);
+        }
+      }
+      @keyframes cardGlus {
+        0% {
+          opacity: 0;
+          transform: translateY(30px) scale(0.98);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      input,
+      textarea,
+      .form-input {
+        user-select: auto;
+        -webkit-user-select: auto;
+      }
+
+      /* ── VERIFICATION UI ── */
+      .btn-verify {
+        background: rgba(232, 92, 13, 0.08);
+        color: var(--orange);
+        border: 1px solid rgba(232, 92, 13, 0.2);
+        border-radius: 8px;
+        padding: 0 16px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 12.5px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+      .btn-verify:hover {
+        background: rgba(232, 92, 13, 0.15);
+        border-color: rgba(232, 92, 13, 0.35);
+      }
+      .btn-verify.verified {
+        background: rgba(46, 125, 50, 0.08);
+        color: var(--green);
+        border-color: rgba(46, 125, 50, 0.25);
+        pointer-events: none;
+      }
+      .btn-verify-confirm {
+        background: var(--black);
+        color: var(--white);
+        border: none;
+        border-radius: 8px;
+        padding: 0 20px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+          background 0.2s,
+          transform 0.1s;
+      }
+      .btn-verify-confirm:hover {
+        background: #222;
+      }
+      .btn-verify-confirm:active {
+        transform: scale(0.97);
+      }
+
+      /* ─────────────────────────────────────
+     NAV (IDENTICAL TO HOME)
+  ───────────────────────────────────── */
+      .nav-backdrop-fade {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 120px;
+        background: rgba(
+          255,
+          255,
+          255,
+          0.05
+        ); /* Avoid grey scale blending issues which can look purple */
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        -webkit-mask-image: linear-gradient(
+          to bottom,
+          black 36px,
+          transparent 120px
+        );
+        mask-image: linear-gradient(to bottom, black 36px, transparent 120px);
+        z-index: 90;
+        pointer-events: none;
+      }
+
+      nav {
+        position: fixed;
+        top: 16px;
+        left: 24px;
+        right: 24px;
+        z-index: 100;
+        background: rgba(10, 10, 10, 0.92);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        padding: 0 28px;
+        justify-content: space-between;
+        box-shadow:
+          0 8px 32px rgba(0, 0, 0, 0.4),
+          0 1px 0 rgba(255, 255, 255, 0.04) inset;
+        transition:
+          background 0.3s,
+          box-shadow 0.3s,
+          border-color 0.3s;
+        overflow: hidden;
+      }
+
+      nav.search-mode {
+        border-color: rgba(232, 92, 13, 0.4);
+        box-shadow:
+          0 8px 40px rgba(0, 0, 0, 0.5),
+          0 0 0 1px rgba(232, 92, 13, 0.15);
+      }
+
+      .nav-default {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        transition:
+          opacity 0.25s ease,
+          transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      nav.search-mode .nav-default {
+        opacity: 0;
+        transform: translateY(-8px);
+        pointer-events: none;
+      }
+
+      .nav-search-bar {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        gap: 12px;
+        opacity: 0;
+        transform: translateY(8px);
+        pointer-events: none;
+        transition:
+          opacity 0.3s ease 0.1s,
+          transform 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.05s;
+        border-radius: 14px;
+        overflow: hidden;
+      }
+      nav.search-mode .nav-search-bar {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: all;
+      }
+
+      .nav-search-bar input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        outline: none;
+        font-family: "Outfit", sans-serif;
+        font-size: 15px;
+        color: #fff;
+        letter-spacing: 0.01em;
+        caret-color: var(--orange);
+      }
+      .nav-search-bar input::placeholder {
+        color: rgba(255, 255, 255, 0.3);
+      }
+
+      .nav-search-icon-inline {
+        color: rgba(255, 255, 255, 0.4);
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+      }
+
+      .nav-search-submit {
+        background: var(--orange);
+        border: none;
+        border-radius: 8px;
+        padding: 7px 18px;
+        color: #fff;
+        font-family: "Outfit", sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background 0.2s;
+        flex-shrink: 0;
+      }
+      .nav-search-submit:hover {
+        background: #c94e0a;
+      }
+
+      .nav-search-close {
+        background: none;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 7px;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: rgba(255, 255, 255, 0.5);
+        transition:
+          color 0.2s,
+          border-color 0.2s;
+        flex-shrink: 0;
+      }
+      .nav-search-close:hover {
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+
+      .nav-search-divider {
+        width: 1px;
+        height: 22px;
+        background: rgba(255, 255, 255, 0.1);
+        flex-shrink: 0;
+      }
+
+      .nav-logo {
+        text-decoration: none !important;
+      }
+      .nav-logo-text {
+        font-family: "Melete", "Outfit", sans-serif;
+        font-size: 15px;
+        color: #fff;
+        letter-spacing: 0.18em;
+        text-decoration: none;
+        white-space: nowrap;
+        display: block;
+        line-height: 1;
+        user-select: none;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 36px;
+        list-style: none;
+      }
+      .nav-links a {
+        font-family: "Outfit", sans-serif;
+        font-size: 13.5px;
+        font-weight: 500;
+        color: #cccccc;
+        text-decoration: none;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        transition: color 0.2s;
+      }
+      .nav-links a:hover {
+        color: var(--orange);
+      }
+
+      .nav-btn-login {
+        background: var(--white);
+        color: var(--black) !important;
+        padding: 8px 20px;
+        border-radius: 2px;
+        transition: background 0.2s !important;
+      }
+      .nav-btn-login:hover {
+        background: #ddd !important;
+        color: var(--black) !important;
+      }
+
+      .nav-search {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 6px;
+        display: flex;
+        align-items: center;
+        color: #cccccc;
+        transition: color 0.2s;
+      }
+      .nav-search:hover {
+        color: var(--orange);
+      }
+
+      .hamburger {
+        display: none;
+        flex-direction: column;
+        gap: 5px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+      }
+      .hamburger span {
+        display: block;
+        width: 22px;
+        height: 2px;
+        background: #fff;
+        border-radius: 2px;
+        transition: all 0.3s;
+      }
+
+      /* ── STEPPER ── */
+      .stepper-card {
+        width: min(680px, 100%);
+        margin: 0 auto 32px;
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(0, 0, 0, 0.08); /* Darker border for light background contrast */
+        border-radius: 14px;
+        padding: 20px 24px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        animation: cardGlus 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+      }
+
+      .stepper-row {
+        display: flex;
+        align-items: flex-start;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+
+      .stepper-row::-webkit-scrollbar {
+        display: none;
+      }
+
+      .step-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 1;
+        min-width: 64px;
+        position: relative;
+        cursor: default;
+      }
+
+      .step-item:not(:last-child)::after {
+        content: "";
+        position: absolute;
+        top: 14px;
+        left: 50%;
+        width: 100%;
+        height: 1px;
+        background: var(--gray-200);
+        z-index: 0;
+        transition: background 0.6s ease;
+      }
+
+      .step-item.completed:not(:last-child)::after {
+        background: var(--green);
+      }
+
+      .step-dot {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 2px solid var(--gray-200);
+        background: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--gray-400);
+        z-index: 1;
+        position: relative;
+        transition: all 0.3s;
+      }
+
+      .step-item.completed .step-dot {
+        background: var(--green);
+        border-color: var(--green);
+        color: var(--white);
+      }
+
+      .step-item.active .step-dot {
+        border-color: var(--orange);
+        color: var(--orange);
+        background: var(--white);
+      }
+
+      .step-label {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--gray-400);
+        margin-top: 8px;
+        text-align: center;
+        white-space: nowrap;
+        transition: color 0.3s;
+      }
+
+      .step-item.active .step-label {
+        color: var(--orange);
+      }
+
+      .step-item.completed .step-label {
+        color: var(--green);
+      }
+
+      /* ══════════════════════════════════════════════
+     MAIN CONTENT
+  ══════════════════════════════════════════════ */
+      .main {
+        position: relative;
+        z-index: 10;
+        padding: 120px 24px 80px;
+        min-height: calc(100vh - 112px);
+      }
+
+      .phase {
+        display: none;
+        animation: phaseIn 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .phase.active {
+        display: block;
+      }
+
+      @keyframes phaseIn {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .card {
+        width: min(680px, 100%);
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.82);
+        backdrop-filter: blur(28px);
+        -webkit-backdrop-filter: blur(28px);
+        border: 1px solid rgba(0, 0, 0, 0.08); /* Darker border for clarity */
+        border-radius: 18px;
+        padding: 48px 52px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        animation: cardGlus 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+      }
+
+      /* FIX #1: phase tag was 11px — now 12px */
+      .phase-tag {
+        font-family: "Rajdhani", sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--orange);
+        margin-bottom: 10px;
+      }
+
+      .card h2 {
+        font-family: "Rajdhani", sans-serif;
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--black);
+        letter-spacing: 0.02em;
+        line-height: 1.15;
+        margin-bottom: 10px;
+      }
+
+      /* FIX #4: sub text now uses gray-600 consistently */
+      .card p.sub {
+        font-size: 15px;
+        font-weight: 400;
+        color: var(--gray-600);
+        line-height: 1.65;
+        margin-bottom: 32px;
+      }
+
+      /* ── BENEFIT GRID ── */
+      .benefit-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-bottom: 36px;
+      }
+
+      .benefit-card {
+        border: var(--border);
+        border-radius: 12px;
+        padding: 20px 22px;
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        background: var(--off-white);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .benefit-card:hover {
+        border-color: var(--orange);
+        box-shadow: 0 6px 20px var(--orange-light);
+        transform: translateY(-3px);
+      }
+
+      .benefit-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 9px;
+        background: var(--orange-light);
+        border: 1px solid var(--orange-mid);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: var(--orange);
+      }
+
+      .benefit-icon svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      /* FIX #1: benefit title was 13.5px — now 14px */
+      .benefit-text strong {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--black);
+        margin-bottom: 3px;
+      }
+
+      /* FIX #1 + #4: benefit body was 12.5px gray-600 — now 13px with better contrast */
+      .benefit-text span {
+        font-size: 13px;
+        color: var(--gray-600);
+        line-height: 1.5;
+      }
+
+      /* ══════════════════════════════════════════════
+     FORM ARCHITECTURE (FIX #5)
+     Wrapped in <form> tags, Enter key works,
+     file size validated at 5 MB.
+  ══════════════════════════════════════════════ */
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      /* FIX #1: form labels were 12px — now 14px */
+      /* FIX #4: was gray-700 which is fine, kept */
+      .form-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--gray-700);
+        margin-bottom: 7px;
+      }
+
+      .form-group label .req {
+        color: var(--orange);
+        margin-left: 2px;
+      }
+
+      .form-input {
+        width: 100%;
+        height: 52px;
+        border: 1.5px solid var(--gray-200);
+        border-radius: 8px;
+        padding: 0 16px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 15px;
+        color: var(--black);
+        background: var(--white);
+        outline: none;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .form-input::placeholder {
+        color: var(--gray-400);
+      }
+
+      .form-input:focus {
+        border-color: var(--orange);
+        box-shadow: 0 0 0 4px rgba(232, 92, 13, 0.12);
+      }
+
+      /* ── FILE UPLOAD ── */
+      .file-upload {
+        width: 100%;
+        border: 1.5px dashed var(--gray-200);
+        border-radius: 10px;
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        cursor: pointer;
+        background: var(--off-white);
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+      }
+
+      .file-upload:hover {
+        border-color: var(--orange);
+        background: var(--white);
+        box-shadow: 0 4px 16px var(--orange-light);
+        transform: scale(1.01);
+      }
+
+      .file-upload.has-file {
+        border-color: var(--green);
+        background: rgba(46, 125, 50, 0.08); /* light green background */
+      }
+
+      .file-upload input[type="file"] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
+      }
+
+      .upload-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        background: var(--white);
+        border: var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: var(--gray-400);
+        transition: color 0.2s;
+      }
+
+      .file-upload.has-file .upload-icon {
+        color: var(--green);
+      }
+
+      .upload-icon svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      .upload-text {
+        flex: 1;
+        min-width: 0;
+        padding-right: 8px; /* space between text and status */
+      }
+
+      /* FIX #1: upload text was 13px/11.5px — now 14px/13px */
+      /* FIX #4: upload hint was gray-400 — now gray-600 */
+      .upload-text strong {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--black);
+      }
+
+      .upload-text span {
+        font-size: 13px;
+        color: var(--gray-600);
+        display: block; /* Ensures hint text doesn't overflow inline */
+      }
+
+      /* FIX #1: upload status was 11px — now 12px */
+      /* FIX #4: was gray-400 — now gray-600 */
+      .upload-status {
+        margin-left: auto;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        color: var(--gray-600);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 45%;
+        flex-shrink: 1;
+      }
+
+      .file-upload.has-file .upload-status {
+        color: var(--green);
+      }
+
+      /* FIX #1: error messages were 11.5px — now 13px */
+      .field-error {
+        font-size: 13px;
+        color: var(--error);
+        margin-top: 6px;
+        display: none;
+        font-weight: 500;
+      }
+
+      .form-group.has-error .form-input,
+      .form-group.has-error .file-upload {
+        border-color: var(--error) !important;
+      }
+
+      .form-group.has-error .field-error {
+        display: block;
+      }
+
+      .section-sep {
+        height: 1px;
+        background: var(--gray-200);
+        margin: 28px 0;
+      }
+
+      .section-title {
+        font-family: "Rajdhani", sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--gray-600);
+        margin-bottom: 18px;
+      }
+
+      /* ── LEGAL VIEWPORT ── */
+      .legal-viewport {
+        border: var(--border);
+        border-radius: 12px;
+        max-height: 200px;
+        overflow-y: auto;
+        padding: 20px 22px;
+        font-size: 14px;
+        /* FIX #1: was 13px */
+        line-height: 1.75;
+        color: var(--gray-600);
+        /* FIX #4 */
+        background: var(--off-white);
+      }
+
+      .legal-viewport::-webkit-scrollbar {
+        width: 5px;
+      }
+
+      .legal-viewport::-webkit-scrollbar-thumb {
+        background: var(--gray-200);
+        border-radius: 10px;
+      }
+
+      .legal-viewport p {
+        margin-bottom: 10px;
+      }
+
+      .legal-viewport p:last-child {
+        margin-bottom: 0;
+      }
+
+      .clause-body ul {
+        padding-left: 20px;
+        margin-bottom: 10px;
+        list-style-type: disc;
+      }
+
+      .clause-body li {
+        margin-bottom: 5px;
+      }
+
+      .clause-body li:last-child {
+        margin-bottom: 0;
+      }
+
+      .legal-viewport strong {
+        color: var(--black);
+      }
+
+      .checkbox-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 16px 18px;
+        background: var(--off-white);
+        border: var(--border);
+        border-radius: 10px;
+        margin-top: 14px;
+        transition: border-color 0.2s;
+      }
+
+      .checkbox-row input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--orange);
+        cursor: pointer;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+
+      /* FIX #1: checkbox label was 13px — now 14px */
+      /* FIX #4: was gray-600 — kept (good) */
+      .checkbox-row label {
+        font-size: 14px;
+        color: var(--gray-700);
+        cursor: pointer;
+        line-height: 1.5;
+      }
+
+      /* ══════════════════════════════════════════════
+     FIX #3 — NDA CLAUSE-LEVEL CHECKBOXES
+     Each clause is an accordion. Signature is
+     gated behind all 4 being checked.
+  ══════════════════════════════════════════════ */
+      .clause-block {
+        border: var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 12px;
+        transition: border-color 0.2s;
+      }
+
+      .clause-block.open {
+        border-color: var(--orange);
+      }
+
+      .clause-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px 20px;
+        background: var(--off-white);
+        cursor: pointer;
+        user-select: none;
+        transition: background 0.15s;
+      }
+
+      .clause-header:hover {
+        background: var(--gray-100);
+      }
+
+      .clause-header input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--orange);
+        flex-shrink: 0;
+        cursor: pointer;
+      }
+
+      .clause-header-text {
+        flex: 1;
+      }
+
+      /* FIX #1: clause title 14px, description 13px */
+      .clause-header-text strong {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--black);
+      }
+
+      .clause-header-text span {
+        font-size: 13px;
+        color: var(--gray-600);
+      }
+
+      .clause-chevron {
+        color: var(--gray-400);
+        transition: transform 0.22s;
+        flex-shrink: 0;
+      }
+
+      .clause-block.open .clause-chevron {
+        transform: rotate(180deg);
+      }
+
+      .clause-body {
+        display: none;
+        padding: 16px 20px;
+        border-top: var(--border);
+        font-size: 14px;
+        line-height: 1.75;
+        color: var(--gray-600);
+        background: var(--white);
+      }
+
+      .clause-block.open .clause-body {
+        display: block;
+      }
+
+      .clause-body p {
+        margin-bottom: 8px;
+      }
+
+      .clause-body p:last-child {
+        margin-bottom: 0;
+      }
+
+      /* ── GATE STATUS NOTICE ── */
+      .sig-gate-notice {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 13px 16px;
+        background: var(--orange-light);
+        border: 1px solid var(--orange-mid);
+        border-radius: 10px;
+        font-size: 14px;
+        color: var(--gray-700);
+        margin-top: 20px;
+        margin-bottom: 20px;
+        transition:
+          background 0.3s,
+          border-color 0.3s;
+      }
+
+      .sig-gate-notice svg {
+        color: var(--orange);
+        flex-shrink: 0;
+      }
+
+      .sig-gate-notice.all-done {
+        background: rgba(46, 125, 50, 0.07);
+        border-color: rgba(46, 125, 50, 0.22);
+        color: #1b5e20;
+      }
+
+      .sig-gate-notice.all-done svg {
+        color: var(--green);
+      }
+
+      /* ── SIGNATURE PAD ── */
+      /* FIX #1: sig label was 12px — now 14px */
+      .sig-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--gray-700);
+        margin-bottom: 8px;
+      }
+
+      .sig-container {
+        border: 1.5px dashed var(--gray-200);
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+        background: var(--off-white);
+        margin-bottom: 8px;
+        transition:
+          border-color 0.2s,
+          opacity 0.3s;
+      }
+
+      .sig-container.locked {
+        opacity: 0.42;
+        pointer-events: none;
+      }
+
+      .sig-container canvas {
+        display: block;
+        cursor: crosshair;
+        touch-action: none;
+        width: 100%;
+        height: 140px;
+      }
+
+      .sig-placeholder {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 8px;
+        pointer-events: none;
+        transition: opacity 0.2s;
+      }
+
+      /* FIX #1: sig placeholder text was 13px — now 14px */
+      .sig-placeholder span {
+        font-size: 14px;
+        color: var(--gray-400);
+        font-style: italic;
+      }
+
+      .sig-locked-icon {
+        color: var(--gray-400);
+      }
+
+      .sig-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      /* FIX #1: sig clear was 11.5px — now 13px */
+      .sig-clear {
+        font-size: 13px;
+        color: var(--gray-600);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        text-decoration: underline;
+        transition: color 0.2s;
+      }
+
+      .sig-clear:hover {
+        color: var(--orange);
+      }
+
+      .sig-hint {
+        font-size: 13px;
+        color: var(--gray-400);
+      }
+
+      /* ── VERIFICATION HOLD ── */
+      .hold-center {
+        text-align: center;
+        padding: 20px 0 10px;
+      }
+
+      .hold-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(46, 125, 50, 0.08);
+        border: 1px solid rgba(46, 125, 50, 0.22);
+        border-radius: 100px;
+        padding: 7px 18px;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--green);
+        margin-bottom: 24px;
+      }
+
+      .hold-icon-wrap {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: var(--orange-light);
+        border: 1px solid var(--orange-mid);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 22px;
+        animation: pulse 2.4s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 var(--orange-mid);
+        }
+
+        50% {
+          box-shadow: 0 0 0 14px transparent;
+        }
+      }
+
+      .hold-icon-wrap svg {
+        width: 30px;
+        height: 30px;
+        color: var(--orange);
+      }
+
+      .hold-center h1 {
+        font-family: "Rajdhani", sans-serif;
+        font-size: 32px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        color: var(--black);
+        margin-bottom: 12px;
+      }
+
+      .hold-center p {
+        font-size: 15px;
+        color: var(--gray-600);
+        line-height: 1.65;
+        max-width: 420px;
+        margin: 0 auto 28px;
+      }
+
+      .hold-divider {
+        height: 1px;
+        background: var(--gray-200);
+        margin: 28px 0;
+      }
+
+      .hold-details {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      .hold-detail-chip {
+        flex: 1;
+        min-width: 160px;
+        background: var(--off-white);
+        border: var(--border);
+        border-radius: 10px;
+        padding: 16px 18px;
+        text-align: left;
+      }
+
+      /* FIX #1: chip label was 11px — now 12px */
+      /* FIX #4: was gray-400 — now gray-600 */
+      .hold-detail-chip strong {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--gray-600);
+        margin-bottom: 5px;
+      }
+
+      .hold-detail-chip span {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--black);
+      }
+
+      /* ── BUTTONS ── */
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--orange);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 0 28px;
+        height: 48px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .btn-primary:hover {
+        background: #c94e0a;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(232, 92, 13, 0.25);
+      }
+
+      .btn-primary:active {
+        transform: none;
+      }
+
+      .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: transparent;
+        color: var(--gray-700);
+        border: 1.5px solid var(--gray-200);
+        border-radius: 10px;
+        padding: 0 22px;
+        height: 48px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .btn-secondary:hover {
+        border-color: var(--gray-700);
+        color: var(--black);
+        background: rgba(0, 0, 0, 0.02);
+      }
+
+      .btn-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 32px;
+        padding-top: 24px;
+        border-top: var(--border);
+      }
+
+      /* ── FOOTER ── */
+      footer {
+        border-top: var(--border);
+        padding: 20px 40px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        background: var(--white);
+      }
+
+      footer span {
+        font-size: 13px;
+        color: var(--gray-400);
+      }
+
+      .footer-links {
+        display: flex;
+        gap: 20px;
+      }
+
+      /* FIX #4: footer links were gray-400 — bumped to gray-600 */
+      .footer-links a {
+        font-size: 13px;
+        color: var(--gray-600);
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+
+      .footer-links a:hover {
+        color: var(--orange);
+      }
+
+      /* ══════════════════════════════════════════════
+     FIX #6 — MOBILE RESPONSIVE
+     Hamburger menu implemented; no dead-end nav.
+  ══════════════════════════════════════════════ */
+      @media (max-width: 640px) {
+        .nav-links {
+          display: none;
+        }
+
+        .nav-hamburger {
+          display: flex;
+        }
+
+        .card {
+          padding: 28px 20px;
+        }
+
+        .benefit-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .btn-row {
+          flex-direction: column-reverse;
+          gap: 12px;
+        }
+
+        .btn-row .btn-primary,
+        .btn-row .btn-secondary {
+          width: 100%;
+          justify-content: center;
+        }
+
+        .hold-details {
+          flex-direction: column;
+        }
+      }
+
+      @media (max-width: 420px) {
+        /* On very narrow screens: dot-only stepper */
+        .step-label {
+          display: none;
+        }
+
+        .stepper-row {
+          height: 44px;
+        }
+      }
+
+      .phase-action-row {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      @media (max-width: 640px) {
+        .phase-action-row {
+          justify-content: center !important;
+        }
+      }
+
+      /* ── CUSTOM MULTI-SELECT DROPDOWN ── */
+      .custom-dropdown {
+        width: 100%;
+        position: relative;
+      }
+      .custom-dropdown .dropdown-header {
+        width: 100%;
+        min-height: 52px;
+        border: 1.5px solid var(--gray-200);
+        border-radius: 8px;
+        padding: 12px 16px;
+        background: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .custom-dropdown.open .dropdown-header {
+        border-color: var(--orange);
+        box-shadow: 0 0 0 4px rgba(232, 92, 13, 0.12);
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+      .custom-dropdown.open .dropdown-header svg {
+        transform: rotate(180deg);
+      }
+      .custom-dropdown .dropdown-list {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        background: var(--white);
+        border: 1.5px solid var(--gray-200);
+        border-top: none;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .custom-dropdown.open .dropdown-list {
+        max-height: 270px;
+        opacity: 1;
+        overflow-y: auto;
+        border-color: var(--orange);
+      }
+      .dropdown-list::-webkit-scrollbar {
+        width: 5px;
+      }
+      .dropdown-list::-webkit-scrollbar-thumb {
+        background: var(--gray-200);
+        border-radius: 10px;
+      }
+      .dropdown-item {
+        display: flex;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 16px;
+        cursor: pointer;
+        border-bottom: 1px solid var(--gray-100);
+        border-left: 3px solid transparent;
+        transition: all 0.2s ease;
+      }
+      .dropdown-item:last-child {
+        border-bottom: none;
+      }
+      .dropdown-item:hover {
+        background: var(--off-white);
+      }
+      .chk-wrap {
+        display: none !important;
+      }
+      /* User explicitly requested green color for selection */
+      .dropdown-item:has(input[type="checkbox"]:checked) {
+        background-color: rgba(16, 185, 129, 0.08);
+        border-left-color: #10b981;
+      }
+      .dropdown-item:has(input[type="checkbox"]:checked) strong {
+        color: #059669; /* Darker emerald for text for sharp contrast */
+      }
+      .dropdown-item-text {
+        flex: 1;
+        min-width: 0;
+      }
+      .dropdown-item-text strong {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--black);
+        margin-bottom: 3px;
+      }
+      .dropdown-item-text span {
+        display: block;
+        font-size: 13px;
+        color: var(--gray-600);
+        line-height: 1.4;
+      }
+      .form-group.has-error .dropdown-header {
+        border-color: var(--error) !important;
+      }
+      .nav-logo-img {
+        height: 50px; /* adjust based on navbar */
+        width: auto;
+        cursor: pointer;
+      }
+      /* ── MOBILE NAV FIX (universal) ── */
+      @media (max-width: 768px) {
+        nav {
+          overflow: visible !important; /* fix: dropdown was clipped */
+          left: 12px;
+          right: 12px;
+          top: 10px;
+          padding: 0 16px;
+          border-radius: 12px;
+          height: 56px;
+        }
+
+        .nav-default {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          width: 100%;
+        }
+
+        /* Logo takes ~70% left */
+        .nav-logo {
+          flex: 1;
+          min-width: 0;
+        }
+
+        .nav-logo-text,
+        .nav-logo-img {
+          max-width: 100%;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          font-size: 13px !important;
+          letter-spacing: 0.14em !important;
+        }
+
+        .nav-logo-img {
+          height: 36px !important;
+          width: auto;
+        }
+
+        /* Hide desktop links on mobile */
+        .nav-links {
+          display: none !important;
+          position: fixed;
+          top: 76px;
+          left: 12px;
+          right: 12px;
+          background: rgba(10, 10, 10, 0.97);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          flex-direction: column;
+          gap: 0;
+          padding: 0;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 12px;
+          overflow: hidden;
+          opacity: 0;
+          pointer-events: none;
+          transform: translateY(-8px) scale(0.98);
+          transform-origin: top;
+          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          z-index: 300;
+        }
+
+        .nav-links.open {
+          display: flex !important;
+          opacity: 1;
+          pointer-events: all;
+          transform: translateY(0) scale(1);
+        }
+
+        .nav-links li {
+          border-bottom: 1px solid #1e1e1e;
+          width: 100%;
+          text-align: center;
+        }
+
+        .nav-links li:last-child {
+          border-bottom: none;
+        }
+
+        .nav-links a,
+        .nav-links button {
+          padding: 16px 24px;
+          display: block;
+          font-size: 15px;
+          width: 100%;
+          text-align: center;
+        }
+
+        .nav-btn-login {
+          margin: 12px auto !important;
+          display: block !important;
+          width: calc(100% - 48px) !important;
+        }
+
+        .nav-search {
+          justify-content: center;
+          width: 100%;
+          padding: 16px 24px;
+          display: block;
+        }
+
+        /* Hamburger always visible on mobile */
+        .hamburger {
+          display: flex !important;
+          flex-shrink: 0;
+          margin-left: 12px;
+          z-index: 301;
+          background: none;
+          border: none;
+          cursor: pointer;
+          flex-direction: column;
+          gap: 5px;
+          padding: 6px;
+        }
+
+        .hamburger span {
+          width: 22px;
+          height: 2px;
+          background: #fff;
+          display: block;
+          transition: all 0.3s;
+        }
+
+        .hamburger.active span:nth-child(1) {
+          transform: translateY(7px) rotate(45deg);
+        }
+        .hamburger.active span:nth-child(2) {
+          opacity: 0;
+        }
+        .hamburger.active span:nth-child(3) {
+          transform: translateY(-7px) rotate(-45deg);
+        }
+
+        /* Hide search icon on mobile to save space */
+        li:has(.nav-search) {
+          display: none;
+        }
+      }
+
+      @media (max-width: 480px) {
+        nav {
+          left: 8px;
+          right: 8px;
+        }
+        .nav-links {
+          left: 8px;
+          right: 8px;
+          top: 72px;
+        }
+      }
+      /* ── SMOOTH SCROLL & PERFORMANCE ── */
+      html {
+        scroll-behavior: auto;
+      }
+
+      * {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      body {
+        -webkit-overflow-scrolling: touch; /* smooth momentum scroll iOS */
+      }
+      /* GPU-accelerate heavy elements */
+      nav,
+      .hero,
+      .popup-overlay,
+      .chain-item,
+      .metric-card,
+      .funnel-copy {
+        will-change: transform;
+        transform: translateZ(0);
+      }
+    </style>
+    <!-- Lenis Premium Smooth Scroll -->
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+  <script src="smooth-scroll.js" defer></script>
+  <link rel="stylesheet" href="navbar.css" />
+</head>
+
+  <body>
+    <!-- 3D GLOBE PARTICLE BACKGROUND -->
+    <canvas
+      id="particleCanvas"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+        pointer-events: none;
+      "
+    ></canvas>
+
+    <!-- NAV FADE BACKDROP -->
+    <div class="nav-backdrop-fade"></div>
+
+    <!-- NAV -->
+    <nav id="nav">
+      <div class="nav-default">
+        <a href="index.html" class="nav-logo">
+          <img src="logo.jpeg" alt="Bharat Modules Logo" class="nav-logo-img" />
+        </a>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="catalogue.html">Products</a></li>
+          <li><a href="contact_us.html">Contact Us</a></li>
+          <li>
+            <button
+              class="nav-btn-login"
+              style="
+                border: none;
+                cursor: pointer;
+                font-family: &quot;Outfit&quot;, sans-serif;
+                font-size: 13px;
+                font-weight: 500;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+              "
+              onclick="window.location.href='manufacturer_portal.html'"
+            >
+              Dashboard
+            </button>
+          </li>
+          <li>
+            <button
+              class="nav-search"
+              onclick="openSearch()"
+              aria-label="Search"
+            >
+              <svg
+                width="17"
+                height="17"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path d="M21 21l-4.35-4.35" />
+              </svg>
+            </button>
+          </li>
+        </ul>
+        <button
+          class="hamburger"
+          id="hamburger"
+          onclick="toggleMenu()"
+          aria-label="Menu"
+        >
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+
+      <div class="nav-search-bar" id="navSearchBar">
+        <div class="nav-search-icon-inline">
+          <svg
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            viewBox="0 0 24 24"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <path d="M21 21l-4.35-4.35" />
+          </svg>
+        </div>
+        <input
+          type="text"
+          id="navSearchInput"
+          placeholder="Search components, modules, OEMs, part numbers…"
+        />
+        <div class="nav-search-divider"></div>
+        <button class="nav-search-submit">Search</button>
+        <button
+          class="nav-search-close"
+          onclick="closeSearch()"
+          aria-label="Close search"
+        >
+          <svg
+            width="13"
+            height="13"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            viewBox="0 0 24 24"
+          >
+            <path d="M18 6L6 18M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </nav>
+
+    <!-- ══ MAIN ══ -->
+    <main class="main">
+      <!-- Visually hidden H1 for SEO page identity -->
+      <h1
+        style="
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border: 0;
+        "
+      >
+        Manufacturer Onboarding and Verification – Bharat Modules OEM
+        Registration
+      </h1>
+
+      <!-- STEPPER -->
+      <div class="stepper-card">
+        <div class="stepper-row">
+          <div class="step-item active" id="s1">
+            <div class="step-dot" id="dot1">1</div>
+            <div class="step-label">Register</div>
+          </div>
+          <div class="step-item" id="s2">
+            <div class="step-dot" id="dot2">2</div>
+            <div class="step-label">Documents</div>
+          </div>
+          <div class="step-item" id="s3">
+            <div class="step-dot" id="dot3">3</div>
+            <div class="step-label">T&amp;C</div>
+          </div>
+          <div class="step-item" id="s4">
+            <div class="step-dot" id="dot4">4</div>
+            <div class="step-label">NDA</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PHASE 1: VALUE PROPOSITION -->
+      <div class="phase active" id="phase1">
+        <div class="card">
+          <div class="phase-tag">Step 1 of 4 &nbsp;·&nbsp; Registration</div>
+          <h2>Verify Profile</h2>
+          <p class="sub">
+            Please enter your registration details below and specify
+            your manufacturing component category to proceed to document upload.
+          </p>
+
+          <form id="form-phase1" onsubmit="return false;" novalidate>
+            <div class="form-group">
+              <label>Name</label>
+              <input
+                type="text"
+                class="form-input"
+                id="obName"
+                placeholder="Your Name"
+                value=""
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Business Name</label>
+              <input
+                type="text"
+                class="form-input"
+                id="obBusiness"
+                placeholder="Business Name"
+                value=""
+              />
+            </div>
+
+            <div class="form-group" id="fg-email">
+              <label>Email</label>
+              <div style="display: flex; gap: 10px">
+                <input
+                  type="email"
+                  class="form-input"
+                  id="obEmail"
+                  placeholder="Email Address"
+                  value=""
+                  style="flex: 1;"
+                />
+                <button
+                  class="btn-verify"
+                  id="btn-verify-email"
+                  onclick="startVerification('email')"
+                >
+                  Verify
+                </button>
+              </div>
+              <div
+                class="otp-container"
+                id="otp-container-email"
+                style="
+                  display: none;
+                  margin-top: 12px;
+                  background: var(--off-white);
+                  padding: 16px;
+                  border-radius: 10px;
+                  border: 1px solid var(--gray-200);
+                  animation: headerSlide 0.3s ease;
+                "
+              >
+                <label
+                  style="
+                    font-size: 13px;
+                    color: var(--gray-600);
+                    margin-bottom: 10px;
+                    display: block;
+                  "
+                  >Enter OTP sent to
+                  <span
+                    id="otp-target-email"
+                    style="font-weight: 600; color: var(--black)"
+                  ></span
+                ></label>
+                <div style="display: flex; gap: 10px">
+                  <input
+                    type="text"
+                    class="form-input"
+                    id="otp-input-email"
+                    placeholder="4-digit code"
+                    maxlength="4"
+                    style="
+                      flex: 1;
+                      letter-spacing: 0.2em;
+                      text-align: center;
+                      font-weight: 700;
+                      font-size: 16px;
+                    "
+                  />
+                  <button
+                    class="btn-verify-confirm"
+                    onclick="confirmOTP('email')"
+                  >
+                    Confirm
+                  </button>
+                </div>
+                <div
+                  class="field-error"
+                  id="otp-error-email"
+                  style="margin-top: 8px"
+                >
+                  Invalid OTP. (Try '1234')
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group" id="fg-phone">
+              <label>Phone Number</label>
+              <div style="display: flex; gap: 10px">
+                <input
+                  type="tel"
+                  class="form-input"
+                  id="obPhone"
+                  placeholder="Phone Number"
+                  value=""
+                  style="flex: 1;"
+                />
+                <button
+                  class="btn-verify"
+                  id="btn-verify-phone"
+                  onclick="startVerification('phone')"
+                >
+                  Verify
+                </button>
+              </div>
+              <div
+                class="otp-container"
+                id="otp-container-phone"
+                style="
+                  display: none;
+                  margin-top: 12px;
+                  background: var(--off-white);
+                  padding: 16px;
+                  border-radius: 10px;
+                  border: 1px solid var(--gray-200);
+                  animation: headerSlide 0.3s ease;
+                "
+              >
+                <label
+                  style="
+                    font-size: 13px;
+                    color: var(--gray-600);
+                    margin-bottom: 10px;
+                    display: block;
+                  "
+                  >Enter OTP sent to
+                  <span
+                    id="otp-target-phone"
+                    style="font-weight: 600; color: var(--black)"
+                  ></span
+                ></label>
+                <div style="display: flex; gap: 10px">
+                  <input
+                    type="text"
+                    class="form-input"
+                    id="otp-input-phone"
+                    placeholder="4-digit code"
+                    maxlength="4"
+                    style="
+                      flex: 1;
+                      letter-spacing: 0.2em;
+                      text-align: center;
+                      font-weight: 700;
+                      font-size: 16px;
+                    "
+                  />
+                  <button
+                    class="btn-verify-confirm"
+                    onclick="confirmOTP('phone')"
+                  >
+                    Confirm
+                  </button>
+                </div>
+                <div
+                  class="field-error"
+                  id="otp-error-phone"
+                  style="margin-top: 8px"
+                >
+                  Invalid OTP. (Try '1234')
+                </div>
+              </div>
+            </div>
+
+            <div class="section-sep"></div>
+
+            <div class="form-group" id="fg-component-category">
+              <label>Component Category <span class="req">*</span></label>
+              <div class="custom-dropdown" id="catDropdown">
+                <div
+                  class="dropdown-header"
+                  onclick="
+                    document
+                      .getElementById('catDropdown')
+                      .classList.toggle('open')
+                  "
+                >
+                  <span
+                    id="catSelectedText"
+                    style="
+                      color: var(--gray-400);
+                      font-weight: 400;
+                      font-family: &quot;DM Sans&quot;, sans-serif;
+                      font-size: 15px;
+                    "
+                    >Select Categories...</span
+                  >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    style="transition: transform 0.2s"
+                  >
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </div>
+                <div class="dropdown-list" data-lenis-prevent>
+                  <label class="dropdown-item">
+                    <div class="chk-wrap">
+                      <input
+                        type="checkbox"
+                        value="Propulsion Systems"
+                        onchange="updateCatSelection()"
+                      />
+                    </div>
+                    <div class="dropdown-item-text">
+                      <strong>Propulsion Systems</strong>
+                      <span
+                        >BLDC Motors, Electronic Speed Controllers (ESCs),
+                        Propellers, Engine Mounts.</span
+                      >
+                    </div>
+                  </label>
+                  <label class="dropdown-item">
+                    <div class="chk-wrap">
+                      <input
+                        type="checkbox"
+                        value="Power & Energy"
+                        onchange="updateCatSelection()"
+                      />
+                    </div>
+                    <div class="dropdown-item-text">
+                      <strong>Power & Energy</strong>
+                      <span
+                        >Lithium-Ion/LiPo Batteries, Battery Management Systems
+                        (BMS), Power Distribution Boards (PDBs), Chargers.</span
+                      >
+                    </div>
+                  </label>
+                  <label class="dropdown-item">
+                    <div class="chk-wrap">
+                      <input
+                        type="checkbox"
+                        value="Avionics & Navigation"
+                        onchange="updateCatSelection()"
+                      />
+                    </div>
+                    <div class="dropdown-item-text">
+                      <strong>Avionics & Navigation</strong>
+                      <span
+                        >Flight Controllers (FCs), GPS/GNSS Modules, IMUs, Radar
+                        Altimeters, Pitot Tubes.</span
+                      >
+                    </div>
+                  </label>
+                  <label class="dropdown-item">
+                    <div class="chk-wrap">
+                      <input
+                        type="checkbox"
+                        value="Command & Communication"
+                        onchange="updateCatSelection()"
+                      />
+                    </div>
+                    <div class="dropdown-item-text">
+                      <strong>Command & Communication</strong>
+                      <span
+                        >Radio Transmitters/Receivers, Video Transmitters (VTX),
+                        Telemetry Radios, Antennas.</span
+                      >
+                    </div>
+                  </label>
+                  <label class="dropdown-item">
+                    <div class="chk-wrap">
+                      <input
+                        type="checkbox"
+                        value="Airframes & Structures"
+                        onchange="updateCatSelection()"
+                      />
+                    </div>
+                    <div class="dropdown-item-text">
+                      <strong>Airframes & Structures</strong>
+                      <span
+                        >Carbon Fiber Frames, CNC Machined Aluminum Arms,
+                        Landing Gear, Fasteners, Enclosures.</span
+                      >
+                    </div>
+                  </label>
+                  <label class="dropdown-item">
+                    <div class="chk-wrap">
+                      <input
+                        type="checkbox"
+                        value="Payloads & Actuators"
+                        onchange="updateCatSelection()"
+                      />
+                    </div>
+                    <div class="dropdown-item-text">
+                      <strong>Payloads & Actuators</strong>
+                      <span
+                        >EO/IR Cameras, LiDAR sensors, Gimbal Mechanisms,
+                        Payload Dropping Hooks, Servos.</span
+                      >
+                    </div>
+                  </label>
+                </div>
+              </div>
+              <div class="field-error">
+                Please select at least one component category.
+              </div>
+            </div>
+
+            <div class="phase-action-row" style="margin-top: 32px">
+              <button
+                type="submit"
+                class="btn-primary"
+                onclick="validatePhase1()"
+              >
+                Continue to Documents
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M3 8h10M9 4l4 4-4 4" />
+                </svg>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- PHASE 2: COMPANY DETAILS — FIX #5: wrapped in <form> -->
+      <div class="phase" id="phase2">
+        <div class="card">
+          <div class="phase-tag">Step 2 of 4 &nbsp;·&nbsp; Documents</div>
+          <h2>Company Documents</h2>
+          <p class="sub">
+            Upload the required business certificates. All documents must be PDF
+            (max 5 MB).
+          </p>
+
+          <form id="form-phase2" onsubmit="return false;" novalidate>
+            <div class="section-title">Required Certifications</div>
+
+            <div class="form-group" id="fg-coi">
+              <label
+                >1. Certificate of Incorporation (COI)
+                <span class="req">*</span></label
+              >
+              <div class="file-upload" id="fu-coi">
+                <input
+                  type="file"
+                  accept=".pdf"
+                  onchange="handleUpload(this, 'fu-coi', 'us-coi', 'coi')"
+                />
+                <div class="upload-icon">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                  </svg>
+                </div>
+                <div class="upload-text">
+                  <strong>Upload PDF</strong>
+                  <span>Certificate of Incorporation (MCA) · Max 5 MB</span>
+                </div>
+                <span class="upload-status" id="us-coi">PDF only</span>
+              </div>
+              <div class="field-error" id="fe-coi">
+                Please upload your Certificate of Incorporation (PDF, max 5 MB).
+              </div>
+            </div>
+
+            <div class="form-group" id="fg-gst">
+              <label>2. GST Certificate <span class="req">*</span></label>
+              <div class="file-upload" id="fu-gst">
+                <input
+                  type="file"
+                  accept=".pdf"
+                  onchange="handleUpload(this, 'fu-gst', 'us-gst', 'gst')"
+                />
+                <div class="upload-icon">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                  </svg>
+                </div>
+                <div class="upload-text">
+                  <strong>Upload PDF</strong>
+                  <span>GST certificate document · Max 5 MB</span>
+                </div>
+                <span class="upload-status" id="us-gst">PDF only</span>
+              </div>
+              <div class="field-error" id="fe-gst">
+                Please upload your GST certificate (PDF, max 5 MB).
+              </div>
+            </div>
+
+            <div class="form-group" id="fg-msme">
+              <label
+                >3. MSME / Udyam Certificate <span class="req">*</span></label
+              >
+              <div class="file-upload" id="fu-msme">
+                <input
+                  type="file"
+                  accept=".pdf"
+                  onchange="handleUpload(this, 'fu-msme', 'us-msme', 'msme')"
+                />
+                <div class="upload-icon">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                  </svg>
+                </div>
+                <div class="upload-text">
+                  <strong>Upload PDF</strong>
+                  <span>MSME or Udyam registration certificate · Max 5 MB</span>
+                </div>
+                <span class="upload-status" id="us-msme">PDF only</span>
+              </div>
+              <div class="field-error" id="fe-msme">
+                Please upload your MSME certificate (PDF, max 5 MB).
+              </div>
+            </div>
+
+            <div class="form-group" id="fg-factory">
+              <label
+                >4. Manufacturing / Factory License
+                <span class="req">*</span></label
+              >
+              <div class="file-upload" id="fu-factory">
+                <input
+                  type="file"
+                  accept=".pdf"
+                  onchange="
+                    handleUpload(this, 'fu-factory', 'us-factory', 'factory')
+                  "
+                />
+                <div class="upload-icon">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                  </svg>
+                </div>
+                <div class="upload-text">
+                  <strong>Upload PDF</strong>
+                  <span>Factory or manufacturing license · Max 5 MB</span>
+                </div>
+                <span class="upload-status" id="us-factory">PDF only</span>
+              </div>
+              <div class="field-error" id="fe-factory">
+                Please upload your factory license (PDF, max 5 MB).
+              </div>
+            </div>
+
+            <div class="form-group" id="fg-pan">
+              <label>5. Company PAN Card <span class="req">*</span></label>
+              <div class="file-upload" id="fu-pan">
+                <input
+                  type="file"
+                  accept=".pdf"
+                  onchange="handleUpload(this, 'fu-pan', 'us-pan', 'pan')"
+                />
+                <div class="upload-icon">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                  </svg>
+                </div>
+                <div class="upload-text">
+                  <strong>Upload PDF</strong>
+                  <span>Company PAN Card document · Max 5 MB</span>
+                </div>
+                <span class="upload-status" id="us-pan">PDF only</span>
+              </div>
+              <div class="field-error" id="fe-pan">
+                Please upload your Company PAN Card (PDF, max 5 MB).
+              </div>
+            </div>
+
+            <div class="btn-row">
+              <button
+                type="button"
+                class="btn-secondary"
+                onclick="goToPhase(1)"
+              >
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M13 8H3M7 4L3 8l4 4" />
+                </svg>
+                Back
+              </button>
+              <!-- FIX #5: type="submit" so Enter key triggers submit -->
+              <button
+                type="submit"
+                class="btn-primary"
+                onclick="validatePhase2()"
+              >
+                Continue to T&amp;C
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M3 8h10M9 4l4 4-4 4" />
+                </svg>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- PHASE 3: T&C -->
+      <div class="phase" id="phase3">
+        <div class="card">
+          <div class="phase-tag">
+            Step 3 of 4 &nbsp;·&nbsp; Terms &amp; Conditions
+          </div>
+          <h2>Terms &amp; Conditions</h2>
+          <p class="sub">
+            Expand and review each section, then check to confirm your
+            understanding. You must acknowledge all 8 sections to continue.
+          </p>
+
+          <!-- Section 1 -->
+          <div class="clause-block" id="tc-clause1">
+            <div class="clause-header" onclick="toggleClause('tc-clause1')">
+              <input
+                type="checkbox"
+                id="chk-tc-clause1"
+                onclick="
+                  event.stopPropagation();
+                  updateTcGate();
+                "
+                aria-label="Acknowledge Section 1"
+              />
+              <div class="clause-header-text">
+                <h3
+                  class="clause-header-text-title"
+                  style="
+                    font-size: 14px;
+                    font-weight: 700;
+                    color: var(--black);
+                    margin: 0;
+                    display: inline;
+                  "
+                >
+                  1. Blind Shipping &amp; Brand Neutrality Protocol
+                </h3>
+                <span
+                  >Click to expand · Read and confirm your understanding.</span
+                >
+              </div>
+              <svg
+                class="clause-chevron"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </div>
+            <div class="clause-body">
+              <p>
+                1.1. All products dispatched via a Bharat Modules purchase order
+                must be shipped in Blind Packaging. This means the external and
+                internal packaging must avoid any OEM-specific branding, logos,
+                or identifying marks unless otherwise specified for technical
+                compliance (e.g., part numbers or safety stamps).
+              </p>
+              <p>
+                1.2. The OEM is strictly prohibited from including the following
+                within or upon any shipment:
+              </p>
+              <ul>
+                <li>Company brochures, business cards, or marketing flyers.</li>
+                <li>OEM-direct invoices, price lists, or thank you notes.</li>
+                <li>
+                  QR codes or URLs leading to the OEM's private website or
+                  social media.
+                </li>
+                <li>
+                  Direct contact information for the OEM's sales or support
+                  teams.
+                </li>
+              </ul>
+              <p>
+                1.3 Exclusions: Branding on components, logos engraved on
+                product are excluded from blind shipping.
+              </p>
+            </div>
+          </div>
+
+          <!-- Section 2 -->
+          <div class="clause-block" id="tc-clause2">
+            <div class="clause-header" onclick="toggleClause('tc-clause2')">
+              <input
+                type="checkbox"
+                id="chk-tc-clause2"
+                onclick="
+                  event.stopPropagation();
+                  updateTcGate();
+                "
+                aria-label="Acknowledge Section 2"
+              />
+              <div class="clause-header-text">
+                <h3
+                  class="clause-header-text-title"
+                  style="
+                    font-size: 14px;
+                    font-weight: 700;
+                    color: var(--black);
+                    margin: 0;
+                    display: inline;
+                  "
+                >
+                  2. Communication &amp; Direct Contact Rules
+                </h3>
+                <span
+                  >Click to expand · Understand documentation and communication
+                  guidelines.</span
+                >
+              </div>
+              <svg
+                class="clause-chevron"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </div>
+            <div class="clause-body">
+              <p>
+                2.1. The only documentation permitted within the shipment is the
+                Bharat Modules Packing Slip and the required Technical Data
+                Sheets &amp; compliance documents. Any invoice provided to the
+                carrier for logistics purposes must list Bharat Modules as the
+                Shipper of Record.
+              </p>
+              <p>
+                2.2. Any attempt to reach a Bharat Modules customer for direct
+                business, or to encourage them to bypass the platform for future
+                orders, constitutes a material breach of contract. This will
+                result in termination of the OEM's account, loss of any pending
+                payouts and a permanent ban from the website.
+              </p>
+            </div>
+          </div>
+
+          <!-- Section 3 -->
+          <div class="clause-block" id="tc-clause3">
+            <div class="clause-header" onclick="toggleClause('tc-clause3')">
+              <input
+                type="checkbox"
+                id="chk-tc-clause3"
+                onclick="
+                  event.stopPropagation();
+                  updateTcGate();
+                "
+                aria-label="Acknowledge Section 3"
+              />
+              <div class="clause-header-text">
+                <h3
+                  class="clause-header-text-title"
+                  style="
+                    font-size: 14px;
+                    font-weight: 700;
+                    color: var(--black);
+                    margin: 0;
+                    display: inline;
+                  "
+                >
+                  3. Product Quality &amp; Packaging Requirements
+                </h3>
+                <span
+                  >Click to expand · Confirm your obligations to product
+                  integrity.</span
+                >
+              </div>
+              <svg
+                class="clause-chevron"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </div>
+            <div class="clause-body">
+              <p>
+                3.1. The OEM warrants that all components supplied are new,
+                authentic, and strictly conform to the technical specifications
+                and Proof of Origin declarations provided during the RFQ phase.
+              </p>
+              <p>
+                3.2. The OEM is solely responsible for industrial-grade
+                packaging sufficient for long-haul transport.
+              </p>
+              <ul>
+                <li>
+                  The 48-Hour Rule: If a product arrives damaged, the Customer
+                  has 48 hours to report it.
+                </li>
+                <li>
+                  OEM Liability: If damage is due to inadequate packaging or
+                  factory error, the OEM must provide a replacement at no
+                  additional cost to the Customer or Bharat Modules, including
+                  expedited shipping.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Section 4 -->
+          <div class="clause-block" id="tc-clause4">
+            <div class="clause-header" onclick="toggleClause('tc-clause4')">
+              <input
+                type="checkbox"
+                id="chk-tc-clause4"
+                onclick="
+                  event.stopPropagation();
+                  updateTcGate();
+                "
+                aria-label="Acknowledge Section 4"
+              />
+              <div class="clause-header-text">
+                <h3
+                  class="clause-header-text-title"
+                  style="
+                    font-size: 14px;
+                    font-weight: 700;
+                    color: var(--black);
+                    margin: 0;
+                    display: inline;
+                  "
+                >
+                  4. Documentation Compliance &amp; Defect Resolutions
+                </h3>
+                <span
+                  >Click to expand · Acknowledge your liability towards
+                  documentation and defects.</span
+                >
+              </div>
+              <svg
+                class="clause-chevron"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </div>
+            <div class="clause-body">
+              <p>
+                4.1. Since Bharat Modules serves high-stakes sectors
+                (Aerospace/Defense), Quality includes documentation.
+              </p>
+              <ul>
+                <li>
+                  If a part is physically perfect but arrives without the
+                  promised Certificates, the product is considered to be
+                  Non-Compliant.
+                </li>
+                <li>
+                  The OEM has 3 business days, after required time to get
+                  certifications to provide missing digital documentation.
+                  Failure to do so has to face the strike rule.
+                </li>
+              </ul>
+              <p>
+                4.2. In cases of confirmed manufacturing defects, the OEM agrees
+                to:
+              </p>
+              <ul>
+                <li>Initiate a replacement within the time as discussed.</li>
+                <li>
+                  Accept a full refund deduction from their Bharat Modules
+                  account if a replacement cannot be provided within the project
+                  deadline.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Section 5 -->
+          <div class="clause-block" id="tc-clause5">
+            <div class="clause-header" onclick="toggleClause('tc-clause5')">
+              <input
+                type="checkbox"
+                id="chk-tc-clause5"
+                onclick="
+                  event.stopPropagation();
+                  updateTcGate();
+                "
+                aria-label="Acknowledge Section 5"
+              />
+              <div class="clause-header-text">
+                <h3
+                  class="clause-header-text-title"
+                  style="
+                    font-size: 14px;
+                    font-weight: 700;
+                    color: var(--black);
+                    margin: 0;
+                    display: inline;
+                  "
+                >
+                  5. Payment &amp; Escrow Process
+                </h3>
+                <span
+                  >Click to expand · Understand payout timelines and
+                  escrow.</span
+                >
+              </div>
+              <svg
+                class="clause-chevron"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </div>
+            <div class="clause-body">
+              <p>
+                5.1. To protect the ecosystem, Bharat Modules acts as the
+                financial intermediary.
+              </p>
+              <ul>
+                <li>
+                  These funds are held in a Bharat Modules account and are only
+                  released to the OEM upon successful dispatch or completion of
+                  delivery.
+                </li>
+                <li>
+                  The payments are processed within 15 to 30 business days,
+                  starting from the delivery date for Pay on Delivery orders or
+                  from the dispatch date for prepaid orders to OEM's registered
+                  bank account.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Section 6 -->
+          <div class="clause-block" id="tc-clause6">
+            <div class="clause-header" onclick="toggleClause('tc-clause6')">
+              <input
+                type="checkbox"
+                id="chk-tc-clause6"
+                onclick="
+                  event.stopPropagation();
+                  updateTcGate();
+                "
+                aria-label="Acknowledge Section 6"
+              />
+              <div class="clause-header-text">
+                <h3
+                  class="clause-header-text-title"
+                  style="
+                    font-size: 14px;
+                    font-weight: 700;
+                    color: var(--black);
+                    margin: 0;
+                    display: inline;
+                  "
+                >
+                  6. Milestone Payments &amp; Adjustments
+                </h3>
+                <span
+                  >Click to expand · Review policies on custom order milestones
+                  and deductions.</span
+                >
+              </div>
+              <svg
+                class="clause-chevron"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </div>
+            <div class="clause-body">
+              <p>
+                6.1. Milestone Releases (For Custom Orders): For high-value
+                manufacturing (e.g., custom Aerospace components), payments may
+                be split:
+              </p>
+              <ul>
+                <li>
+                  Milestone A: OEM will be paid the required amount to procure
+                  the raw materials.
+                </li>
+                <li>
+                  Milestone B: The remaining amount is released only after the
+                  order is dispatched or delivered.
+                </li>
+              </ul>
+              <p>
+                6.2. Bharat Modules will deduct the agreed-upon platform
+                commission and any applicable logistics fees before the final
+                payout. In the event of an OEM-side error (returns/damages),
+                Bharat Modules reserves the right to imply penalty.
+              </p>
+              <p>
+                6.3. Changes in payment terms: Manufacturer will contact Bharat
+                Modules for a custom payment terms &amp; will be implemented
+                after mutual acceptance.
+              </p>
+            </div>
+          </div>
+
+          <!-- Section 7 -->
+          <div class="clause-block" id="tc-clause7">
+            <div class="clause-header" onclick="toggleClause('tc-clause7')">
+              <input
+                type="checkbox"
+                id="chk-tc-clause7"
+                onclick="
+                  event.stopPropagation();
+                  updateTcGate();
+                "
+                aria-label="Acknowledge Section 7"
+              />
+              <div class="clause-header-text">
+                <h3
+                  class="clause-header-text-title"
+                  style="
+                    font-size: 14px;
+                    font-weight: 700;
+                    color: var(--black);
+                    margin: 0;
+                    display: inline;
+                  "
+                >
+                  7. Order Cancellation Terms
+                </h3>
+                <span
+                  >Click to expand · Detailed rules around dispatch limits and
+                  non-cancelable items.</span
+                >
+              </div>
+              <svg
+                class="clause-chevron"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </div>
+            <div class="clause-body">
+              <p>
+                7.1. The OEM agrees to the following cancellation windows,
+                acknowledging the difference between commodity hardware and
+                specialized engineering:
+              </p>
+              <ul>
+                <li>
+                  Standard Components: The OEM must accept a no-penalty
+                  cancellation before order dispatch.
+                </li>
+                <li>
+                  Custom/Bespoke Components (CNC, Aerospace, Tooling, 3D
+                  printing): Once the OEM has started production, the order is
+                  considered Non-Cancellable. The OEM is entitled to the
+                  material-milestone payment, but must cease further labor if a
+                  cancellation request is received.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Section 8 -->
+          <div class="clause-block" id="tc-clause8">
+            <div class="clause-header" onclick="toggleClause('tc-clause8')">
+              <input
+                type="checkbox"
+                id="chk-tc-clause8"
+                onclick="
+                  event.stopPropagation();
+                  updateTcGate();
+                "
+                aria-label="Acknowledge Section 8"
+              />
+              <div class="clause-header-text">
+                <h3
+                  class="clause-header-text-title"
+                  style="
+                    font-size: 14px;
+                    font-weight: 700;
+                    color: var(--black);
+                    margin: 0;
+                    display: inline;
+                  "
+                >
+                  8. Returns, Refunds &amp; Logistics Liability
+                </h3>
+                <span
+                  >Click to expand · Understand your obligations in case of
+                  returns.</span
+                >
+              </div>
+              <svg
+                class="clause-chevron"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </div>
+            <div class="clause-body">
+              <p>
+                8.1. Returns are strictly limited to Technical Non-Conformity.
+              </p>
+              <ul>
+                <li>
+                  Definition of Non-Conformity: Any instance where the physical
+                  part does not match the dimensions, material grade, or
+                  tolerances specified in the RFQ, or where the "Proof of
+                  Origin" documentation is missing or wrong.
+                </li>
+                <li>
+                  OEM Obligation: Upon a verified claim of Non-Conformity, the
+                  OEM is contractually obligated to provide a replacement within
+                  the original lead-time window or issue a full refund at the
+                  Customer's discretion.
+                </li>
+              </ul>
+              <p>8.2. Financial Recovery &amp; Refund Processing:</p>
+              <ul>
+                <li>
+                  Refund policy: If the manufacturer is fully paid before
+                  delivery &amp; a valid refund is initiated by the customer
+                  (within 48 hours of delivery), the manufacturer is responsible
+                  for total refund.
+                </li>
+                <li>
+                  Logistic Liability: If a return is triggered by OEM error
+                  (wrong part/failed audit), the OEM is responsible for the cost
+                  of reverse logistics and the shipping of the replacement part.
+                </li>
+              </ul>
+              <p>
+                8.3. The OEM acknowledges that Bharat Modules performs technical
+                verification and lead generation for every transaction.
+              </p>
+              <ul>
+                <li>
+                  If a refund or return is processed due to OEM negligence
+                  (manufacturing defect, documentation failure, or shipping
+                  error), Bharat Modules will retain its full Service Fee
+                  (margin). The OEM will be responsible for the difference,
+                  ensuring the Customer is made whole while Bharat Modules is
+                  compensated for the technical labor expended on the failed
+                  transaction.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Gate Notice -->
+          <div
+            class="notice-gate"
+            id="tcGateNotice"
+            style="
+              margin-top: 16px;
+              margin-bottom: 24px;
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              padding: 14px 18px;
+              border-radius: 10px;
+              font-size: 13.5px;
+              font-weight: 500;
+              transition: all 0.3s;
+              background: rgba(232, 92, 13, 0.08);
+              color: var(--orange);
+              border: 1px solid rgba(232, 92, 13, 0.2);
+            "
+          >
+            <svg
+              id="tcGateIcon"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              style="flex-shrink: 0"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <span id="tcGateText"
+              >Acknowledge 8 more sections above to continue.</span
+            >
+          </div>
+
+          <div class="btn-row">
+            <button class="btn-secondary" onclick="goToPhase(2)">
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M13 8H3M7 4L3 8l4 4" />
+              </svg>
+              Back
+            </button>
+            <button class="btn-primary" onclick="validatePhase3()">
+              Continue to M-NDA
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M3 8h10M9 4l4 4-4 4" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PHASE 4: M-NDA — FIX #3: clause-level checkboxes gate the signature -->
+      <div class="phase" id="phase4">
+        <div class="card">
+          <div class="phase-tag">Step 4 of 4 &nbsp;·&nbsp; Mutual NDA</div>
+          <h2>Mutual Non-Disclosure Agreement</h2>
+          <p class="sub">
+            Expand and review each clause, then check to confirm your
+            understanding. The signature pad unlocks only once all four clauses
+            are acknowledged.
+          </p>
+
+          <!-- Clause 1 -->
+          <div class="clause-block" id="clause1">
+            <div class="clause-header" onclick="toggleClause('clause1')">
+              <input
+                type="checkbox"
+                id="chk-clause1"
+                onclick="
+                  event.stopPropagation();
+                  updateSigGate();
+                "
+                aria-label="Acknowledge clause 1"
+              />
+              <div class="clause-header-text">
+                <h3
+                  class="clause-header-text-title"
+                  style="
+                    font-size: 14px;
+                    font-weight: 700;
+                    color: var(--black);
+                    margin: 0;
+                    display: inline;
+                  "
+                >
+                  1. Definition of Confidential Information
+                </h3>
+                <span
+                  >Click to expand · Read and confirm your understanding.</span
+                >
+              </div>
+              <svg
+                class="clause-chevron"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </div>
+            <div class="clause-body">
+              <p>
+                "Confidential Information" means any data or information, oral
+                or written, disclosed by either Party that is designated as
+                confidential or that should reasonably be treated as
+                confidential. This includes, but is not limited to: business
+                strategies, B2B pricing, client lists, hardware schematics, Bill
+                of Materials (BOM), manufacturing processes, technical test
+                data, and supply chain logistics.
+              </p>
+            </div>
+          </div>
+
+          <!-- Clause 2 -->
+          <div class="clause-block" id="clause2">
+            <div class="clause-header" onclick="toggleClause('clause2')">
+              <input
+                type="checkbox"
+                id="chk-clause2"
+                onclick="
+                  event.stopPropagation();
+                  updateSigGate();
+                "
+                aria-label="Acknowledge clause 2"
+              />
+              <div class="clause-header-text">
+                <h3
+                  class="clause-header-text-title"
+                  style="
+                    font-size: 14px;
+                    font-weight: 700;
+                    color: var(--black);
+                    margin: 0;
+                    display: inline;
+                  "
+                >
+                  2. Obligations of the Receiving Party
+                </h3>
+                <span
+                  >Click to expand · Confirm your obligations to hold
+                  information in strict confidence.</span
+                >
+              </div>
+              <svg
+                class="clause-chevron"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </div>
+            <div class="clause-body">
+              <p style="line-height: 1.8">
+                Each Party agrees to:<br />
+                &nbsp;&nbsp;&nbsp;(a) hold all Confidential Information in
+                strict confidence;<br />
+                &nbsp;&nbsp;&nbsp;(b) not disclose Confidential Information to
+                any third party without prior written consent;<br />
+                &nbsp;&nbsp;&nbsp;(c) use Confidential Information solely for
+                the purpose of evaluating or conducting business through the BM
+                Platform.
+              </p>
+            </div>
+          </div>
+
+          <!-- Clause 3 -->
+          <div class="clause-block" id="clause3">
+            <div class="clause-header" onclick="toggleClause('clause3')">
+              <input
+                type="checkbox"
+                id="chk-clause3"
+                onclick="
+                  event.stopPropagation();
+                  updateSigGate();
+                "
+                aria-label="Acknowledge clause 3"
+              />
+              <div class="clause-header-text">
+                <h3
+                  class="clause-header-text-title"
+                  style="
+                    font-size: 14px;
+                    font-weight: 700;
+                    color: var(--black);
+                    margin: 0;
+                    display: inline;
+                  "
+                >
+                  3. Exclusions &amp; Permitted Disclosures
+                </h3>
+                <span
+                  >Click to expand · Understand what information is exempt from
+                  these obligations.</span
+                >
+              </div>
+              <svg
+                class="clause-chevron"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </div>
+            <div class="clause-body">
+              <p style="line-height: 1.8">
+                These obligations shall not apply to information that:<br />
+                &nbsp;&nbsp;&nbsp;(a) is or becomes publicly available without
+                breach of this M-NDA;<br />
+                &nbsp;&nbsp;&nbsp;(b) was rightfully known by the receiving
+                Party prior to disclosure;<br />
+                &nbsp;&nbsp;&nbsp;(c) is independently developed without
+                reference to the Confidential Information; or<br />
+                &nbsp;&nbsp;&nbsp;(d) is required to be disclosed by law or
+                court order.
+              </p>
+            </div>
+          </div>
+
+          <!-- Clause 4 -->
+          <div class="clause-block" id="clause4">
+            <div class="clause-header" onclick="toggleClause('clause4')">
+              <input
+                type="checkbox"
+                id="chk-clause4"
+                onclick="
+                  event.stopPropagation();
+                  updateSigGate();
+                "
+                aria-label="Acknowledge clause 4"
+              />
+              <div class="clause-header-text">
+                <h3
+                  class="clause-header-text-title"
+                  style="
+                    font-size: 14px;
+                    font-weight: 700;
+                    color: var(--black);
+                    margin: 0;
+                    display: inline;
+                  "
+                >
+                  4. Term, Remedies &amp; Governing Law
+                </h3>
+                <span
+                  >Click to expand · Acknowledge the duration and consequences
+                  of breach.</span
+                >
+              </div>
+              <svg
+                class="clause-chevron"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </div>
+            <div class="clause-body">
+              <p>
+                <strong>Term:</strong> This M-NDA shall remain in effect for
+                three (3) years from the date of signature or until terminated
+                by mutual written agreement.
+              </p>
+              <p>
+                <strong>Return of Information:</strong> Upon request or
+                termination, each Party shall promptly return or destroy all
+                confidential Information and certify in writing that it has done
+                so.
+              </p>
+              <p>
+                <strong>Remedies:</strong> The Parties acknowledge that a breach
+                may cause irreparable harm. The non-breaching Party shall be
+                entitled to seek equitable relief including injunction, in
+                addition to all other remedies available at law. This agreement
+                is governed by Indian law; disputes shall be resolved before
+                courts in Bengaluru, Karnataka.
+              </p>
+            </div>
+          </div>
+
+          <!-- Gate status -->
+          <div class="sig-gate-notice" id="sigGateNotice">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              id="sigGateIcon"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <span id="sigGateText"
+              >Acknowledge all 4 clauses above to unlock the signature
+              pad.</span
+            >
+          </div>
+
+          <div class="section-sep"></div>
+
+          <div class="form-group" id="fg-signer-name">
+            <label for="signer-name">Signer Name</label>
+            <input
+              type="text"
+              class="form-input"
+              id="signer-name"
+              placeholder="Your Name"
+              value=""
+            />
+          </div>
+
+          <div class="form-group" id="fg-signer-role">
+            <label for="signer-role"
+              >Signer Role / Title <span class="req">*</span></label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="signer-role"
+              placeholder="e.g. Director, Authorized Signatory"
+              oninput="
+                if (this.value.trim().length > 0) {
+                  document
+                    .getElementById('fg-signer-role')
+                    .classList.remove('has-error');
+                }
+              "
+            />
+            <div class="field-error">Signer role is required.</div>
+          </div>
+
+          <div class="form-group">
+            <label>Signature Method <span class="req">*</span></label>
+            <div
+              style="
+                display: flex;
+                gap: 16px;
+                margin-bottom: 12px;
+                align-items: center;
+              "
+            >
+              <label
+                style="
+                  font-size: 14px;
+                  font-weight: 500;
+                  cursor: pointer;
+                  color: var(--gray-700);
+                  display: flex;
+                  align-items: center;
+                  gap: 6px;
+                "
+              >
+                <input
+                  type="radio"
+                  name="sigMethod"
+                  value="draw"
+                  checked
+                  onchange="toggleSigMethod()"
+                  style="width: 16px; height: 16px; accent-color: var(--orange)"
+                />
+                Draw digital signature
+              </label>
+              <label
+                style="
+                  font-size: 14px;
+                  font-weight: 500;
+                  cursor: pointer;
+                  color: var(--gray-700);
+                  display: flex;
+                  align-items: center;
+                  gap: 6px;
+                "
+              >
+                <input
+                  type="radio"
+                  name="sigMethod"
+                  value="upload"
+                  onchange="toggleSigMethod()"
+                  style="width: 16px; height: 16px; accent-color: var(--orange)"
+                />
+                Upload signature document
+              </label>
+            </div>
+          </div>
+
+          <!-- Signature pad (Wrapper for Draw) -->
+          <div id="sig-draw-wrap">
+            <div class="sig-label">
+              Digital Signature <span style="color: var(--orange)">*</span>
+            </div>
+            <div class="sig-container locked" id="sigContainer">
+              <canvas id="sigCanvas" height="140"></canvas>
+              <div class="sig-placeholder" id="sigPlaceholder">
+                <svg
+                  class="sig-locked-icon"
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  id="sigLockIcon"
+                >
+                  <rect x="3" y="11" width="18" height="11" rx="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+                <span id="sigPlaceholderText"
+                  >Acknowledge all clauses to unlock</span
+                >
+              </div>
+            </div>
+            <div class="sig-actions" style="margin-bottom: 4px">
+              <button class="sig-clear" onclick="clearSig()">
+                Clear signature
+              </button>
+              <span class="sig-hint">Draw with your mouse or finger</span>
+            </div>
+          </div>
+
+          <!-- Signature Upload (Wrapper for Upload) -->
+          <div id="sig-upload-wrap" style="display: none; margin-bottom: 4px">
+            <div class="form-group" id="fg-sigdoc" style="margin-bottom: 0">
+              <label>Upload Signature <span class="req">*</span></label>
+              <div
+                class="file-upload"
+                id="fu-sigdoc"
+                style="opacity: 0.42; transition: opacity 0.3s; margin-top: 8px"
+              >
+                <input
+                  type="file"
+                  accept=".pdf,.png,.jpg,.jpeg"
+                  onchange="
+                    handleUpload(this, 'fu-sigdoc', 'us-sigdoc', 'sigdoc')
+                  "
+                  id="sigdoc-input"
+                  disabled
+                />
+                <div class="upload-icon">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                  </svg>
+                </div>
+                <div class="upload-text">
+                  <strong>Upload Document or Image</strong>
+                  <span>Signature or stamped document · Max 5 MB</span>
+                </div>
+                <span class="upload-status" id="us-sigdoc">PDF/Image</span>
+              </div>
+              <div class="field-error" id="fe-sigdoc">
+                Please upload your signature.
+              </div>
+              <div
+                class="field-error"
+                id="fe-sigdoc-lock"
+                style="
+                  color: var(--orange);
+                  display: block;
+                  margin-top: 6px;
+                  font-weight: 500;
+                  font-size: 13px;
+                "
+              >
+                Acknowledge all clauses above to unlock upload.
+              </div>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn-secondary" onclick="goToPhase(3)">
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M13 8H3M7 4L3 8l4 4" />
+              </svg>
+              Back
+            </button>
+            <div
+              style="
+                display: flex;
+                gap: 12px;
+                flex-wrap: wrap;
+                justify-content: flex-end;
+              "
+            >
+              <button class="btn-primary" onclick="validatePhase4()">
+                Submit Application
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <polyline points="2,8 6,12 14,4" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PHASE 5: VERIFICATION HOLD -->
+      <div class="phase" id="phase5">
+        <div class="card">
+          <div class="hold-center">
+            <div class="hold-badge">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="2,8 6,12 14,4" />
+              </svg>
+              Application Submitted
+            </div>
+            <div class="hold-icon-wrap">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 6v6l4 2" />
+              </svg>
+            </div>
+            <h2
+              style="
+                font-family: &quot;Rajdhani&quot;, sans-serif;
+                font-size: clamp(28px, 4vw, 42px);
+                font-weight: 700;
+                color: var(--black);
+                letter-spacing: 0.02em;
+                line-height: 1.15;
+                margin-bottom: 10px;
+              "
+            >
+              Verification in Process.
+            </h2>
+            <p>
+              Our team will verify all your details and notify you at
+              <strong id="display-email">your registered email</strong> within
+              <strong>2 business days</strong>.
+            </p>
+            <div
+              style="
+                display: flex;
+                gap: 16px;
+                justify-content: center;
+                flex-wrap: wrap;
+                margin-top: 12px;
+              "
+            >
+              <button
+                class="btn-secondary"
+                onclick="downloadNDA()"
+                style="
+                  color: var(--orange);
+                  border-color: var(--orange);
+                  display: inline-flex;
+                "
+              >
+                Download M-NDA form
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  style="margin-left: 6px"
+                >
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+              </button>
+              <a
+                href="#"
+                onclick="
+                  if (document.referrer) {
+                    history.back();
+                  } else {
+                    window.location.href = 'index.html';
+                  }
+                  return false;
+                "
+                class="btn-primary"
+                style="display: inline-flex"
+              >
+                Back to Home
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M3 8h10M9 4l4 4-4 4" />
+                </svg>
+              </a>
+            </div>
+          </div>
+          <div class="hold-divider"></div>
+          <div class="hold-details">
+            <div class="hold-detail-chip">
+              <strong>What happens next</strong>
+              <span>BM internal audit team reviews your documents</span>
+            </div>
+            <div class="hold-detail-chip">
+              <strong>Timeline</strong>
+              <span>2 business days for verification</span>
+            </div>
+            <div class="hold-detail-chip">
+              <strong>After approval</strong>
+              <span>Full access to Manufacturer Dashboard</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+
+
+    <script>
+      /* ── 3D PARTICLE GLOBE BACKGROUND ── */
+      const bgCanvas = document.getElementById("particleCanvas");
+      const bgCtx = bgCanvas.getContext("2d");
+      let width, height;
+
+      function resize() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        if (bgCanvas) {
+          bgCanvas.width = width;
+          bgCanvas.height = height;
+        }
+      }
+      window.addEventListener("resize", resize);
+      resize();
+
+      const numParticles = 1200; // Dense massive field
+      const particles = [];
+      // mix of Indian flag colors! Saffron, Silver(for white), Green
+      const colors = ["#FF9933", "#eaf0f6", "#138808"];
+
+      // Distribution of particles in a huge massive 3D volume
+      for (let i = 0; i < numParticles; i++) {
+        const x = (Math.random() - 0.5) * 8000;
+        const y = (Math.random() - 0.5) * 6000;
+        const z = (Math.random() - 0.5) * 6000;
+
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const sm = Math.random() * 3 + 2.5; // Huge increase to particle size (2.5 to 5.5) so they are unquestioningly visible
+        particles.push({
+          baseX: x,
+          baseY: y,
+          baseZ: z,
+          color: color,
+          ox: 0,
+          oy: 0,
+          sm: sm,
+        });
+      }
+
+      let rotX = 0;
+      let rotY = 0;
+      let globeTime = 0;
+      let mouseX = -9999;
+      let mouseY = -9999;
+
+      document.addEventListener("mousemove", (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      });
+
+      document.addEventListener("mouseleave", () => {
+        mouseX = -9999;
+        mouseY = -9999;
+      });
+
+      function drawGlobe() {
+        if (!bgCtx) return;
+        // Create a clean white linear gradient to avoid any purple optical illusions!
+        const grad = bgCtx.createLinearGradient(0, 0, 0, height);
+        grad.addColorStop(0, "#ffffff");
+        grad.addColorStop(1, "#f8f9fa");
+        bgCtx.fillStyle = grad;
+        bgCtx.fillRect(0, 0, width, height);
+
+        // Native auto-rotation
+        globeTime += 0.001;
+        rotX = Math.sin(globeTime * 0.5) * 0.15; // slow tilt
+        rotY = globeTime * 0.3; // continuous slow pan
+
+        const cx = width / 2;
+        const cy = height / 2;
+
+        const projected = particles
+          .map((p) => {
+            const sY = Math.sin(rotY),
+              cY = Math.cos(rotY);
+            const sX = Math.sin(rotX),
+              cX = Math.cos(rotX);
+
+            // Rotate Y
+            let x1 = p.baseX * cY - p.baseZ * sY;
+            let z1 = p.baseZ * cY + p.baseX * sY;
+            let y1 = p.baseY;
+
+            // Rotate X
+            let y2 = y1 * cX - z1 * sX;
+            let z2 = z1 * cX + y1 * sX;
+
+            // 3D Projection
+            const fov = 1000;
+            const distance = fov + z2 + 2500;
+            if (distance < 1) return null;
+
+            const scale = fov / distance;
+            let xp = cx + x1 * scale;
+            let yp = cy + y2 * scale;
+
+            // Escape mouse effect (Physics repulsion)
+            const dx = xp - mouseX;
+            const dy = yp - mouseY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const repelDistance = 200;
+
+            if (dist < repelDistance && dist > 0) {
+              const force = (repelDistance - dist) / repelDistance;
+              // Add explosive velocity away from mouse
+              p.ox += (dx / dist) * force * 15;
+              p.oy += (dy / dist) * force * 15;
+            }
+
+            // Physics: spring back to original position (decay)
+            p.ox *= 0.88;
+            p.oy *= 0.88;
+
+            xp += p.ox;
+            yp += p.oy;
+
+            return { xp, yp, scale, z: z2, color: p.color };
+          })
+          .filter(Boolean);
+
+        // Draw back-to-front
+        projected.sort((a, b) => b.z - a.z);
+
+        projected.forEach((p) => {
+          bgCtx.beginPath();
+          // Varied, attention-grabbing but non-disturbing sizes
+          const r = Math.max(1.0, 1.8 * p.scale * p.sm);
+          bgCtx.arc(p.xp, p.yp, r, 0, Math.PI * 2);
+          bgCtx.fillStyle = p.color;
+
+          // Opacity based on depth (z)
+          bgCtx.globalAlpha = Math.max(
+            0.02,
+            Math.min(0.8, (2500 - p.z) / 4000),
+          );
+          bgCtx.fill();
+        });
+
+        requestAnimationFrame(drawGlobe);
+      }
+      drawGlobe();
+
+      /* ── STATE ── */
+      let currentPhase = 1;
+      const MAX_FILE_BYTES = 5 * 1024 * 1024; // FIX #5: 5 MB limit
+      const uploadedFiles = {
+        gst: false,
+        msme: false,
+        coi: false,
+        factory: false,
+        pan: false,
+        sigdoc: false,
+      };
+      let currentSigMethod = "draw";
+      let sigHasData = false;
+      let sigDrawing = false;
+
+      function toggleSigMethod() {
+        const methods = document.getElementsByName("sigMethod");
+        for (let m of methods) {
+          if (m.checked) currentSigMethod = m.value;
+        }
+        if (currentSigMethod === "draw") {
+          document.getElementById("sig-draw-wrap").style.display = "block";
+          document.getElementById("sig-upload-wrap").style.display = "none";
+          resizeCanvas();
+        } else {
+          document.getElementById("sig-draw-wrap").style.display = "none";
+          document.getElementById("sig-upload-wrap").style.display = "block";
+        }
+      }
+
+      /* ── FIX #6: MOBILE MENU ── */
+      function toggleMobileMenu() {
+        document.getElementById("burgerBtn").classList.toggle("open");
+        document.getElementById("mobileMenu").classList.toggle("open");
+        document.querySelector(".site-header").classList.toggle("menu-open");
+      }
+
+      /* ── PHASE NAVIGATION ── */
+      function goToPhase(n) {
+        document
+          .getElementById("phase" + currentPhase)
+          .classList.remove("active");
+
+        for (let i = 1; i <= 4; i++) {
+          const s = document.getElementById("s" + i);
+          const d = document.getElementById("dot" + i);
+          if (!s || !d) continue;
+
+          s.classList.remove("active", "completed");
+
+          if (i < n || n === 5) {
+            s.classList.add("completed");
+            d.innerHTML =
+              '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2.5,8 6,12 13.5,4"/></svg>';
+          } else if (i === n) {
+            s.classList.add("active");
+            d.textContent = i;
+          } else {
+            d.textContent = i;
+          }
+        }
+
+        currentPhase = n;
+        document.getElementById("phase" + n).classList.add("active");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+
+        // Persist the user's progress phase
+        localStorage.setItem("bharat_modules_onboarding_phase", n);
+
+        if (n === 4 && currentSigMethod === "draw") {
+          setTimeout(resizeCanvas, 50); // Important: Resize after display block is active
+        }
+      }
+
+      /* ── FIX #5: FILE UPLOAD WITH SIZE + TYPE VALIDATION ── */
+      function handleUpload(input, fuId, usId, key) {
+        const file = input.files[0];
+        const fu = document.getElementById(fuId);
+        const us = document.getElementById(usId);
+        const fg = fu.closest(".form-group");
+
+        if (!file) return;
+
+        // FIX #5: reject oversized files before they get anywhere near a server
+        if (file.size > MAX_FILE_BYTES) {
+          input.value = "";
+          fu.classList.remove("has-file");
+          us.textContent = "PDF only";
+          uploadedFiles[key] = false;
+          if (fg) {
+            fg.querySelector(".field-error").textContent =
+              "File too large. Maximum allowed size is 5 MB.";
+            fg.classList.add("has-error");
+          }
+          return;
+        }
+
+        const validTypes =
+          key === "sigdoc"
+            ? ["application/pdf", "image/jpeg", "image/png"]
+            : ["application/pdf"];
+        if (!validTypes.includes(file.type)) {
+          input.value = "";
+          fu.classList.remove("has-file");
+          us.textContent = key === "sigdoc" ? "PDF/Img only" : "PDF only";
+          uploadedFiles[key] = false;
+          if (fg) {
+            fg.querySelector(".field-error").textContent =
+              key === "sigdoc"
+                ? "Only PDF, JPG, and PNG are allowed."
+                : "Only PDF files are accepted.";
+            fg.classList.add("has-error");
+          }
+          return;
+        }
+
+        // Success
+        fu.classList.add("has-file");
+        const short =
+          file.name.length > 22 ? file.name.substring(0, 20) + "…" : file.name;
+        us.textContent = "✓ " + short;
+        uploadedFiles[key] = true;
+        if (fg) fg.classList.remove("has-error");
+      }
+
+      /* ── PHASE 1 VALIDATION & VERIFICATION ── */
+      let verifiedStatus = { email: false, phone: false };
+
+      function startVerification(type) {
+        const targetEl =
+          type === "email"
+            ? document.getElementById("obEmail")
+            : document.getElementById("obPhone");
+        const targetVal =
+          targetEl.value ||
+          (type === "email" ? "your email address" : "your phone number");
+        document.getElementById("otp-target-" + type).textContent = targetVal;
+
+        const btn = document.getElementById("btn-verify-" + type);
+        btn.innerHTML = "Sending...";
+        btn.style.opacity = "0.7";
+        btn.style.pointerEvents = "none";
+
+        setTimeout(() => {
+          btn.innerHTML = "Code Sent";
+          btn.style.opacity = "1";
+          btn.style.pointerEvents = "auto";
+          document.getElementById("otp-container-" + type).style.display =
+            "block";
+          document.getElementById("otp-input-" + type).focus();
+        }, 800);
+      }
+
+      function confirmOTP(type) {
+        const val = document.getElementById("otp-input-" + type).value;
+        const err = document.getElementById("otp-error-" + type);
+
+        if (val === "1234") {
+          err.style.display = "none";
+          verifiedStatus[type] = true;
+
+          const container = document.getElementById("otp-container-" + type);
+          container.style.display = "none";
+
+          const btn = document.getElementById("btn-verify-" + type);
+          btn.innerHTML = `✓ Verified`;
+          btn.classList.add("verified");
+        } else {
+          err.style.display = "block";
+        }
+      }
+
+      function updateCatSelection() {
+        const inputs = document.querySelectorAll(
+          '.dropdown-item input[type="checkbox"]:checked',
+        );
+        const textEl = document.getElementById("catSelectedText");
+        const fgCat = document.getElementById("fg-component-category");
+
+        if (inputs.length === 0) {
+          textEl.textContent = "Select Categories...";
+          textEl.style.color = "var(--gray-400)";
+        } else if (inputs.length === 1) {
+          textEl.textContent = inputs[0].value;
+          textEl.style.color = "var(--black)";
+          fgCat.classList.remove("has-error");
+        } else {
+          textEl.textContent = inputs.length + " Categories Selected";
+          textEl.style.color = "var(--black)";
+          fgCat.classList.remove("has-error");
+        }
+      }
+
+      // Close dropdown when clicking outside
+      document.addEventListener("click", function (e) {
+        const dropdown = document.getElementById("catDropdown");
+        if (
+          dropdown &&
+          dropdown.classList.contains("open") &&
+          !dropdown.contains(e.target)
+        ) {
+          dropdown.classList.remove("open");
+        }
+      });
+
+      function validatePhase1() {
+        let passed = true;
+
+        // Require Email Verification
+        if (!verifiedStatus.email) {
+          const btn = document.getElementById("btn-verify-email");
+          btn.style.boxShadow = "0 0 0 2px var(--error)";
+          setTimeout(() => (btn.style.boxShadow = ""), 2000);
+          passed = false;
+        }
+        // Require Phone Verification
+        if (!verifiedStatus.phone) {
+          const btn = document.getElementById("btn-verify-phone");
+          btn.style.boxShadow = "0 0 0 2px var(--error)";
+          setTimeout(() => (btn.style.boxShadow = ""), 2000);
+          passed = false;
+        }
+
+        const inputs = document.querySelectorAll(
+          '.dropdown-item input[type="checkbox"]:checked',
+        );
+        const fgCat = document.getElementById("fg-component-category");
+        if (inputs.length === 0) {
+          fgCat.classList.add("has-error");
+          passed = false;
+        } else {
+          fgCat.classList.remove("has-error");
+        }
+
+        if (passed) {
+          goToPhase(2);
+        } else {
+          const notice =
+            !verifiedStatus.email || !verifiedStatus.phone
+              ? document.getElementById("fg-email")
+              : fgCat;
+          notice.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }
+
+      /* ── PHASE 2 VALIDATION ── */
+      function validatePhase2() {
+        let valid = true;
+
+        ["coi", "gst", "msme", "factory", "pan"].forEach((key) => {
+          const fg = document.getElementById("fg-" + key);
+          if (!uploadedFiles[key]) {
+            fg.classList.add("has-error");
+            valid = false;
+          } else {
+            fg.classList.remove("has-error");
+          }
+        });
+
+        if (valid) {
+          goToPhase(3);
+        } else {
+          const firstErr = document.querySelector(
+            "#phase2 .form-group.has-error",
+          );
+          if (firstErr)
+            firstErr.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }
+
+      /* ── PHASE 3 VALIDATION ── */
+      function validatePhase3() {
+        const boxes = [
+          "chk-tc-clause1",
+          "chk-tc-clause2",
+          "chk-tc-clause3",
+          "chk-tc-clause4",
+          "chk-tc-clause5",
+          "chk-tc-clause6",
+          "chk-tc-clause7",
+          "chk-tc-clause8",
+        ];
+        const remaining = boxes.filter(
+          (id) => !document.getElementById(id).checked,
+        );
+
+        if (remaining.length > 0) {
+          const notice = document.getElementById("tcGateNotice");
+          if (notice) {
+            notice.style.transform = "scale(1.02)";
+            setTimeout(() => (notice.style.transform = "scale(1)"), 200);
+          }
+
+          remaining.forEach((id) => {
+            const block = document.getElementById(id).closest(".clause-block");
+            if (block) {
+              block.style.borderColor = "var(--error)";
+              setTimeout(() => (block.style.borderColor = ""), 2000);
+            }
+          });
+          return;
+        }
+        goToPhase(4);
+      }
+
+      /* ── TC GATE LOGIC ── */
+      function updateTcGate() {
+        const remaining = [
+          "chk-tc-clause1",
+          "chk-tc-clause2",
+          "chk-tc-clause3",
+          "chk-tc-clause4",
+          "chk-tc-clause5",
+          "chk-tc-clause6",
+          "chk-tc-clause7",
+          "chk-tc-clause8",
+        ].filter((id) => !document.getElementById(id).checked).length;
+        const notice = document.getElementById("tcGateNotice");
+        const icon = document.getElementById("tcGateIcon");
+        const text = document.getElementById("tcGateText");
+
+        if (!notice) return;
+
+        if (remaining === 0) {
+          notice.style.background = "rgba(46, 125, 50, 0.08)";
+          notice.style.color = "var(--green)";
+          notice.style.borderColor = "rgba(46, 125, 50, 0.2)";
+          icon.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
+          text.textContent = "All sections acknowledged. You may continue.";
+        } else {
+          notice.style.background = "rgba(232, 92, 13, 0.08)";
+          notice.style.color = "var(--orange)";
+          notice.style.borderColor = "rgba(232, 92, 13, 0.2)";
+          icon.innerHTML =
+            '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>';
+          text.textContent = `Acknowledge ${remaining} more section${remaining > 1 ? "s" : ""} above to continue.`;
+        }
+      }
+
+      /* ── FIX #3: CLAUSE ACCORDION ── */
+      function toggleClause(id) {
+        document.getElementById(id).classList.toggle("open");
+      }
+
+      function allClausesChecked() {
+        return [
+          "chk-clause1",
+          "chk-clause2",
+          "chk-clause3",
+          "chk-clause4",
+        ].every((id) => document.getElementById(id).checked);
+      }
+
+      /* FIX #3: Signature gate logic */
+      function updateSigGate() {
+        const done = allClausesChecked();
+        const sig = document.getElementById("sigContainer");
+        const notice = document.getElementById("sigGateNotice");
+        const gateText = document.getElementById("sigGateText");
+        const gateIcon = document.getElementById("sigGateIcon");
+        const phText = document.getElementById("sigPlaceholderText");
+        const lockIcon = document.getElementById("sigLockIcon");
+
+        const sigUploadInput = document.getElementById("sigdoc-input");
+        const fuSigdoc = document.getElementById("fu-sigdoc");
+        const lockMsg = document.getElementById("fe-sigdoc-lock");
+
+        if (done) {
+          sig.classList.remove("locked");
+          notice.classList.add("all-done");
+          gateIcon.innerHTML = '<polyline points="2,8 6,12 14,4"/>';
+          gateText.textContent =
+            "All clauses acknowledged. Please sign below or upload heavily.";
+          phText.textContent = "Sign here using your mouse or finger";
+          if (lockIcon) lockIcon.style.display = "none";
+
+          if (sigUploadInput) {
+            sigUploadInput.disabled = false;
+            fuSigdoc.style.opacity = "1";
+            if (lockMsg) lockMsg.style.display = "none";
+          }
+        } else {
+          sig.classList.add("locked");
+          notice.classList.remove("all-done");
+          gateIcon.innerHTML =
+            '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>';
+          const remaining = [
+            "chk-clause1",
+            "chk-clause2",
+            "chk-clause3",
+            "chk-clause4",
+          ].filter((id) => !document.getElementById(id).checked).length;
+          gateText.textContent = `Acknowledge ${remaining} more clause${remaining > 1 ? "s" : ""} above to unlock signing.`;
+          phText.textContent = "Acknowledge all clauses to unlock";
+          if (lockIcon) lockIcon.style.display = "";
+
+          if (sigUploadInput) {
+            sigUploadInput.disabled = true;
+            fuSigdoc.style.opacity = "0.42";
+            if (lockMsg) lockMsg.style.display = "block";
+          }
+        }
+      }
+
+      /* ── SIGNATURE PAD ── */
+      const canvas = document.getElementById("sigCanvas");
+      const ctx = canvas.getContext("2d");
+
+      function resizeCanvas() {
+        if (!canvas.parentElement) return;
+        const rect = canvas.parentElement.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = rect.width * dpr;
+        canvas.height = 140 * dpr;
+        ctx.scale(dpr, dpr);
+        ctx.strokeStyle = "#0a0a0a";
+        ctx.lineWidth = 1.8;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+      }
+
+      function getPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        if (e.touches)
+          return {
+            x: e.touches[0].clientX - rect.left,
+            y: e.touches[0].clientY - rect.top,
+          };
+        return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+      }
+
+      canvas.addEventListener("mousedown", (e) => {
+        if (!allClausesChecked()) return;
+        sigDrawing = true;
+        const p = getPos(e);
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        document.getElementById("sigPlaceholder").style.opacity = "0";
+      });
+      canvas.addEventListener("mousemove", (e) => {
+        if (!sigDrawing) return;
+        const p = getPos(e);
+        ctx.lineTo(p.x, p.y);
+        ctx.stroke();
+        sigHasData = true;
+      });
+      canvas.addEventListener("mouseup", () => {
+        sigDrawing = false;
+        ctx.beginPath();
+      });
+      canvas.addEventListener("mouseleave", () => {
+        sigDrawing = false;
+        ctx.beginPath();
+      });
+
+      canvas.addEventListener(
+        "touchstart",
+        (e) => {
+          e.preventDefault();
+          if (!allClausesChecked()) return;
+          sigDrawing = true;
+          const p = getPos(e);
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          document.getElementById("sigPlaceholder").style.opacity = "0";
+        },
+        { passive: false },
+      );
+      canvas.addEventListener(
+        "touchmove",
+        (e) => {
+          e.preventDefault();
+          if (!sigDrawing) return;
+          const p = getPos(e);
+          ctx.lineTo(p.x, p.y);
+          ctx.stroke();
+          sigHasData = true;
+        },
+        { passive: false },
+      );
+      canvas.addEventListener("touchend", () => {
+        sigDrawing = false;
+        ctx.beginPath();
+      });
+
+      function clearSig() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        sigHasData = false;
+        if (allClausesChecked()) {
+          document.getElementById("sigPlaceholder").style.opacity = "1";
+          document.getElementById("sigPlaceholderText").textContent =
+            "Sign here using your mouse or finger";
+        }
+      }
+
+      /* ── DOWNLOAD NDA PDF ── */
+      function downloadNDA() {
+        if (!allClausesChecked()) {
+          alert("Please acknowledge all clauses before downloading.");
+          return;
+        }
+        if (currentSigMethod === "draw" && !sigHasData) {
+          alert("Please provide your digital signature before downloading.");
+          return;
+        }
+        const sName = document.getElementById("signer-name").value.trim();
+        const sRole = document.getElementById("signer-role").value.trim();
+
+        if (sName.length < 2 || sRole.length < 2) {
+          alert("Please enter your Signer Name and Role to download the NDA.");
+          return;
+        }
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(18);
+        doc.text("Mutual Non-Disclosure Agreement (M-NDA)", 105, 20, {
+          align: "center",
+        });
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(11);
+        let y = 35;
+
+        const clauses = [
+          "1. Definition of Confidential Information\n'Confidential Information' means any data or information, oral or written, disclosed by either Party that is designated as confidential or that should reasonably be treated as confidential. This includes business strategies, pricing, product formulations, etc.",
+          "2. Obligations of the Receiving Party\nEach Party agrees to hold all Confidential Information in strict confidence, not disclose it to any third party without consent, and use it solely for business evaluation.",
+          "3. Exclusions & Permitted Disclosures\nObligations shall not apply to information that is publicly available, rightfully known prior to disclosure, independently developed, or required by law.",
+          "4. Term, Remedies & Governing Law\nThis M-NDA remains in effect for three (3) years from the date of signature. The non-breaching Party is entitled to seek equitable relief. Governed by Indian law.",
+        ];
+
+        clauses.forEach((text) => {
+          const lines = doc.splitTextToSize(text, 170);
+          doc.text(lines, 20, y);
+          y += lines.length * 5 + 6;
+        });
+
+        y += 10;
+        doc.setFont("helvetica", "bold");
+        doc.text("Agreement Acknowledged & Signed By:", 20, y);
+        y += 8;
+        doc.setFont("helvetica", "normal");
+        doc.text(`Name: ${sName}`, 20, y);
+        y += 7;
+        doc.text(`Role: ${sRole}`, 20, y);
+        y += 7;
+        const today = new Date().toLocaleDateString();
+        doc.text(`Date: ${today}`, 20, y);
+
+        y += 12;
+        doc.text("Signature:", 20, y);
+        y += 5;
+
+        if (currentSigMethod === "draw" && sigHasData) {
+          const tempCanvas = document.createElement("canvas");
+          tempCanvas.width = canvas.width;
+          tempCanvas.height = canvas.height;
+          const tCtx = tempCanvas.getContext("2d");
+          tCtx.fillStyle = "#ffffff";
+          tCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+          tCtx.drawImage(canvas, 0, 0);
+
+          const imgData = tempCanvas.toDataURL("image/jpeg", 1.0);
+          doc.addImage(imgData, "JPEG", 20, y, 70, 25);
+          doc.rect(20, y, 70, 25);
+        } else {
+          doc.text("(Signed/Stamped Upload Provided)", 20, y + 10);
+        }
+
+        doc.save("Bharat_Modules_M-NDA.pdf");
+      }
+
+      /* ── PHASE 4 VALIDATION ── */
+      function validatePhase4() {
+        if (!allClausesChecked()) {
+          const notice = document.getElementById("sigGateNotice");
+          notice.style.boxShadow = "0 0 0 2px var(--error)";
+          notice.scrollIntoView({ behavior: "smooth", block: "center" });
+          setTimeout(() => {
+            notice.style.boxShadow = "";
+          }, 2200);
+          return;
+        }
+
+        let nameValid = true;
+        let roleValid = true;
+        const sName = document.getElementById("signer-name").value.trim();
+        const sRole = document.getElementById("signer-role").value.trim();
+
+        if (sName.length < 2) {
+          document.getElementById("fg-signer-name").classList.add("has-error");
+          nameValid = false;
+        }
+        if (sRole.length < 2) {
+          document.getElementById("fg-signer-role").classList.add("has-error");
+          roleValid = false;
+        }
+        if (!nameValid || !roleValid) {
+          document
+            .getElementById("fg-signer-name")
+            .scrollIntoView({ behavior: "smooth", block: "center" });
+          return;
+        }
+
+        if (currentSigMethod === "draw") {
+          if (!sigHasData) {
+            const sig = document.getElementById("sigContainer");
+            sig.style.borderColor = "var(--error)";
+            sig.scrollIntoView({ behavior: "smooth", block: "center" });
+            setTimeout(() => {
+              sig.style.borderColor = "";
+            }, 2200);
+            return;
+          }
+        } else if (currentSigMethod === "upload") {
+          if (!uploadedFiles["sigdoc"]) {
+            const fuSigdoc = document.getElementById("fg-sigdoc");
+            fuSigdoc.classList.add("has-error");
+            fuSigdoc.scrollIntoView({ behavior: "smooth", block: "center" });
+            return;
+          }
+        }
+
+        goToPhase(5);
+      }
+
+      /* ── INIT ── */
+      window.addEventListener("load", () => {
+        resizeCanvas();
+        updateSigGate();
+
+        // Pre-fill fields from registration data saved during signup
+        const saved = localStorage.getItem('bharat_modules_registration');
+        if (saved) {
+          try {
+            const d = JSON.parse(saved);
+            if (d.name && document.getElementById('obName')) document.getElementById('obName').value = d.name;
+            if (d.business && document.getElementById('obBusiness')) document.getElementById('obBusiness').value = d.business;
+            if (d.email && document.getElementById('obEmail')) document.getElementById('obEmail').value = d.email;
+            if (d.phone && document.getElementById('obPhone')) document.getElementById('obPhone').value = d.phone;
+          } catch(e) {}
+        }
+
+        // Restore last phase (or jump to phase 5 if submitted previously)
+        const savedPhase = localStorage.getItem(
+          "bharat_modules_onboarding_phase",
+        );
+        if (savedPhase && parseInt(savedPhase) !== 1) {
+          goToPhase(parseInt(savedPhase));
+        }
+      });
+
+      // ── Submit onboarding to backend when reaching phase 5 ──
+      const _originalGoToPhase = goToPhase;
+      goToPhase = async function(n) {
+        // When moving to phase 5 (completion), submit to backend
+        if (n === 5) {
+          const token = localStorage.getItem('bm_token');
+          if (token) {
+            const bizName = document.getElementById('obBusiness')?.value?.trim();
+            const saved = localStorage.getItem('bharat_modules_registration');
+            let regData = {};
+            try { regData = JSON.parse(saved || '{}'); } catch(e) {}
+
+            try {
+              const res = await fetch('http://localhost:4000/api/manufacturers/onboard', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  company_name: bizName || regData.business || 'My Company',
+                  gstin: '',        // collected in phase 2 docs — placeholder
+                  company_address: '',
+                  description: '',
+                }),
+              });
+              const data = await res.json();
+              if (!res.ok && res.status !== 409) {
+                // 409 = already onboarded, that's fine
+                console.warn('Onboard API error:', data.message);
+              }
+            } catch(err) {
+              console.error('Onboard submit failed:', err);
+            }
+          }
+        }
+        _originalGoToPhase(n);
+      };
+      window.addEventListener("resize", resizeCanvas);
+
+      // ── Nav scroll tint ──
+      window.addEventListener("scroll", () => {
+        const nav = document.getElementById("nav");
+        if (!nav.classList.contains("search-mode")) {
+          nav.style.background =
+            window.scrollY > 20 ? "rgba(8,8,8,0.97)" : "rgba(10,10,10,0.92)";
+        }
+      });
+
+      // ── Mobile menu ──
+      function toggleMenu() {
+        document.getElementById("navLinks").classList.toggle("open");
+        document.getElementById("hamburger").classList.toggle("active");
+      }
+
+      // ── Search ──
+      function openSearch() {
+        document.getElementById("nav").classList.add("search-mode");
+        setTimeout(
+          () => document.getElementById("navSearchInput").focus(),
+          320,
+        );
+      }
+      function closeSearch() {
+        document.getElementById("nav").classList.remove("search-mode");
+        document.getElementById("navSearchInput").value = "";
+      }
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeSearch();
+        if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+          e.preventDefault();
+          openSearch();
+        }
+      });
+
+      // ── Ultra smooth scroll ──
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          const target = document.querySelector(this.getAttribute("href"));
+          if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        });
+      });
+    </script>
+    <!-- SEO: Structured descriptive content (visually hidden, accessible to search engines) -->
+    <div
+      style="
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      "
+      aria-hidden="true"
+    >
+      <p>
+        The Bharat Modules manufacturer onboarding process is a secure four-step
+        verification journey designed for Indian OEMs and industrial component
+        manufacturers. To become a Bharat Verified manufacturer and list your
+        products on India's closed B2B procurement network, you must complete
+        all four phases: profile registration, document upload, terms and
+        conditions acknowledgement, and mutual non-disclosure agreement signing.
+      </p>
+      <p>
+        In Step 1, you verify your registration profile by confirming your
+        business name, email address, and phone number via OTP. You also select
+        the component categories that best represent your manufacturing output,
+        including propulsion systems, power and energy components, avionics and
+        navigation hardware, command and communication devices, airframes and
+        structures, and payloads and actuators. In Step 2, you upload the
+        required compliance documents including your GST registration
+        certificate, MSME certificate, company bank statement, factory or
+        manufacturing license, and company PAN card. All documents must be in
+        PDF format and under 5 MB.
+      </p>
+      <p>
+        Step 3 requires you to read and acknowledge all eight sections of the
+        Bharat Modules Platform Terms and Conditions covering blind shipping
+        protocols, communication rules, product quality requirements,
+        documentation compliance, payment and escrow processes, milestone
+        payment terms, order cancellation policies, and returns and logistics
+        liability. Step 4 covers the Mutual Non-Disclosure Agreement (M-NDA),
+        which governs the confidential exchange of business information between
+        Bharat Modules and your organisation. Upon signing, your onboarding
+        application is submitted for review. Our internal audit team verifies
+        all documents within two business days, after which you receive full
+        access to the Manufacturer Dashboard.
+      </p>
+    </div>
+  </body>
+</html>
