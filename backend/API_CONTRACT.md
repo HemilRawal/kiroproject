@@ -17,24 +17,62 @@ Protected routes require: `Authorization: Bearer <token>` header.
 ```json
 Request:
 {
-  "full_name":  "Rahul Sharma",       // required, min 2 chars
-  "email":      "rahul@example.com",  // required, valid email
-  "password":   "Pass1234",           // required, min 8 chars, 1 letter + 1 number
-  "phone":      "9876543210",         // optional
-  "role":       "buyer"               // optional: "buyer" (default) | "manufacturer"
+  "full_name":     "Rahul Sharma",       // required, min 2 chars
+  "email":         "rahul@example.com",  // required, valid email, unique across BOTH tables
+  "password":      "Pass1234",           // required, min 8 chars, 1 letter + 1 number
+  "phone":         "9876543210",         // optional
+  "company_name":  "ABC Corp",           // optional
+  "role":          "buyer"               // REQUIRED: "buyer" | "manufacturer"
 }
 
 Response 201:
 {
   "success": true,
+  "message": "Account created. Please check your email for the verification code.",
+  "requiresVerification": true,
+  "email": "rahul@example.com",
+  "role": "buyer"
+}
+```
+**Note:** No JWT token is returned on registration. User must verify email first.
+
+### POST /api/auth/verify-email
+```json
+Request:
+{
+  "email": "rahul@example.com",   // required
+  "otp":   "123456",              // required, 6-digit numeric string
+  "role":  "buyer"                // required: "buyer" | "manufacturer"
+}
+
+Response 200:
+{
+  "success": true,
+  "message": "Email verified successfully.",
   "token":   "<jwt_token>",
   "user": {
-    "id":         "uuid",
-    "email":      "rahul@example.com",
-    "full_name":  "Rahul Sharma",
-    "role":       "buyer",
-    "created_at": "2024-01-01T00:00:00Z"
+    "id":             "uuid",
+    "email":          "rahul@example.com",
+    "full_name":      "Rahul Sharma",
+    "role":           "buyer",
+    "email_verified": true,
+    "created_at":     "2024-01-01T00:00:00Z"
   }
+}
+```
+
+### POST /api/auth/resend-otp
+```json
+Request:
+{
+  "email": "rahul@example.com",  // required
+  "role":  "buyer"               // required: "buyer" | "manufacturer"
+}
+
+Response 200:
+{
+  "success": true,
+  "message": "A new verification code has been sent to your email."
 }
 ```
 
@@ -43,14 +81,31 @@ Response 201:
 Request:
 {
   "email":    "rahul@example.com",  // required
-  "password": "Pass1234"            // required
+  "password": "Pass1234",           // required
+  "role":     "buyer"               // REQUIRED: "buyer" | "manufacturer"
 }
 
-Response 200:
+Response 200 (success):
 {
   "success": true,
   "token":   "<jwt_token>",
-  "user":    { ...same as register }
+  "user":    { ...same as verify-email response }
+}
+
+Response 403 (email not verified):
+{
+  "success": false,
+  "message": "Please verify your email before logging in. A new verification code has been sent.",
+  "requiresVerification": true,
+  "email": "rahul@example.com",
+  "role": "buyer"
+}
+
+Response 401 (wrong role):
+{
+  "success": false,
+  "message": "This email is registered as a manufacturer, not as a buyer. Please switch to manufacturer login.",
+  "suggestedRole": "manufacturer"
 }
 ```
 
@@ -62,7 +117,7 @@ Response 200:
 {
   "success": true,
   "user": {
-    "id", "email", "full_name", "phone", "role", "is_verified", "created_at"
+    "id", "email", "full_name", "phone", "company_name", "role", "email_verified", "phone_verified", "created_at"
   }
 }
 ```
@@ -238,6 +293,21 @@ Response 201:
 
 ---
 
+## DATABASE TABLES
+
+| Table | Purpose |
+|-------|---------|
+| `user_buyers` | Buyer accounts (email, password, verification status) |
+| `user_manufacturers` | Manufacturer accounts (email, password, verification status) |
+| `verification_otps` | Hashed OTP codes for email verification |
+| `users` | Legacy table (kept for backward compatibility) |
+| `manufacturers` | Extended manufacturer profiles (GSTIN, docs, verification) |
+| `products` | Product listings |
+| `rfqs` / `rfq_items` / `rfq_quotes` | RFQ workflow |
+| `orders` / `order_documents` | Order management |
+| `wishlists` | Product wishlists |
+| `contact_enquiries` | Contact form submissions |
+
 ## ERROR RESPONSES (consistent shape for all errors)
 ```json
 {
@@ -254,13 +324,13 @@ Response 201:
 
 ## HTTP STATUS CODES USED
 | Code | Meaning |
-|------|---------|
+|------|---------| 
 | 200  | OK |
 | 201  | Created |
 | 400  | Bad request (validation failed) |
-| 401  | Unauthorized (no token / wrong password) |
-| 403  | Forbidden (wrong role) |
+| 401  | Unauthorized (no token / wrong password / wrong role) |
+| 403  | Forbidden (email not verified) |
 | 404  | Not found |
-| 409  | Conflict (duplicate email, etc.) |
+| 409  | Conflict (duplicate email) |
 | 429  | Too many requests (rate limited) |
 | 500  | Server error |

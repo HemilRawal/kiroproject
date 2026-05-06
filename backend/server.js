@@ -31,6 +31,7 @@ const allowedOrigins = [
   process.env.FRONTEND_URL || 'http://localhost:3000',
   'http://127.0.0.1:5500',   // VS Code Live Server
   'http://localhost:5500',
+  'null',                    // Allow local file:// execution
   ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : []),
 ];
 
@@ -76,12 +77,12 @@ app.get('/health', (req, res) => {
 });
 
 // ── 6. ROUTES ────────────────────────────────────────────────
-app.use('/api/auth',          authLimiter, require('./routes/auth'));
-app.use('/api/rfq',           require('./routes/rfq'));
-app.use('/api/products',      require('./routes/products'));
-app.use('/api/orders',        require('./routes/orders'));
+app.use('/api/auth', authLimiter, require('./routes/auth'));
+app.use('/api/rfq', require('./routes/rfq'));
+app.use('/api/products', require('./routes/products'));
+app.use('/api/orders', require('./routes/orders'));
 app.use('/api/manufacturers', require('./routes/manufacturers'));
-app.use('/api/contact',       require('./routes/contact'));
+app.use('/api/contact', require('./routes/contact'));
 
 // ── 7. 404 HANDLER ───────────────────────────────────────────
 app.use((req, res) => {

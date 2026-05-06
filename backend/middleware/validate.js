@@ -34,8 +34,8 @@ const validateRegister = (req, res, next) => {
     errors.push('Password must contain at least one letter and one number.');
   }
 
-  if (role && !['buyer', 'manufacturer'].includes(role)) {
-    errors.push('Role must be buyer or manufacturer.');
+  if (!role || !['buyer', 'manufacturer'].includes(role)) {
+    errors.push('Role is required and must be buyer or manufacturer.');
   }
 
   if (errors.length > 0) {
@@ -51,7 +51,7 @@ const validateRegister = (req, res, next) => {
 
 // Validate login input
 const validateLogin = (req, res, next) => {
-  const { email, password } = req.body;
+  const { email, password, role } = req.body;
   const errors = [];
 
   if (!email || !validator.isEmail(email)) {
@@ -62,6 +62,10 @@ const validateLogin = (req, res, next) => {
     errors.push('Password is required.');
   }
 
+  if (!role || !['buyer', 'manufacturer'].includes(role)) {
+    errors.push('Role is required. Please select Buyer or Manufacturer.');
+  }
+
   if (errors.length > 0) {
     return res.status(400).json({ success: false, errors });
   }
@@ -70,4 +74,50 @@ const validateLogin = (req, res, next) => {
   next();
 };
 
-module.exports = { validateRegister, validateLogin, sanitize };
+// Validate OTP verification input
+const validateVerifyOTP = (req, res, next) => {
+  const { email, otp, role } = req.body;
+  const errors = [];
+
+  if (!email || !validator.isEmail(email)) {
+    errors.push('A valid email address is required.');
+  }
+
+  if (!otp || !/^\d{6}$/.test(otp)) {
+    errors.push('A valid 6-digit verification code is required.');
+  }
+
+  if (!role || !['buyer', 'manufacturer'].includes(role)) {
+    errors.push('Role is required.');
+  }
+
+  if (errors.length > 0) {
+    return res.status(400).json({ success: false, errors });
+  }
+
+  req.body.email = validator.normalizeEmail(email);
+  next();
+};
+
+// Validate resend OTP input
+const validateResendOTP = (req, res, next) => {
+  const { email, role } = req.body;
+  const errors = [];
+
+  if (!email || !validator.isEmail(email)) {
+    errors.push('A valid email address is required.');
+  }
+
+  if (!role || !['buyer', 'manufacturer'].includes(role)) {
+    errors.push('Role is required.');
+  }
+
+  if (errors.length > 0) {
+    return res.status(400).json({ success: false, errors });
+  }
+
+  req.body.email = validator.normalizeEmail(email);
+  next();
+};
+
+module.exports = { validateRegister, validateLogin, validateVerifyOTP, validateResendOTP, sanitize };

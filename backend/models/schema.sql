@@ -27,6 +27,64 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- ─────────────────────────────────────────────────────────────
+-- 1b. USER_BUYERS
+--     Dedicated table for buyer accounts.
+--     Email must be globally unique across buyers AND manufacturers.
+-- ─────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS user_buyers (
+  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  email           TEXT UNIQUE NOT NULL,
+  password_hash   TEXT NOT NULL,
+  full_name       TEXT NOT NULL,
+  phone           TEXT,
+  company_name    TEXT,
+  email_verified  BOOLEAN DEFAULT FALSE,
+  phone_verified  BOOLEAN DEFAULT FALSE,
+  is_active       BOOLEAN DEFAULT TRUE,
+  created_at      TIMESTAMPTZ DEFAULT NOW(),
+  updated_at      TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ─────────────────────────────────────────────────────────────
+-- 1c. USER_MANUFACTURERS
+--     Dedicated table for manufacturer accounts.
+--     Email must be globally unique across buyers AND manufacturers.
+-- ─────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS user_manufacturers (
+  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  email           TEXT UNIQUE NOT NULL,
+  password_hash   TEXT NOT NULL,
+  full_name       TEXT NOT NULL,
+  phone           TEXT,
+  company_name    TEXT,
+  email_verified  BOOLEAN DEFAULT FALSE,
+  phone_verified  BOOLEAN DEFAULT FALSE,
+  is_active       BOOLEAN DEFAULT TRUE,
+  created_at      TIMESTAMPTZ DEFAULT NOW(),
+  updated_at      TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ─────────────────────────────────────────────────────────────
+-- 1d. VERIFICATION_OTPS
+--     Stores hashed OTP codes for email verification.
+--     Expires after 10 minutes. Marked as used after verification.
+-- ─────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS verification_otps (
+  id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  identifier  TEXT NOT NULL,
+  otp_code    TEXT NOT NULL,
+  otp_type    TEXT NOT NULL CHECK (otp_type IN ('email', 'phone')),
+  user_role   TEXT NOT NULL CHECK (user_role IN ('buyer', 'manufacturer')),
+  expires_at  TIMESTAMPTZ NOT NULL,
+  used        BOOLEAN DEFAULT FALSE,
+  created_at  TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_otps_identifier ON verification_otps(identifier, otp_type, user_role);
+CREATE INDEX IF NOT EXISTS idx_user_buyers_email ON user_buyers(email);
+CREATE INDEX IF NOT EXISTS idx_user_manufacturers_email ON user_manufacturers(email);
+
+-- ─────────────────────────────────────────────────────────────
 -- 2. MANUFACTURERS
 --    Extended profile for users with role = 'manufacturer'
 --    verification_status: 'pending' | 'under_review' | 'approved' | 'rejected'
