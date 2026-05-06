@@ -14,8 +14,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const supabase = require('../config/db');
-const { generateOTP, storeOTP, verifyOTP } = require('../services/otpService');
-const { sendEmailOTP } = require('../services/emailService');
 
 // ── Helpers ──────────────────────────────────────────────────
 
@@ -49,71 +47,46 @@ const register = async (req, res, next) => {
     const table = getTable(role);
     const otherTable = getOtherTable(role);
 
-    // 1. Check if email exists in the SAME role table
-    const { data: existingSame } = await supabase
-      .from(table)
-      .select('id')
-      .eq('email', email.toLowerCase())
-      .single();
-
+    // 1. Check if email already exists in our tables
+    const { data: existingSame } = await supabase.from(table).select('id').eq('email', email.toLowerCase()).single();
     if (existingSame) {
-      return res.status(409).json({
-        success: false,
-        message: `An account with this email already exists as a ${role}.`,
-      });
+      return res.status(409).json({ success: false, message: `An account with this email already exists as a ${role}.` });
     }
 
-    // 2. Check if email exists in the OTHER role table
-    const { data: existingOther } = await supabase
-      .from(otherTable)
-      .select('id')
-      .eq('email', email.toLowerCase())
-      .single();
-
+    const { data: existingOther } = await supabase.from(otherTable).select('id').eq('email', email.toLowerCase()).single();
     if (existingOther) {
       const otherRole = role === 'buyer' ? 'manufacturer' : 'buyer';
-      return res.status(409).json({
-        success: false,
-        message: `This email is already registered as a ${otherRole}. The same email cannot be used for both roles.`,
-      });
+      return res.status(409).json({ success: false, message: `This email is already registered as a ${otherRole}. The same email cannot be used for both roles.` });
     }
 
-    // 3. Hash password
-    const password_hash = await bcrypt.hash(password, 12);
+    // 2. Use Supabase Auth to Sign Up and send OTP
+    // This creates the user in auth.users and automatically sends the OTP
+    // We store the profile data in user_metadata to use later during verification
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: email.toLowerCase(),
+      password: password,
+      options: {
+        data: {
+          role,
+          full_name,
+          phone: phone || null,
+          company_name: company_name || null
+        }
+      }
+    });
 
-    // 4. Insert user into the correct table
-    const { data: user, error } = await supabase
-      .from(table)
-      .insert({
-        email: email.toLowerCase(),
-        password_hash,
-        full_name,
-        phone: phone || null,
-        company_name: company_name || null,
-        email_verified: false,
-        phone_verified: false,
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-
-    // 5. Generate and send email OTP
-    const otpCode = generateOTP();
-    await storeOTP(email, otpCode, 'email', role);
-
-    const emailResult = await sendEmailOTP(email, otpCode, full_name);
-    if (!emailResult.success) {
-      console.error('[REGISTER] Email OTP send failed:', emailResult.error);
-      // Don't block registration — user can resend OTP
+    if (authError) {
+      return res.status(400).json({ success: false, message: authError.message });
     }
 
-    // 6. Return success WITHOUT token — must verify email first
+    // Note: We DO NOT insert into user_buyers / user_manufacturers yet!
+    // They will only be registered in our database once they verify the OTP.
+
     res.status(201).json({
       success: true,
       message: 'Account created. Please check your email for the verification code.',
       requiresVerification: true,
-      email: user.email,
+      email: email.toLowerCase(),
       role,
     });
   } catch (err) {
@@ -125,38 +98,55 @@ const register = async (req, res, next) => {
 const verifyEmail = async (req, res, next) => {
   try {
     const { email, otp, role = 'buyer' } = req.body;
-    const table = getTable(role);
+    
+    // 1. Verify the OTP using Supabase Auth
+    const { data: authData, error: authError } = await supabase.auth.verifyOtp({
+      email: email.toLowerCase(),
+      token: otp,
+      type: 'signup'
+    });
 
-    // 1. Verify the OTP
-    const result = await verifyOTP(email, otp, 'email', role);
-    if (!result.valid) {
-      return res.status(400).json({
-        success: false,
-        message: result.message,
-      });
+    if (authError) {
+      return res.status(400).json({ success: false, message: authError.message });
     }
 
-    // 2. Mark email as verified in the correct table
-    const { data: user, error } = await supabase
+    // OTP is correct! Now we officially register them in our custom table.
+    const userMeta = authData.user.user_metadata || {};
+    const table = getTable(role);
+
+    // We still need to pass a dummy password_hash since the schema requires it, 
+    // but actual authentication is handled by Supabase Auth going forward.
+    const dummyHash = await bcrypt.hash(authData.user.id, 10);
+
+    const { data: user, error: dbError } = await supabase
       .from(table)
-      .update({ email_verified: true, updated_at: new Date().toISOString() })
-      .eq('email', email.toLowerCase())
+      .insert({
+        email: email.toLowerCase(),
+        password_hash: dummyHash,
+        full_name: userMeta.full_name || 'User',
+        phone: userMeta.phone || null,
+        company_name: userMeta.company_name || null,
+        email_verified: true,
+      })
       .select()
       .single();
 
-    if (error || !user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found.',
-      });
+    if (dbError) {
+      // If user already exists in DB, we just fetch them
+      if (dbError.code === '23505') { // Unique violation
+         const { data: existingUser } = await supabase.from(table).update({ email_verified: true }).eq('email', email.toLowerCase()).select().single();
+         const token = signToken(existingUser, role);
+         return res.json({ success: true, message: 'Email verified successfully.', token, user: sanitizeUser(existingUser, role) });
+      }
+      return res.status(500).json({ success: false, message: 'Failed to create user profile in database.' });
     }
 
-    // 3. Issue JWT token now that email is verified
+    // 3. Issue JWT token
     const token = signToken(user, role);
 
     res.json({
       success: true,
-      message: 'Email verified successfully.',
+      message: 'Email verified and account registered successfully.',
       token,
       user: sanitizeUser(user, role),
     });
@@ -168,40 +158,15 @@ const verifyEmail = async (req, res, next) => {
 // ── POST /api/auth/resend-otp ────────────────────────────────
 const resendOTP = async (req, res, next) => {
   try {
-    const { email, role = 'buyer' } = req.body;
-    const table = getTable(role);
+    const { email } = req.body;
 
-    // Check user exists
-    const { data: user } = await supabase
-      .from(table)
-      .select('id, full_name, email_verified')
-      .eq('email', email.toLowerCase())
-      .single();
+    const { data, error } = await supabase.auth.resend({
+      type: 'signup',
+      email: email.toLowerCase()
+    });
 
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'No account found with this email.',
-      });
-    }
-
-    if (user.email_verified) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email is already verified.',
-      });
-    }
-
-    // Generate and send new OTP
-    const otpCode = generateOTP();
-    await storeOTP(email, otpCode, 'email', role);
-
-    const emailResult = await sendEmailOTP(email, otpCode, user.full_name);
-    if (!emailResult.success) {
-      return res.status(500).json({
-        success: false,
-        message: 'Failed to send verification email. Please try again.',
-      });
+    if (error) {
+      return res.status(400).json({ success: false, message: error.message });
     }
 
     res.json({
@@ -220,7 +185,28 @@ const login = async (req, res, next) => {
     const table = getTable(role);
     const invalidMsg = 'Invalid email or password.';
 
-    // 1. Fetch user from the role-specific table
+    // 1. Authenticate with Supabase Auth
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      email: email.toLowerCase(),
+      password: password
+    });
+
+    if (authError) {
+      // If email isn't confirmed yet in Supabase Auth
+      if (authError.message.includes('Email not confirmed')) {
+        await supabase.auth.resend({ type: 'signup', email: email.toLowerCase() });
+        return res.status(403).json({
+          success: false,
+          message: 'Please verify your email before logging in. A new verification code has been sent.',
+          requiresVerification: true,
+          email: email.toLowerCase(),
+          role,
+        });
+      }
+      return res.status(401).json({ success: false, message: invalidMsg });
+    }
+
+    // 2. Fetch user from our custom role-specific table
     const { data: user, error } = await supabase
       .from(table)
       .select('*')
@@ -231,11 +217,7 @@ const login = async (req, res, next) => {
     if (error || !user) {
       // Check if user exists in the other table to give a helpful message
       const otherTable = getOtherTable(role);
-      const { data: otherUser } = await supabase
-        .from(otherTable)
-        .select('id')
-        .eq('email', email.toLowerCase())
-        .single();
+      const { data: otherUser } = await supabase.from(otherTable).select('id').eq('email', email.toLowerCase()).single();
 
       if (otherUser) {
         const otherRole = role === 'buyer' ? 'manufacturer' : 'buyer';
@@ -249,29 +231,7 @@ const login = async (req, res, next) => {
       return res.status(401).json({ success: false, message: invalidMsg });
     }
 
-    // 2. Check password
-    const isMatch = await bcrypt.compare(password, user.password_hash);
-    if (!isMatch) {
-      return res.status(401).json({ success: false, message: invalidMsg });
-    }
-
-    // 3. Check email verification
-    if (!user.email_verified) {
-      // Send a new OTP automatically
-      const otpCode = generateOTP();
-      await storeOTP(email, otpCode, 'email', role);
-      await sendEmailOTP(email, otpCode, user.full_name);
-
-      return res.status(403).json({
-        success: false,
-        message: 'Please verify your email before logging in. A new verification code has been sent.',
-        requiresVerification: true,
-        email: user.email,
-        role,
-      });
-    }
-
-    // 4. Issue JWT
+    // 4. Issue custom JWT for our app
     const token = signToken(user, role);
 
     res.json({
