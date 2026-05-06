@@ -20,8 +20,12 @@ const errorHandler = require('./middleware/errorHandler');
 const app = express();
 
 // ── 1. SECURITY HEADERS (helmet) ────────────────────────────
-// Sets headers like X-Content-Type-Options, X-Frame-Options, etc.
-app.use(helmet());
+// CSP disabled in development to allow Firebase, Recaptcha, Google Fonts, etc.
+// Re-enable with proper directives before deploying to production.
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginEmbedderPolicy: false,
+}));
 
 // ── 2. CORS ──────────────────────────────────────────────────
 // Only allow requests from your frontend domain
@@ -29,6 +33,8 @@ app.use(helmet());
 // Example .env entry: ALLOWED_ORIGINS=https://bharatmodules.com,https://www.bharatmodules.com
 const allowedOrigins = [
   process.env.FRONTEND_URL || 'http://localhost:3000',
+  'http://localhost:4000',     // Frontend served from same server
+  'http://127.0.0.1:4000',
   'http://127.0.0.1:5500',   // VS Code Live Server
   'http://localhost:5500',
   'null',                    // Allow local file:// execution
@@ -71,9 +77,18 @@ app.use(generalLimiter);
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
-// ── 5. HEALTH CHECK ──────────────────────────────────────────
+// ── 5. STATIC FILES & HEALTH CHECK ──────────────────────────
+// Serve all static files (HTML, CSS, JS, Images) from the parent directory
+const path = require('path');
+app.use(express.static(path.join(__dirname, '..')));
+
 app.get('/health', (req, res) => {
   res.json({ success: true, message: 'Bharat Modules API is running.', timestamp: new Date() });
+});
+
+// Serve the login page at the root URL
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'login-page.html'));
 });
 
 // ── 6. ROUTES ────────────────────────────────────────────────
