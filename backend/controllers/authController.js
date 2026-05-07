@@ -1,124 +1,137 @@
 // controllers/authController.js
 // ─────────────────────────────────────────────────────────────
-// Handles: register, login, verifyEmail, resendOTP, getMe
+// Handles: register, login, verify-email, resend-otp, getMe
 //
-// Architecture:
-//   - Buyers  → user_buyers table
-//   - Manufacturers → user_manufacturers table
-//   - Same email CANNOT exist in both tables
-//   - Email must be verified before login is allowed
-//   - Passwords hashed with bcrypt (cost factor 12)
-//   - JWT signed with role, expires in 7 days
+// Security:
+//   - Passwords hashed with bcrypt (cost 12)
+//   - JWT signed with JWT_SECRET
+//   - Role separation: buyers and manufacturers are SEPARATE tables
+//   - Login enforces role — a manufacturer cannot log in as a buyer
+//   - OTP is 6-digit, expires in 10 minutes, single-use
 // ─────────────────────────────────────────────────────────────
 
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const jwt    = require('jsonwebtoken');
+const resend = require('../config/resend');
 const supabase = require('../config/db');
-const admin = require('../config/firebaseAdmin');
-const { generateOTP, storeOTP, verifyOTP } = require('../services/otpService');
-const { sendEmailOTP } = require('../services/emailService');
-const smsService = require('../services/smsService');
 
 // ── Helpers ──────────────────────────────────────────────────
 
-const getTable = (role) => {
-  if (role === 'manufacturer') return 'user_manufacturers';
-  return 'user_buyers';
-};
-
-const getOtherTable = (role) => {
-  if (role === 'manufacturer') return 'user_buyers';
-  return 'user_manufacturers';
-};
-
-const signToken = (user, role) => {
-  return jwt.sign(
-    { id: user.id, email: user.email, role },
+const signToken = (user) =>
+  jwt.sign(
+    { id: user.id, email: user.email, role: user.role },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
   );
+
+// Returns the correct table name based on role
+const tableFor = (role) =>
+  role === 'manufacturer' ? 'user_manufacturers' : 'user_buyers';
+
+// Generate a 6-digit numeric OTP
+const generateOTP = () =>
+  String(Math.floor(100000 + Math.random() * 900000));
+
+// Send OTP email via Resend
+const sendOTPEmail = async (email, otp, role) => {
+  const roleLabel = role === 'manufacturer' ? 'Manufacturer' : 'Buyer';
+  try {
+    await resend.emails.send({
+      from: process.env.FROM_EMAIL || 'no-reply@bharatmodules.com',
+      to: email,
+      subject: `Your Bharat Modules verification code: ${otp}`,
+      html: `
+        <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;">
+          <h2 style="color:#0a0a0a;margin-bottom:8px;">Verify your ${roleLabel} account</h2>
+          <p style="color:#555;margin-bottom:24px;">Use the code below to complete your registration. It expires in 10 minutes.</p>
+          <div style="background:#f5f5f3;border-radius:12px;padding:24px;text-align:center;margin-bottom:24px;">
+            <span style="font-size:36px;font-weight:700;letter-spacing:0.2em;color:#e85c0d;">${otp}</span>
+          </div>
+          <p style="color:#999;font-size:13px;">If you didn't request this, ignore this email.</p>
+        </div>
+      `,
+    });
+  } catch (err) {
+    // Log but don't crash — OTP is still saved in DB
+    console.error('Resend email failed:', err.message);
+  }
 };
 
-const sanitizeUser = (user, role) => {
-  const { password_hash, ...safe } = user;
-  return { ...safe, role };
-};
-
-// ── POST /api/auth/register ──────────────────────────────────
+// ── POST /api/auth/register ───────────────────────────────────
 const register = async (req, res, next) => {
   try {
     const { email, password, full_name, phone, role = 'buyer', company_name } = req.body;
-    const table = getTable(role);
-    const otherTable = getOtherTable(role);
+    const table = tableFor(role);
 
-    // 1. Check if email already exists in our tables
-    const { data: existingSame } = await supabase.from(table).select('id').eq('email', email.toLowerCase()).single();
-    if (existingSame) {
-      return res.status(409).json({ success: false, message: `An account with this email already exists as a ${role}.` });
+    // Check if email already exists in this role's table
+    const { data: existing } = await supabase
+      .from(table)
+      .select('id')
+      .eq('email', email)
+      .single();
+
+    if (existing) {
+      return res.status(409).json({
+        success: false,
+        message: 'An account with this email already exists.',
+      });
     }
 
-    const { data: existingOther } = await supabase.from(otherTable).select('id').eq('email', email.toLowerCase()).single();
-    if (existingOther) {
+    // Also check the OTHER role's table — same email can't be in both
+    const otherTable = tableFor(role === 'buyer' ? 'manufacturer' : 'buyer');
+    const { data: otherExists } = await supabase
+      .from(otherTable)
+      .select('id')
+      .eq('email', email)
+      .single();
+
+    if (otherExists) {
       const otherRole = role === 'buyer' ? 'manufacturer' : 'buyer';
-      return res.status(409).json({ success: false, message: `This email is already registered as a ${otherRole}. The same email cannot be used for both roles.` });
+      return res.status(409).json({
+        success: false,
+        message: `This email is already registered as a ${otherRole}. Please use a different email or log in as a ${otherRole}.`,
+      });
     }
 
-    // 2. Use Supabase Auth to Sign Up and send OTP
-    // This creates the user in auth.users and automatically sends the OTP
-    // We store the profile data in user_metadata to use later during verification
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: email.toLowerCase(),
-      password: password,
-      options: {
-        data: {
-          role,
-          full_name,
-          phone: phone || null,
-          company_name: company_name || null
-        }
-      }
+    const password_hash = await bcrypt.hash(password, 12);
+
+    // Insert into role-specific table
+    const insertData = {
+      email,
+      password_hash,
+      full_name,
+      phone,
+      email_verified: false,
+    };
+    if (company_name) insertData.company_name = company_name;
+
+    const { data: user, error } = await supabase
+      .from(table)
+      .insert(insertData)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    // Generate and store OTP
+    const otp = generateOTP();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString(); // 10 min
+
+    await supabase.from('verification_otps').insert({
+      identifier: email,
+      otp_code:   otp,
+      otp_type:   'email',
+      user_role:  role,
+      expires_at: expiresAt,
     });
 
-    if (authError) {
-      // If the user already exists in Supabase Auth but hasn't verified their email,
-      // we should just resend the OTP instead of showing an error.
-      if (authError.message.includes('User already registered')) {
-        const { data: existingProfile } = await supabase.from(table).select('id').eq('email', email.toLowerCase()).single();
-        if (!existingProfile) {
-           // User exists in Auth but not in our profile table -> they are unverified.
-           const otpCode = generateOTP();
-           await storeOTP(email, otpCode, 'email', role);
-           await sendEmailOTP(email.toLowerCase(), otpCode, full_name);
-           
-           return res.status(201).json({
-             success: true,
-             message: 'Account exists but is not verified. A new verification code has been sent via Resend.',
-             requiresVerification: true,
-             email: email.toLowerCase(),
-             role
-           });
-        }
-      }
-      return res.status(400).json({ success: false, message: authError.message });
-    }
-
-    // 3. Generate and Send our own OTP via Resend
-    const otpCode = generateOTP();
-    await storeOTP(email, otpCode, 'email', role);
-    
-    const emailRes = await sendEmailOTP(email.toLowerCase(), otpCode, full_name);
-    
-    if (!emailRes.success) {
-      // We don't fail the whole registration if email fails to send, 
-      // but we should warn the user they might need to resend.
-      console.error('[REGISTER] Email failed to send:', emailRes.error);
-    }
+    // Send OTP email
+    await sendOTPEmail(email, otp, role);
 
     res.status(201).json({
       success: true,
-      message: 'Account created. Please check your email for the verification code (sent via Resend).',
-      requiresVerification: true,
-      email: email.toLowerCase(),
+      message: 'Account created. Please check your email for the verification code.',
+      email: user.email,
       role,
     });
   } catch (err) {
@@ -126,151 +139,190 @@ const register = async (req, res, next) => {
   }
 };
 
-// ── POST /api/auth/verify-email ──────────────────────────────
+// ── POST /api/auth/verify-email ───────────────────────────────
 const verifyEmail = async (req, res, next) => {
   try {
-    const { email, otp, role = 'buyer' } = req.body;
-    
-    // 1. Verify the OTP using our custom otpService
-    const verification = await verifyOTP(email, otp, 'email', role);
+    const { email, otp, role } = req.body;
 
-    if (!verification.valid) {
-      return res.status(400).json({ success: false, message: verification.message });
+    if (!email || !otp || !role) {
+      return res.status(400).json({ success: false, message: 'Email, OTP, and role are required.' });
     }
 
-    // 2. Fetch the user from Supabase Auth to get their ID and metadata
-    // We search by email since they just verified it.
-    const { data: { users }, error: listError } = await supabase.auth.admin.listUsers();
-    const authUser = users.find(u => u.email === email.toLowerCase());
+    // Find a valid, unused OTP
+    const { data: record, error } = await supabase
+      .from('verification_otps')
+      .select('*')
+      .eq('identifier', email)
+      .eq('otp_type', 'email')
+      .eq('user_role', role)
+      .eq('used', false)
+      .gt('expires_at', new Date().toISOString())
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
 
-    if (!authUser) {
-      return res.status(404).json({ success: false, message: 'User account not found in Auth system.' });
+    if (error || !record) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or expired verification code.',
+      });
     }
 
-    // 3. Mark the user as verified in Supabase Auth
-    await supabase.auth.admin.updateUserById(authUser.id, { email_confirm: true });
+    if (record.otp_code !== otp) {
+      return res.status(400).json({
+        success: false,
+        message: 'Incorrect verification code.',
+      });
+    }
 
-    // OTP is correct! Now we officially register them in our custom table.
-    const userMeta = authUser.user_metadata || {};
-    const table = getTable(role);
+    // Mark OTP as used
+    await supabase
+      .from('verification_otps')
+      .update({ used: true })
+      .eq('id', record.id);
 
-    // We still need to pass a dummy password_hash since the schema requires it, 
-    // but actual authentication is handled by Supabase Auth going forward.
-    const dummyHash = await bcrypt.hash(authUser.id, 10);
-
-    const { data: user, error: dbError } = await supabase
+    // Mark user as verified in their role table
+    const table = tableFor(role);
+    const { data: user, error: updateErr } = await supabase
       .from(table)
-      .insert({
-        email: email.toLowerCase(),
-        password_hash: dummyHash,
-        full_name: userMeta.full_name || 'User',
-        phone: userMeta.phone || null,
-        company_name: userMeta.company_name || null,
-        email_verified: true,
-      })
+      .update({ email_verified: true, updated_at: new Date().toISOString() })
+      .eq('email', email)
       .select()
       .single();
 
-    let finalUser = user;
-    if (dbError && dbError.code === '23505') {
-       const { data: existingUser } = await supabase.from(table).update({ email_verified: true }).eq('email', email.toLowerCase()).select().single();
-       finalUser = existingUser;
-    } else if (dbError) {
-      console.error("DB Insert Error:", dbError);
-      return res.status(500).json({ success: false, message: 'Failed to create user profile in database: ' + dbError.message });
+    if (updateErr || !user) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
     }
 
-    // 5. SKIP PHONE VERIFICATION FOR NOW
-    const token = signToken(finalUser, role);
+    // Also sync to the main users table (for RFQ/order foreign keys)
+    const { data: mainUser } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .single();
+
+    let finalUserId = mainUser?.id;
+
+    if (!mainUser) {
+      // Create entry in main users table
+      const { data: newMainUser } = await supabase
+        .from('users')
+        .insert({
+          email: user.email,
+          password_hash: user.password_hash,
+          full_name: user.full_name,
+          phone: user.phone,
+          role,
+          is_verified: true,
+        })
+        .select()
+        .single();
+      finalUserId = newMainUser?.id;
+    } else {
+      await supabase
+        .from('users')
+        .update({ is_verified: true })
+        .eq('id', mainUser.id);
+    }
+
+    const tokenUser = { id: finalUserId || user.id, email: user.email, role };
+    const token = signToken(tokenUser);
 
     res.json({
       success: true,
-      message: 'Email verified and account registered successfully.',
+      message: 'Email verified successfully.',
       token,
-      user: sanitizeUser(finalUser, role),
+      user: {
+        id: finalUserId || user.id,
+        email: user.email,
+        full_name: user.full_name,
+        role,
+        is_verified: true,
+      },
     });
   } catch (err) {
     next(err);
   }
 };
 
-// ── POST /api/auth/resend-otp ────────────────────────────────
+// ── POST /api/auth/resend-otp ─────────────────────────────────
 const resendOTP = async (req, res, next) => {
   try {
-    const { email, role = 'buyer' } = req.body;
+    const { email, role } = req.body;
+    const table = tableFor(role);
 
-    // 1. Generate new OTP
-    const otpCode = generateOTP();
-    await storeOTP(email, otpCode, 'email', role);
+    const { data: user } = await supabase
+      .from(table)
+      .select('id, email_verified')
+      .eq('email', email)
+      .single();
 
-    // 2. Send via Resend
-    // We need the user's name, but for a resend we might not have it in the request.
-    // We can try to fetch it from Auth or just use 'User'.
-    const emailRes = await sendEmailOTP(email.toLowerCase(), otpCode);
-
-    if (!emailRes.success) {
-      return res.status(500).json({ success: false, message: 'Failed to send email: ' + emailRes.error });
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Account not found.' });
     }
 
-    res.json({
-      success: true,
-      message: 'A new verification code has been sent to your email via Resend.',
+    if (user.email_verified) {
+      return res.status(400).json({ success: false, message: 'Email is already verified.' });
+    }
+
+    // Invalidate old OTPs
+    await supabase
+      .from('verification_otps')
+      .update({ used: true })
+      .eq('identifier', email)
+      .eq('otp_type', 'email')
+      .eq('user_role', role)
+      .eq('used', false);
+
+    // Generate new OTP
+    const otp = generateOTP();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+
+    await supabase.from('verification_otps').insert({
+      identifier: email,
+      otp_code:   otp,
+      otp_type:   'email',
+      user_role:  role,
+      expires_at: expiresAt,
     });
+
+    await sendOTPEmail(email, otp, role);
+
+    res.json({ success: true, message: 'Verification code resent.' });
   } catch (err) {
     next(err);
   }
 };
 
-// ── POST /api/auth/login ─────────────────────────────────────
+// ── POST /api/auth/login ──────────────────────────────────────
 const login = async (req, res, next) => {
   try {
-    const { email, password, role = 'buyer' } = req.body;
-    const table = getTable(role);
+    const { email, password, role: requestedRole = 'buyer' } = req.body;
+    const table = tableFor(requestedRole);
     const invalidMsg = 'Invalid email or password.';
 
-    // 1. Authenticate with Supabase Auth
-    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-      email: email.toLowerCase(),
-      password: password
-    });
-
-    if (authError) {
-      // If email isn't confirmed yet in Supabase Auth
-      if (authError.message.includes('Email not confirmed')) {
-        // Generate and send our own OTP
-        const otpCode = generateOTP();
-        await storeOTP(email, otpCode, 'email', role);
-        await sendEmailOTP(email.toLowerCase(), otpCode);
-
-        return res.status(403).json({
-          success: false,
-          message: 'Please verify your email before logging in. A new verification code has been sent via Resend.',
-          requiresVerification: true,
-          email: email.toLowerCase(),
-          role,
-        });
-      }
-      return res.status(401).json({ success: false, message: invalidMsg });
-    }
-
-    // 2. Fetch user from our custom role-specific table
+    // Look up user in the requested role's table
     const { data: user, error } = await supabase
       .from(table)
       .select('*')
-      .eq('email', email.toLowerCase())
+      .eq('email', email)
       .eq('is_active', true)
       .single();
 
     if (error || !user) {
-      // Check if user exists in the other table to give a helpful message
-      const otherTable = getOtherTable(role);
-      const { data: otherUser } = await supabase.from(otherTable).select('id').eq('email', email.toLowerCase()).single();
+      // Check if they exist in the OTHER role's table — give a helpful message
+      const otherRole = requestedRole === 'buyer' ? 'manufacturer' : 'buyer';
+      const otherTable = tableFor(otherRole);
+      const { data: otherUser } = await supabase
+        .from(otherTable)
+        .select('id')
+        .eq('email', email)
+        .single();
 
       if (otherUser) {
-        const otherRole = role === 'buyer' ? 'manufacturer' : 'buyer';
         return res.status(401).json({
           success: false,
-          message: `This email is registered as a ${otherRole}, not as a ${role}. Please switch to ${otherRole} login.`,
+          message: `This account is registered as a ${otherRole}. Please log in from the ${otherRole} login page.`,
           suggestedRole: otherRole,
         });
       }
@@ -278,36 +330,79 @@ const login = async (req, res, next) => {
       return res.status(401).json({ success: false, message: invalidMsg });
     }
 
-    // 3. PHONE VERIFICATION (SKIPPED FOR NOW)
-    /*
-    if (!user.phone_verified && user.phone) {
-      await smsService.sendOTP(user.phone);
-      return res.status(403).json({ ... });
+    if (!user.password_hash) {
+      return res.status(401).json({
+        success: false,
+        message: 'This account uses Google Sign-In. Please log in with Google.',
+      });
     }
-    */
 
-    // 4. Issue custom JWT for our app
-    const token = signToken(user, role);
+    const isMatch = await bcrypt.compare(password, user.password_hash);
+    if (!isMatch) {
+      return res.status(401).json({ success: false, message: invalidMsg });
+    }
+
+    // Block login if email not verified
+    if (!user.email_verified) {
+      // Resend OTP automatically
+      const otp = generateOTP();
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+
+      await supabase.from('verification_otps').insert({
+        identifier: email,
+        otp_code:   otp,
+        otp_type:   'email',
+        user_role:  requestedRole,
+        expires_at: expiresAt,
+      });
+      await sendOTPEmail(email, otp, requestedRole);
+
+      return res.status(403).json({
+        success: false,
+        requiresVerification: true,
+        email: user.email,
+        role: requestedRole,
+        message: 'Please verify your email. A new code has been sent.',
+      });
+    }
+
+    // Get the main users table ID for JWT
+    const { data: mainUser } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .single();
+
+    const tokenUser = {
+      id: mainUser?.id || user.id,
+      email: user.email,
+      role: requestedRole,
+    };
+    const token = signToken(tokenUser);
 
     res.json({
       success: true,
       message: 'Logged in successfully.',
       token,
-      user: sanitizeUser(user, role),
+      user: {
+        id: mainUser?.id || user.id,
+        email: user.email,
+        full_name: user.full_name,
+        role: requestedRole,
+        is_verified: true,
+      },
     });
   } catch (err) {
     next(err);
   }
 };
 
-// ── GET /api/auth/me ─────────────────────────────────────────
+// ── GET /api/auth/me ──────────────────────────────────────────
 const getMe = async (req, res, next) => {
   try {
-    const table = getTable(req.user.role);
-
     const { data: user, error } = await supabase
-      .from(table)
-      .select('id, email, full_name, phone, company_name, email_verified, phone_verified, created_at')
+      .from('users')
+      .select('id, email, full_name, phone, role, is_verified, created_at')
       .eq('id', req.user.id)
       .single();
 
@@ -315,72 +410,7 @@ const getMe = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'User not found.' });
     }
 
-    res.json({ success: true, user: { ...user, role: req.user.role } });
-  } catch (err) {
-    next(err);
-  }
-};
-
-// ── MSG91 Phone Verification Endpoints ───────────────────────
-
-const sendPhoneOTP = async (req, res, next) => {
-  try {
-    const { phone } = req.body;
-    const result = await smsService.sendOTP(phone);
-    if (result.success) {
-      res.json({ success: true, message: 'OTP sent successfully via MSG91.' });
-    } else {
-      res.status(500).json({ success: false, message: result.message });
-    }
-  } catch (err) {
-    next(err);
-  }
-};
-
-const verifyPhoneOTP = async (req, res, next) => {
-  try {
-    const { email, phone, otp, role = 'buyer' } = req.body;
-    const table = getTable(role);
-
-    // 1. Verify with MSG91
-    const result = await smsService.verifyOTP(phone, otp);
-    if (!result.success) {
-      return res.status(400).json({ success: false, message: result.message });
-    }
-
-    // 2. Update DB
-    const { data: user, error } = await supabase
-      .from(table)
-      .update({ phone_verified: true })
-      .eq('email', email.toLowerCase())
-      .select()
-      .single();
-
-    if (error) {
-      return res.status(500).json({ success: false, message: 'Failed to update phone status.' });
-    }
-
-    const token = signToken(user, role);
-    res.json({
-      success: true,
-      message: 'Phone verified successfully.',
-      token,
-      user: sanitizeUser(user, role)
-    });
-  } catch (err) {
-    next(err);
-  }
-};
-
-const resendPhoneOTP = async (req, res, next) => {
-  try {
-    const { phone } = req.body;
-    const result = await smsService.resendOTP(phone);
-    if (result.success) {
-      res.json({ success: true, message: 'OTP resent successfully.' });
-    } else {
-      res.status(500).json({ success: false, message: result.message });
-    }
+    res.json({ success: true, user });
   } catch (err) {
     next(err);
   }
@@ -391,8 +421,6 @@ module.exports = {
   login, 
   verifyEmail, 
   resendOTP, 
-  getMe, 
-  sendPhoneOTP, 
-  verifyPhoneOTP, 
-  resendPhoneOTP 
+  getMe 
 };
+
