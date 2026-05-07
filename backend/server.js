@@ -63,10 +63,10 @@ const generalLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// Stricter limit for auth endpoints: 10 attempts per 15 minutes
+// Stricter limit for auth endpoints: 20 attempts per 15 minutes
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: 20,
   message: { success: false, message: 'Too many login attempts. Please try again in 15 minutes.' },
 });
 
@@ -98,6 +98,7 @@ app.use('/api/products', require('./routes/products'));
 app.use('/api/orders', require('./routes/orders'));
 app.use('/api/manufacturers', require('./routes/manufacturers'));
 app.use('/api/contact', require('./routes/contact'));
+app.use('/api/onboarding', require('./routes/onboarding'));
 
 // ── 7. 404 HANDLER ───────────────────────────────────────────
 app.use((req, res) => {

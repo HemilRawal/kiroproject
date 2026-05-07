@@ -2854,7 +2854,28 @@
     }
 
     function goToOnboarding() {
-      window.location.href = 'onboarding2.html';
+      // Check if already submitted — if so, check status
+      const token = localStorage.getItem('bm_token');
+      if (!token) {
+        window.location.href = 'login-page.html?role=manufacturer';
+        return;
+      }
+      fetch('http://localhost:4000/api/onboarding/status', {
+        headers: { 'Authorization': `Bearer ${token}` },
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.application?.status === 'approved') {
+          window.location.href = 'manufacturer_portal.html';
+        } else if (data.application?.status === 'pending' || data.application?.status === 'under_review') {
+          window.location.href = 'onboarding2.html#status';
+        } else {
+          window.location.href = 'onboarding2.html';
+        }
+      })
+      .catch(() => {
+        window.location.href = 'onboarding2.html';
+      });
     }
 
     // ── Scroll reveal ──

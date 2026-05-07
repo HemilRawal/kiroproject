@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Portal – Bharat Modules</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --black: #0a0a0a;
+      --white: #ffffff;
+      --orange: #e85c0d;
+      --green: #2e7d32;
+      --red: #c62828;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-400: #94a3b8;
+      --gray-600: #475569;
+      --gray-700: #334155;
+      --border: 1px solid #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Outfit', sans-serif; background: var(--gray-50); color: var(--black); min-height: 100vh; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 16px; left: 24px; right: 24px; z-index: 100;
+      background: rgba(10,10,10,0.95); backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.08); border-radius: 14px;
+      height: 60px; display: flex; align-items: center; padding: 0 28px;
+      justify-content: space-between;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .nav-logo { font-family: 'Outfit', sans-serif; font-size: 15px; color: #fff; letter-spacing: 0.18em; font-weight: 700; }
+    .nav-badge { background: var(--red); color: #fff; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .nav-admin-name { font-size: 13px; color: #ccc; }
+    .btn-logout { background: none; border: 1px solid rgba(255,255,255,0.15); border-radius: 7px; padding: 6px 14px; font-family: 'Outfit', sans-serif; font-size: 12px; color: #888; cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.04em; }
+    .btn-logout:hover { color: #fff; border-color: rgba(255,255,255,0.3); }
+
+    /* LAYOUT */
+    .page { max-width: 1200px; margin: 0 auto; padding: 96px 32px 60px; }
+
+    /* STATS ROW */
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+    .stat-card { background: var(--white); border: var(--border); border-radius: var(--radius); padding: 20px 24px; box-shadow: var(--shadow); }
+    .stat-label { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 8px; }
+    .stat-value { font-size: 32px; font-weight: 700; color: var(--black); line-height: 1; }
+    .stat-value.orange { color: var(--orange); }
+    .stat-value.green { color: var(--green); }
+    .stat-value.red { color: var(--red); }
+
+    /* FILTER TABS */
+    .filter-row { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .filter-btn { padding: 8px 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; border-radius: 8px; cursor: pointer; border: 1.5px solid var(--gray-200); background: var(--white); color: var(--gray-700); transition: all 0.15s; font-family: 'Outfit', sans-serif; }
+    .filter-btn:hover { border-color: var(--orange); color: var(--orange); }
+    .filter-btn.active { background: var(--black); color: #fff; border-color: var(--black); }
+
+    /* TABLE */
+    .table-wrap { background: var(--white); border: var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+    table { width: 100%; border-collapse: collapse; }
+    thead th { padding: 12px 20px; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); background: var(--gray-50); border-bottom: var(--border); text-align: left; }
+    tbody tr { border-bottom: var(--border); cursor: pointer; transition: background 0.15s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(232,92,13,0.03); }
+    tbody td { padding: 14px 20px; font-size: 13.5px; color: var(--gray-700); vertical-align: middle; }
+    .td-company { font-weight: 600; color: var(--black); }
+    .td-email { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+
+    /* STATUS BADGE */
+    .badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 600; }
+    .badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .b-pending { background: #fffbeb; color: #b45309; }
+    .b-under_review { background: #eff6ff; color: #1d4ed8; }
+    .b-approved { background: #dcfce7; color: #166534; }
+    .b-rejected { background: #fef2f2; color: #991b1b; }
+
+    /* SLIDEOUT PANEL */
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .overlay.open { opacity: 1; pointer-events: all; }
+    .slideout { position: fixed; top: 0; right: 0; bottom: 0; width: 560px; background: var(--white); z-index: 201; transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.16,1,0.3,1); overflow-y: auto; box-shadow: -8px 0 40px rgba(0,0,0,0.15); }
+    .slideout.open { transform: translateX(0); }
+    .slideout-header { padding: 24px 28px; border-bottom: var(--border); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: var(--white); z-index: 1; }
+    .slideout-title { font-size: 18px; font-weight: 700; color: var(--black); }
+    .btn-close { background: none; border: 1px solid var(--gray-200); border-radius: 8px; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--gray-400); transition: all 0.2s; }
+    .btn-close:hover { color: var(--black); border-color: var(--black); }
+    .slideout-body { padding: 24px 28px; }
+
+    /* DETAIL ROWS */
+    .detail-section { margin-bottom: 24px; }
+    .detail-section-title { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 12px; padding-bottom: 8px; border-bottom: var(--border); }
+    .detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--gray-100); font-size: 13px; }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-key { color: var(--gray-400); font-weight: 500; }
+    .detail-val { color: var(--black); font-weight: 600; text-align: right; max-width: 60%; word-break: break-word; }
+
+    /* DECISION AREA */
+    .decision-area { background: var(--gray-50); border: var(--border); border-radius: var(--radius); padding: 20px; margin-top: 24px; }
+    .decision-title { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-600); margin-bottom: 14px; }
+    .decision-notes { width: 100%; border: var(--border); border-radius: 8px; padding: 10px 14px; font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--black); resize: vertical; min-height: 80px; outline: none; margin-bottom: 14px; transition: border-color 0.2s; }
+    .decision-notes:focus { border-color: var(--orange); }
+    .decision-btns { display: flex; gap: 10px; }
+    .btn-approve { flex: 1; background: var(--green); color: #fff; border: none; border-radius: 8px; padding: 12px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: background 0.2s; letter-spacing: 0.04em; }
+    .btn-approve:hover { background: #1b5e20; }
+    .btn-reject { flex: 1; background: var(--red); color: #fff; border: none; border-radius: 8px; padding: 12px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: background 0.2s; letter-spacing: 0.04em; }
+    .btn-reject:hover { background: #7f1d1d; }
+
+    /* EMPTY STATE */
+    .empty { text-align: center; padding: 60px 20px; color: var(--gray-400); }
+    .empty svg { margin-bottom: 16px; opacity: 0.3; }
+
+    /* TOAST */
+    .toast { position: fixed; bottom: 32px; right: 32px; background: var(--black); color: #fff; padding: 14px 20px; border-radius: 10px; font-size: 13px; font-weight: 500; z-index: 999; transform: translateY(80px); opacity: 0; transition: all 0.3s; box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.green { background: var(--green); }
+    .toast.red { background: var(--red); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <span class="nav-logo">BHARAT MODULES</span>
+    <span class="nav-badge">Admin</span>
+  </div>
+  <div class="nav-right">
+    <span class="nav-admin-name" id="adminName">Admin</span>
+    <button class="btn-logout" onclick="handleLogout()">Sign Out</button>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Total Applications</div>
+      <div class="stat-value" id="statTotal">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Pending Review</div>
+      <div class="stat-value orange" id="statPending">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Approved</div>
+      <div class="stat-value green" id="statApproved">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Rejected</div>
+      <div class="stat-value red" id="statRejected">—</div>
+    </div>
+  </div>
+
+  <!-- Filter -->
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="filterApps('all', this)">All</button>
+    <button class="filter-btn" onclick="filterApps('pending', this)">Pending</button>
+    <button class="filter-btn" onclick="filterApps('under_review', this)">Under Review</button>
+    <button class="filter-btn" onclick="filterApps('approved', this)">Approved</button>
+    <button class="filter-btn" onclick="filterApps('rejected', this)">Rejected</button>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>GSTIN</th>
+          <th>Categories</th>
+          <th>Status</th>
+          <th>Submitted</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="appTableBody">
+        <tr><td colspan="6"><div class="empty"><svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><p>Loading applications…</p></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Slideout overlay -->
+<div class="overlay" id="overlay" onclick="closeSlideout()"></div>
+
+<!-- Slideout panel -->
+<div class="slideout" id="slideout">
+  <div class="slideout-header">
+    <span class="slideout-title" id="slideTitle">Application Detail</span>
+    <button class="btn-close" onclick="closeSlideout()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="slideout-body" id="slideBody"></div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  const API_BASE = 'http://localhost:4000';
+  let allApps = [];
+  let currentFilter = 'all';
+  let currentAppId = null;
+
+  function getToken() { return localStorage.getItem('bm_token'); }
+
+  // ── Auth guard — admin only ──
+  document.addEventListener('DOMContentLoaded', async () => {
+    const token = getToken();
+    if (!token) { window.location.href = 'login-page.html'; return; }
+
+    const user = JSON.parse(localStorage.getItem('bm_user') || '{}');
+    if (user.role !== 'admin') {
+      alert('Access denied. Admin accounts only.');
+      window.location.href = 'login-page.html';
+      return;
+    }
+
+    document.getElementById('adminName').textContent = user.full_name || 'Admin';
+    await loadApplications();
+  });
+
+  // ── Load all applications ──
+  async function loadApplications() {
+    try {
+      const res = await fetch(`${API_BASE}/api/onboarding/admin/applications`, {
+        headers: { 'Authorization': `Bearer ${getToken()}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+
+      allApps = data.applications || [];
+      updateStats();
+      renderTable(allApps);
+    } catch (err) {
+      console.error('Failed to load applications:', err);
+      showToast('Failed to load applications', 'red');
+    }
+  }
+
+  // ── Update stat cards ──
+  function updateStats() {
+    document.getElementById('statTotal').textContent    = allApps.length;
+    document.getElementById('statPending').textContent  = allApps.filter(a => a.status === 'pending' || a.status === 'under_review').length;
+    document.getElementById('statApproved').textContent = allApps.filter(a => a.status === 'approved').length;
+    document.getElementById('statRejected').textContent = allApps.filter(a => a.status === 'rejected').length;
+  }
+
+  // ── Filter ──
+  function filterApps(status, btn) {
+    currentFilter = status;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filtered = status === 'all' ? allApps : allApps.filter(a => a.status === status);
+    renderTable(filtered);
+  }
+
+  // ── Render table ──
+  function renderTable(apps) {
+    const tbody = document.getElementById('appTableBody');
+    if (!apps.length) {
+      tbody.innerHTML = `<tr><td colspan="6"><div class="empty">
+        <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        <p>No applications found.</p></div></td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = apps.map(a => `
+      <tr onclick="openSlideout('${a.id}')">
+        <td>
+          <div class="td-company">${a.company_name}</div>
+          <div class="td-email">${a.email}</div>
+        </td>
+        <td style="font-family:monospace;font-size:12px;">${a.gstin || '—'}</td>
+        <td style="font-size:12px;color:var(--gray-600);">${(a.component_categories || []).slice(0,2).join(', ') || '—'}</td>
+        <td><span class="badge b-${a.status}">${a.status.replace('_', ' ')}</span></td>
+        <td style="font-size:12px;">${new Date(a.submitted_at).toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'})}</td>
+        <td>
+          <button onclick="event.stopPropagation();openSlideout('${a.id}')" style="background:var(--black);color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;">
+            Review
+          </button>
+        </td>
+      </tr>`).join('');
+  }
+
+  // ── Open slideout with application detail ──
+  function openSlideout(id) {
+    const app = allApps.find(a => a.id === id);
+    if (!app) return;
+    currentAppId = id;
+
+    document.getElementById('slideTitle').textContent = app.company_name;
+
+    const canReview = app.status === 'pending' || app.status === 'under_review';
+
+    document.getElementById('slideBody').innerHTML = `
+      <div class="detail-section">
+        <div class="detail-section-title">Company Information</div>
+        <div class="detail-row"><span class="detail-key">Company Name</span><span class="detail-val">${app.company_name}</span></div>
+        <div class="detail-row"><span class="detail-key">GSTIN</span><span class="detail-val">${app.gstin || '—'}</span></div>
+        <div class="detail-row"><span class="detail-key">MSME Number</span><span class="detail-val">${app.msme_number || '—'}</span></div>
+        <div class="detail-row"><span class="detail-key">PAN Number</span><span class="detail-val">${app.pan_number || '—'}</span></div>
+        <div class="detail-row"><span class="detail-key">Website</span><span class="detail-val">${app.website ? `<a href="${app.website}" target="_blank" style="color:var(--orange);">${app.website}</a>` : '—'}</span></div>
+        <div class="detail-row"><span class="detail-key">Address</span><span class="detail-val">${[app.company_address, app.city, app.state, app.pincode].filter(Boolean).join(', ') || '—'}</span></div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">Documents</div>
+        <div class="detail-row">
+          <span class="detail-key">COI</span>
+          <span class="detail-val">${app.coi_doc_url ? `<a href="${app.coi_doc_url}" target="_blank" style="color:var(--orange);font-weight:700;">View PDF ↗</a>` : '—'}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-key">GST Certificate</span>
+          <span class="detail-val">${app.gst_doc_url ? `<a href="${app.gst_doc_url}" target="_blank" style="color:var(--orange);font-weight:700;">View PDF ↗</a>` : '—'}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-key">MSME Certificate</span>
+          <span class="detail-val">${app.msme_doc_url ? `<a href="${app.msme_doc_url}" target="_blank" style="color:var(--orange);font-weight:700;">View PDF ↗</a>` : '—'}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-key">Factory License</span>
+          <span class="detail-val">${app.factory_doc_url ? `<a href="${app.factory_doc_url}" target="_blank" style="color:var(--orange);font-weight:700;">View PDF ↗</a>` : '—'}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-key">PAN Card</span>
+          <span class="detail-val">${app.pan_doc_url ? `<a href="${app.pan_doc_url}" target="_blank" style="color:var(--orange);font-weight:700;">View PDF ↗</a>` : '—'}</span>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">Contact Person</div>
+        <div class="detail-row"><span class="detail-key">Full Name</span><span class="detail-val">${app.full_name}</span></div>
+        <div class="detail-row"><span class="detail-key">Email</span><span class="detail-val">${app.email}</span></div>
+        <div class="detail-row"><span class="detail-key">Phone</span><span class="detail-val">${app.phone || '—'}</span></div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">Categories</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;padding:4px 0;">
+          ${(app.component_categories || []).map(c => `<span style="background:var(--gray-100);border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;color:var(--gray-700);">${c}</span>`).join('') || '<span style="color:var(--gray-400);font-size:13px;">None specified</span>'}
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">NDA & Signature</div>
+        <div class="detail-row"><span class="detail-key">NDA Signed</span><span class="detail-val" style="color:${app.nda_signed ? 'var(--green)' : 'var(--red)'};">${app.nda_signed ? '✓ Yes' : '✗ No'}</span></div>
+        <div class="detail-row"><span class="detail-key">Signer Name</span><span class="detail-val">${app.signer_name || '—'}</span></div>
+        <div class="detail-row"><span class="detail-key">Signer Role</span><span class="detail-val">${app.signer_role || '—'}</span></div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">Uploaded Documents</div>
+        ${['coi','gst','msme','factory','pan'].map(key => {
+          const url = app[key + '_doc_url'];
+          return '<div class="detail-row"><span class="detail-key">' + key.toUpperCase() + ' Document</span><span class="detail-val">' +
+            (url ? '<a href="' + url + '" target="_blank" style="color:var(--orange);text-decoration:none;font-weight:600;">View PDF ↗</a>' : '<span style="color:var(--gray-400);">Not uploaded</span>') +
+            '</span></div>';
+        }).join('')}
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">Application Status</div>
+        <div class="detail-row"><span class="detail-key">Current Status</span><span class="detail-val"><span class="badge b-${app.status}">${app.status.replace('_',' ')}</span></span></div>
+        <div class="detail-row"><span class="detail-key">Submitted</span><span class="detail-val">${new Date(app.submitted_at).toLocaleString('en-IN')}</span></div>
+        ${app.reviewed_at ? `<div class="detail-row"><span class="detail-key">Reviewed</span><span class="detail-val">${new Date(app.reviewed_at).toLocaleString('en-IN')}</span></div>` : ''}
+        ${app.admin_notes ? `<div class="detail-row"><span class="detail-key">Admin Notes</span><span class="detail-val">${app.admin_notes}</span></div>` : ''}
+      </div>
+
+
+      ${canReview ? `
+      <div class="decision-area">
+        <div class="decision-title">Review Decision</div>
+        <textarea class="decision-notes" id="adminNotes" placeholder="Optional notes (shown to applicant if rejected)…"></textarea>
+        <div class="decision-btns">
+          <button class="btn-approve" onclick="submitDecision('approved')">✓ Approve Application</button>
+          <button class="btn-reject" onclick="submitDecision('rejected')">✗ Reject Application</button>
+        </div>
+      </div>` : `
+      <div style="background:var(--gray-50);border:var(--border);border-radius:var(--radius);padding:16px;text-align:center;color:var(--gray-400);font-size:13px;">
+        This application has already been ${app.status}.
+      </div>`}
+    `;
+
+    document.getElementById('overlay').classList.add('open');
+    document.getElementById('slideout').classList.add('open');
+  }
+
+  function closeSlideout() {
+    document.getElementById('overlay').classList.remove('open');
+    document.getElementById('slideout').classList.remove('open');
+    currentAppId = null;
+  }
+
+  // ── Submit approve/reject decision ──
+  async function submitDecision(decision) {
+    if (!currentAppId) return;
+    const notes = document.getElementById('adminNotes')?.value?.trim() || '';
+
+    if (decision === 'rejected' && !notes) {
+      if (!confirm('No rejection reason provided. The applicant will receive a generic rejection email. Continue?')) return;
+    }
+
+    const btn = decision === 'approved'
+      ? document.querySelector('.btn-approve')
+      : document.querySelector('.btn-reject');
+    btn.disabled = true;
+    btn.textContent = 'Processing…';
+
+    try {
+      const res = await fetch(`${API_BASE}/api/onboarding/admin/applications/${currentAppId}/review`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({ decision, admin_notes: notes }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message);
+
+      showToast(
+        decision === 'approved' ? '✓ Application approved. Manufacturer notified.' : '✗ Application rejected. Manufacturer notified.',
+        decision === 'approved' ? 'green' : 'red'
+      );
+
+      closeSlideout();
+      await loadApplications();
+    } catch (err) {
+      showToast('Error: ' + err.message, 'red');
+      btn.disabled = false;
+      btn.textContent = decision === 'approved' ? '✓ Approve Application' : '✗ Reject Application';
+    }
+  }
+
+  // ── Toast notification ──
+  function showToast(msg, type = '') {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.className = `toast ${type} show`;
+    setTimeout(() => toast.classList.remove('show'), 3500);
+  }
+
+  // ── Logout ──
+  function handleLogout() {
+    localStorage.clear();
+    window.location.replace('login-page.html');
+  }
+
+  // ── Keyboard close ──
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSlideout(); });
+</script>
+</body>
+</html>

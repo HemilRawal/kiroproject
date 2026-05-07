@@ -39,6 +39,7 @@
       content="Register your Indian OEM on Bharat Modules. Upload GST, MSME, and manufacturing documents for Bharat Verified certification. 4-step onboarding, 2-day approval."
     />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap"
@@ -1865,6 +1866,7 @@
                   style="flex: 1;"
                 />
                 <button
+                  type="button"
                   class="btn-verify"
                   id="btn-verify-email"
                   onclick="startVerification('email')"
@@ -1942,6 +1944,7 @@
                   style="flex: 1;"
                 />
                 <button
+                  type="button"
                   class="btn-verify"
                   id="btn-verify-phone"
                   onclick="startVerification('phone')"
@@ -2014,11 +2017,7 @@
               <div class="custom-dropdown" id="catDropdown">
                 <div
                   class="dropdown-header"
-                  onclick="
-                    document
-                      .getElementById('catDropdown')
-                      .classList.toggle('open')
-                  "
+                  onclick="toggleCatDropdown()"
                 >
                   <span
                     id="catSelectedText"
@@ -2184,7 +2183,45 @@
           </p>
 
           <form id="form-phase2" onsubmit="return false;" novalidate>
-            <div class="section-title">Required Certifications</div>
+            <div class="section-title">Company Identification</div>
+            <div class="form-group">
+              <label>GSTIN <span class="req">*</span></label>
+              <input type="text" class="form-input" id="obGstin" placeholder="15-digit GST Number" maxlength="15" />
+            </div>
+            <div class="form-group">
+              <label>MSME Number</label>
+              <input type="text" class="form-input" id="obMsme" placeholder="UDYAM-XX-00-0000000" />
+            </div>
+            <div class="form-group">
+              <label>Company PAN <span class="req">*</span></label>
+              <input type="text" class="form-input" id="obPan" placeholder="10-digit PAN Number" maxlength="10" />
+            </div>
+            <div class="form-group">
+              <label>Company Website</label>
+              <input type="url" class="form-input" id="obWebsite" placeholder="https://www.example.com" />
+            </div>
+
+            <div class="section-title" style="margin-top: 24px;">Registered Address</div>
+            <div class="form-group">
+              <label>Street Address <span class="req">*</span></label>
+              <input type="text" class="form-input" id="obAddress" placeholder="Building, Street, Area" />
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+              <div class="form-group">
+                <label>City <span class="req">*</span></label>
+                <input type="text" class="form-input" id="obCity" placeholder="City" />
+              </div>
+              <div class="form-group">
+                <label>State <span class="req">*</span></label>
+                <input type="text" class="form-input" id="obState" placeholder="State" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Pincode <span class="req">*</span></label>
+              <input type="text" class="form-input" id="obPincode" placeholder="6-digit Pincode" maxlength="6" />
+            </div>
+
+            <div class="section-title" style="margin-top: 24px;">Required Certifications</div>
 
             <div class="form-group" id="fg-coi">
               <label
@@ -3575,129 +3612,81 @@
       <!-- PHASE 5: VERIFICATION HOLD -->
       <div class="phase" id="phase5">
         <div class="card">
-          <div class="hold-center">
+          <div class="hold-center" id="statusPending">
             <div class="hold-badge">
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <polyline points="2,8 6,12 14,4" />
-              </svg>
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,8 6,12 14,4"/></svg>
               Application Submitted
             </div>
             <div class="hold-icon-wrap">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 6v6l4 2" />
-              </svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
             </div>
-            <h2
-              style="
-                font-family: &quot;Rajdhani&quot;, sans-serif;
-                font-size: clamp(28px, 4vw, 42px);
-                font-weight: 700;
-                color: var(--black);
-                letter-spacing: 0.02em;
-                line-height: 1.15;
-                margin-bottom: 10px;
-              "
-            >
+            <h2 style="font-family:'Rajdhani',sans-serif;font-size:clamp(28px,4vw,42px);font-weight:700;color:var(--black);letter-spacing:0.02em;line-height:1.15;margin-bottom:10px;">
               Verification in Process.
             </h2>
-            <p>
-              Our team will verify all your details and notify you at
-              <strong id="display-email">your registered email</strong> within
-              <strong>2 business days</strong>.
-            </p>
-            <div
-              style="
-                display: flex;
-                gap: 16px;
-                justify-content: center;
-                flex-wrap: wrap;
-                margin-top: 12px;
-              "
-            >
-              <button
-                class="btn-secondary"
-                onclick="downloadNDA()"
-                style="
-                  color: var(--orange);
-                  border-color: var(--orange);
-                  display: inline-flex;
-                "
-              >
+            <p>Our team will verify all your details and notify you at <strong id="display-email">your registered email</strong> within <strong>2 business days</strong>.</p>
+            <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:12px;">
+              <button class="btn-secondary" onclick="downloadNDA()" style="color:var(--orange);border-color:var(--orange);display:inline-flex;">
                 Download M-NDA form
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  style="margin-left: 6px"
-                >
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                  <polyline points="7 10 12 15 17 10"></polyline>
-                  <line x1="12" y1="15" x2="12" y2="3"></line>
-                </svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               </button>
-              <a
-                href="#"
-                onclick="
-                  if (document.referrer) {
-                    history.back();
-                  } else {
-                    window.location.href = 'index.html';
-                  }
-                  return false;
-                "
-                class="btn-primary"
-                style="display: inline-flex"
-              >
+              <a href="oem_register_landingpage.html" class="btn-primary" style="display:inline-flex;">
                 Back to Home
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2.2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path d="M3 8h10M9 4l4 4-4 4" />
-                </svg>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
               </a>
             </div>
           </div>
+
+          <!-- Approved state (hidden by default) -->
+          <div class="hold-center" id="statusApproved" style="display:none;">
+            <div class="hold-badge" style="background:rgba(46,125,50,0.1);border-color:rgba(46,125,50,0.3);color:var(--green);">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="2,8 6,12 14,4"/></svg>
+              Application Approved
+            </div>
+            <div class="hold-icon-wrap" style="background:rgba(46,125,50,0.1);border-color:rgba(46,125,50,0.3);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.8"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <h2 style="font-family:'Rajdhani',sans-serif;font-size:clamp(28px,4vw,42px);font-weight:700;color:var(--black);letter-spacing:0.02em;line-height:1.15;margin-bottom:10px;">
+              You're Verified!
+            </h2>
+            <p>Your manufacturer account has been approved. You can now access your dashboard.</p>
+            <div style="margin-top:20px;">
+              <a href="manufacturer_portal.html" class="btn-primary" style="display:inline-flex;">
+                Go to Dashboard
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- Rejected state (hidden by default) -->
+          <div class="hold-center" id="statusRejected" style="display:none;">
+            <div class="hold-badge" style="background:rgba(198,40,40,0.1);border-color:rgba(198,40,40,0.3);color:#c62828;">
+              Application Rejected
+            </div>
+            <div class="hold-icon-wrap" style="background:rgba(198,40,40,0.1);border-color:rgba(198,40,40,0.3);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#c62828" stroke-width="1.8"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </div>
+            <h2 style="font-family:'Rajdhani',sans-serif;font-size:clamp(28px,4vw,42px);font-weight:700;color:var(--black);letter-spacing:0.02em;line-height:1.15;margin-bottom:10px;">
+              Application Rejected
+            </h2>
+            <p>Your application was not approved at this time. Please check your email for details and reasons.</p>
+            <p id="rejectionNotes" style="margin-top:12px;padding:12px 16px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;font-size:13px;color:#991b1b;display:none;"></p>
+            <div style="margin-top:20px;">
+              <button onclick="resubmitApplication()" class="btn-primary" style="display:inline-flex;">
+                Resubmit Application
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+              </button>
+            </div>
+          </div>
+
           <div class="hold-divider"></div>
           <div class="hold-details">
-            <div class="hold-detail-chip">
-              <strong>What happens next</strong>
-              <span>BM internal audit team reviews your documents</span>
-            </div>
-            <div class="hold-detail-chip">
-              <strong>Timeline</strong>
-              <span>2 business days for verification</span>
-            </div>
-            <div class="hold-detail-chip">
-              <strong>After approval</strong>
+            <div class="hold-detail-chip"><strong>What happens next</strong><span>BM internal audit team reviews your documents</span></div>
+            <div class="hold-detail-chip"><strong>Timeline</strong><span>2 business days for verification</span></div>
+            <div class="hold-detail-chip"><strong>After approval</strong><span>Full access to Manufacturer Dashboard</span></div>
+          </div>
+        </div>
+      </div>
+    </main>
               <span>Full access to Manufacturer Dashboard</span>
             </div>
           </div>
@@ -3863,6 +3852,17 @@
         pan: false,
         sigdoc: false,
       };
+      let fileObjects = {}; // To store actual File objects for later upload
+
+      const SUPABASE_URL = "https://xlkufanjlphlrcvsovms.supabase.co";
+      const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhsa3VmYW5qbHBobHJjdnNvdm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4NTgxNzEsImV4cCI6MjA5MzQzNDE3MX0.jvwgyGaTO-B1ZCQxFb3-cUg9uf7Cw-DoASWs07wK36s";
+      let sbClient = null;
+      try {
+        if (typeof window.supabase !== 'undefined') {
+          sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
+      } catch(e) { console.error("Supabase init failed", e); }
+
       let currentSigMethod = "draw";
       let sigHasData = false;
       let sigDrawing = false;
@@ -3974,6 +3974,7 @@
           file.name.length > 22 ? file.name.substring(0, 20) + "…" : file.name;
         us.textContent = "✓ " + short;
         uploadedFiles[key] = true;
+        fileObjects[key] = file; // Store the file object
         if (fg) fg.classList.remove("has-error");
       }
 
@@ -4045,6 +4046,12 @@
         }
       }
 
+      function toggleCatDropdown() {
+        const d = document.getElementById('catDropdown');
+        if (d) d.classList.toggle('open');
+      }
+
+
       // Close dropdown when clicking outside
       document.addEventListener("click", function (e) {
         const dropdown = document.getElementById("catDropdown");
@@ -4110,6 +4117,28 @@
             fg.classList.remove("has-error");
           }
         });
+
+        // Validate text fields
+        const requiredFields = [
+          {id: 'obGstin', label: 'GSTIN'},
+          {id: 'obPan', label: 'Company PAN'},
+          {id: 'obAddress', label: 'Street Address'},
+          {id: 'obCity', label: 'City'},
+          {id: 'obState', label: 'State'},
+          {id: 'obPincode', label: 'Pincode'}
+        ];
+
+        requiredFields.forEach(f => {
+          const el = document.getElementById(f.id);
+          const fg = el.closest('.form-group');
+          if (!el.value.trim()) {
+            fg.classList.add('has-error');
+            valid = false;
+          } else {
+            fg.classList.remove('has-error');
+          }
+        });
+
 
         if (valid) {
           goToPhase(3);
@@ -4497,50 +4526,167 @@
           } catch(e) {}
         }
 
+        // If URL has #status, check application status from backend
+        if (window.location.hash === '#status') {
+          checkApplicationStatus();
+          return;
+        }
+
         // Restore last phase (or jump to phase 5 if submitted previously)
-        const savedPhase = localStorage.getItem(
-          "bharat_modules_onboarding_phase",
-        );
+        const savedPhase = localStorage.getItem("bharat_modules_onboarding_phase");
+        
         if (savedPhase && parseInt(savedPhase) !== 1) {
+          window.isRestoringPhase = true;
           goToPhase(parseInt(savedPhase));
+          window.isRestoringPhase = false;
         }
       });
+
+      // ── Check application status from backend ──
+      async function checkApplicationStatus() {
+        const token = localStorage.getItem('bm_token');
+        if (!token) { window.location.href = 'login-page.html'; return; }
+
+        // Jump to phase 5 first
+        const _orig = goToPhase;
+        // Directly show phase 5 without triggering the submit intercept
+        document.querySelectorAll('.phase').forEach(p => p.classList.remove('active'));
+        document.getElementById('phase5')?.classList.add('active');
+
+        try {
+          const res = await fetch('http://localhost:4000/api/onboarding/status', {
+            headers: { 'Authorization': `Bearer ${token}` },
+          });
+          const data = await res.json();
+          const status = data.application?.status;
+
+          // Hide all status divs
+          ['statusPending','statusApproved','statusRejected'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+          });
+
+          if (status === 'approved') {
+            document.getElementById('statusApproved').style.display = 'block';
+          } else if (status === 'rejected') {
+            document.getElementById('statusRejected').style.display = 'block';
+            const notes = data.application?.admin_notes;
+            if (notes) {
+              const notesEl = document.getElementById('rejectionNotes');
+              if (notesEl) { notesEl.textContent = 'Reason: ' + notes; notesEl.style.display = 'block'; }
+            }
+          } else {
+            document.getElementById('statusPending').style.display = 'block';
+          }
+        } catch(err) {
+          document.getElementById('statusPending').style.display = 'block';
+        }
+      }
+
+      function resubmitApplication() {
+        localStorage.removeItem('bharat_modules_onboarding_phase');
+        window.location.href = 'onboarding2.html';
+      }
 
       // ── Submit onboarding to backend when reaching phase 5 ──
       const _originalGoToPhase = goToPhase;
       goToPhase = async function(n) {
-        // When moving to phase 5 (completion), submit to backend
-        if (n === 5) {
+        if (n === 5 && !window.isRestoringPhase) {
           const token = localStorage.getItem('bm_token');
-          if (token) {
-            const bizName = document.getElementById('obBusiness')?.value?.trim();
-            const saved = localStorage.getItem('bharat_modules_registration');
-            let regData = {};
-            try { regData = JSON.parse(saved || '{}'); } catch(e) {}
+          if (!token) { window.location.href = 'login-page.html'; return; }
 
-            try {
-              const res = await fetch('http://localhost:4000/api/manufacturers/onboard', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                  company_name: bizName || regData.business || 'My Company',
-                  gstin: '',        // collected in phase 2 docs — placeholder
-                  company_address: '',
-                  description: '',
-                }),
-              });
-              const data = await res.json();
-              if (!res.ok && res.status !== 409) {
-                // 409 = already onboarded, that's fine
-                console.warn('Onboard API error:', data.message);
+          // Show loading on button
+          const submitBtn = document.querySelector('#phase4 .btn-primary');
+          if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting…'; }
+
+          try {
+            // ── Collect form values ──
+            const getValue = id => document.getElementById(id)?.value?.trim() || '';
+            const bizName    = getValue('obBusiness');
+            const fullName   = getValue('obName');
+            const phone      = getValue('obPhone');
+            const gstin      = getValue('obGstin');
+            const msme       = getValue('obMsme');
+            const panNum     = getValue('obPan');
+            const website    = getValue('obWebsite');
+            const address    = getValue('obAddress');
+            const city       = getValue('obCity');
+            const state      = getValue('obState');
+            const pincode    = getValue('obPincode');
+            const signerName = getValue('signer-name');
+            const signerRole = getValue('signer-role');
+            const categories = Array.from(
+              document.querySelectorAll('.dropdown-item input[type="checkbox"]:checked')
+            ).map(i => i.value);
+
+            // ── Try to upload PDFs (non-blocking — won't stop submission if it fails) ──
+            const docUrls = {};
+            if (sbClient && Object.keys(fileObjects).length > 0) {
+              for (const key of Object.keys(fileObjects)) {
+                const file = fileObjects[key];
+                if (!file) continue;
+                try {
+                  const fileName = `${Date.now()}_${key}_${file.name.replace(/\s+/g, '_')}`;
+                  const { error: uploadError } = await sbClient.storage
+                    .from('onboarding_docs')
+                    .upload(fileName, file, { upsert: true });
+
+                  if (!uploadError) {
+                    const { data: urlData } = sbClient.storage
+                      .from('onboarding_docs')
+                      .getPublicUrl(fileName);
+                    docUrls[`${key}_doc_url`] = urlData.publicUrl;
+                  } else {
+                    console.warn(`Storage upload skipped for ${key}:`, uploadError.message);
+                  }
+                } catch (uploadErr) {
+                  console.warn(`Storage upload error for ${key}:`, uploadErr.message);
+                }
               }
-            } catch(err) {
-              console.error('Onboard submit failed:', err);
             }
+
+            // ── Submit to backend ──
+            const res = await fetch('http://localhost:4000/api/onboarding/submit', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                company_name:         bizName || 'My Company',
+                full_name:            fullName,
+                phone,
+                gstin,
+                msme_number:          msme,
+                pan_number:           panNum,
+                company_address:      address,
+                city, state, pincode, website,
+                component_categories: categories,
+                nda_signed:           true,
+                signer_name:          signerName,
+                signer_role:          signerRole,
+                ...docUrls,
+              }),
+            });
+
+            const data = await res.json();
+
+            if (res.ok || res.status === 409) {
+              // Clean up only auth-unrelated localStorage
+              localStorage.removeItem('bharat_modules_onboarding_phase');
+              localStorage.removeItem('bm_onboarding_form_data');
+              // Show phase 5 — "Verification in Progress"
+              _originalGoToPhase(5);
+            } else {
+              alert('Submission error: ' + (data.message || 'Unknown error'));
+              if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Submit Application'; }
+            }
+          } catch(err) {
+            console.error('Submit failed:', err);
+            alert('Network error. Please check your connection and try again.');
+            if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Submit Application'; }
           }
+          return;
         }
         _originalGoToPhase(n);
       };

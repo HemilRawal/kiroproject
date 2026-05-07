@@ -298,10 +298,39 @@ const resendOTP = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { email, password, role: requestedRole = 'buyer' } = req.body;
-    const table = tableFor(requestedRole);
     const invalidMsg = 'Invalid email or password.';
 
-    // Look up user in the requested role's table
+    // ── Admin login — check main users table ──
+    if (requestedRole === 'admin') {
+      const { data: adminUser, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', email)
+        .eq('role', 'admin')
+        .eq('is_active', true)
+        .single();
+
+      if (error || !adminUser) {
+        return res.status(401).json({ success: false, message: invalidMsg });
+      }
+
+      const isMatch = await bcrypt.compare(password, adminUser.password_hash);
+      if (!isMatch) {
+        return res.status(401).json({ success: false, message: invalidMsg });
+      }
+
+      const token = signToken({ id: adminUser.id, email: adminUser.email, role: 'admin' });
+      return res.json({
+        success: true,
+        message: 'Logged in successfully.',
+        token,
+        user: { id: adminUser.id, email: adminUser.email, full_name: adminUser.full_name, role: 'admin', is_verified: true },
+      });
+    }
+
+    // ── Buyer / Manufacturer login — check role-specific tables ──
+    const table = tableFor(requestedRole);
+
     const { data: user, error } = await supabase
       .from(table)
       .select('*')
@@ -344,7 +373,6 @@ const login = async (req, res, next) => {
 
     // Block login if email not verified
     if (!user.email_verified) {
-      // Resend OTP automatically
       const otp = generateOTP();
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
 
@@ -366,12 +394,29 @@ const login = async (req, res, next) => {
       });
     }
 
-    // Get the main users table ID for JWT
-    const { data: mainUser } = await supabase
+    // Get or create the main users table entry for JWT
+    let { data: mainUser } = await supabase
       .from('users')
       .select('id')
       .eq('email', email)
       .single();
+
+    if (!mainUser) {
+      // Sync to main users table — needed for onboarding/RFQ foreign keys
+      const { data: newMainUser } = await supabase
+        .from('users')
+        .insert({
+          email: user.email,
+          password_hash: user.password_hash,
+          full_name: user.full_name,
+          phone: user.phone,
+          role: requestedRole,
+          is_verified: true,
+        })
+        .select('id')
+        .single();
+      mainUser = newMainUser;
+    }
 
     const tokenUser = {
       id: mainUser?.id || user.id,

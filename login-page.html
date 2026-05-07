@@ -1399,7 +1399,7 @@
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     // Use relative paths if on localhost to avoid CORS/origin issues
-    const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '' : 'http://localhost:4000';
+    const API_BASE = 'http://localhost:4000';
 
     // ── OTP STATE ──
     let pendingVerification = { email: '', role: 'buyer', phone: '' };
@@ -1489,9 +1489,10 @@
         localStorage.setItem('bm_user', JSON.stringify(data.user));
         localStorage.setItem('userRole', data.user.role);
 
-        // Redirect based on role from server
+        // Manufacturer → OEM landing page (they click Start Verification → onboarding)
+        // Buyer → customer dashboard
         if (data.user.role === 'manufacturer') {
-          window.location.href = 'manufacturer_portal.html';
+          window.location.href = 'oem_register_landingpage.html';
         } else {
           window.location.href = 'customer_dashboard_3.html';
         }
@@ -1737,79 +1738,39 @@
           localStorage.setItem('bm_user', JSON.stringify(data.user));
           localStorage.setItem('userRole', data.user.role);
 
-          // If we have a phone number from registration, move to Phone verification
-          if (pendingVerification.phone) {
-            btn.textContent = 'Sending SMS…';
-            try {
-              await sendBackendPhoneOTP(pendingVerification.phone);
-              // Switch overlay to Phone
-              showOTPOverlay(pendingVerification.phone, 'phone');
-            } catch (err) {
-              console.error("SMS Error:", err);
-              errorEl.textContent = 'Failed to send verification SMS via MSG91. ' + err.message;
-              inputs.forEach(i => i.classList.add('error'));
-            } finally {
-              btn.disabled = false;
-              btn.textContent = 'Verify Email';
-            }
-            return;
-          }
-
-          // No phone to verify, just redirect
+          // Email verified — redirect based on role
           hideOTPOverlay();
-          if (data.user.role === 'manufacturer') {
-            window.location.href = 'manufacturer_portal.html';
-          } else {
-            window.location.href = 'customer_dashboard_3.html';
-          }
+
+          // Show welcome message briefly then redirect
+          showWelcomeAndRedirect(data.user);
         } catch (err) {
           errorEl.textContent = 'Network error. Please try again.';
           btn.disabled = false;
           btn.textContent = 'Verify Email';
         }
-      } else if (currentVerificationStep === 'phone') {
-        try {
-          // 1. Verify with MSG91 via our backend
-          const jwtToken = localStorage.getItem('bm_token');
-          const backendRes = await fetch(`${API_BASE}/api/auth/verify-phone-otp`, {
-            method: 'POST',
-            headers: { 
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${jwtToken}`
-            },
-            body: JSON.stringify({
-              email: pendingVerification.email,
-              phone: pendingVerification.phone,
-              otp: otp,
-              role: pendingVerification.role
-            })
-          });
-          
-          const backendData = await backendRes.json();
-          if (!backendRes.ok) {
-            errorEl.textContent = backendData.message || 'Phone verification failed.';
-            inputs.forEach(i => i.classList.add('error'));
-            btn.disabled = false;
-            btn.textContent = 'Verify Phone';
-            return;
-          }
-
-          // Success completely! Redirect
-          localStorage.setItem('bm_token', backendData.token);
-          localStorage.setItem('bm_user', JSON.stringify(backendData.user));
-          hideOTPOverlay();
-          if (backendData.user.role === 'manufacturer') {
-            window.location.href = 'manufacturer_portal.html';
-          } else {
-            window.location.href = 'customer_dashboard_3.html';
-          }
-        } catch(err) {
-          errorEl.textContent = 'Invalid SMS code. Please try again.';
-          inputs.forEach(i => i.classList.add('error'));
-          btn.disabled = false;
-          btn.textContent = 'Verify Phone';
-        }
       }
+    }
+
+    function showWelcomeAndRedirect(user) {
+      // Show a brief welcome overlay then go to login
+      const overlay = document.getElementById('otpOverlay');
+      const card = overlay.querySelector('.otp-card');
+      card.innerHTML = `
+        <div style="text-align:center;padding:20px 0;">
+          <div style="width:64px;height:64px;background:rgba(46,125,50,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+            <svg width="32" height="32" fill="none" stroke="#2e7d32" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <h2 style="color:#fff;margin-bottom:8px;">Registration Complete!</h2>
+          <p style="color:rgba(255,255,255,0.6);margin-bottom:4px;">Welcome to Bharat Modules</p>
+          <p style="color:rgba(255,255,255,0.4);font-size:13px;">Redirecting to login…</p>
+        </div>
+      `;
+      overlay.classList.add('active');
+      setTimeout(() => {
+        overlay.classList.remove('active');
+        // Always go to login after registration — user must log in fresh
+        window.location.href = 'login-page.html';
+      }, 2500);
     }
 
     function startResendCooldown(seconds) {
@@ -1881,6 +1842,68 @@
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
       return data;
+    }
+  </script>
+
+  <!-- Hidden admin login — only visible if you know it's here -->
+  <div style="position:fixed;bottom:16px;right:20px;z-index:10;">
+    <a href="#" onclick="showAdminLogin();return false;" style="font-size:11px;color:rgba(0,0,0,0.25);text-decoration:none;letter-spacing:0.08em;font-family:'Outfit',sans-serif;">admin</a>
+  </div>
+
+  <!-- Admin login modal -->
+  <div id="adminModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:600;align-items:center;justify-content:center;">
+    <div style="background:#0a0a0a;border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:36px 32px;width:360px;position:relative;">
+      <button onclick="document.getElementById('adminModal').style.display='none'" style="position:absolute;top:14px;right:14px;background:none;border:none;color:#555;cursor:pointer;font-size:20px;">×</button>
+      <p style="font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#555;margin-bottom:20px;">Admin Access</p>
+      <div style="margin-bottom:14px;">
+        <label style="display:block;font-size:11px;color:#666;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em;">Email</label>
+        <input type="email" id="adminEmail" placeholder="admin@bharatmodules.com" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:11px 14px;font-family:'Outfit',sans-serif;font-size:14px;color:#fff;outline:none;" />
+      </div>
+      <div style="margin-bottom:20px;">
+        <label style="display:block;font-size:11px;color:#666;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em;">Password</label>
+        <input type="password" id="adminPassword" placeholder="••••••••" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:11px 14px;font-family:'Outfit',sans-serif;font-size:14px;color:#fff;outline:none;" onkeydown="if(event.key==='Enter')adminLogin()" />
+      </div>
+      <div id="adminError" style="font-size:12px;color:#ef4444;margin-bottom:12px;display:none;"></div>
+      <button onclick="adminLogin()" style="width:100%;background:#e85c0d;color:#fff;border:none;border-radius:8px;padding:13px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;">Sign In as Admin</button>
+    </div>
+  </div>
+
+  <script>
+    function showAdminLogin() {
+      document.getElementById('adminModal').style.display = 'flex';
+      setTimeout(() => document.getElementById('adminEmail').focus(), 100);
+    }
+
+    async function adminLogin() {
+      const email = document.getElementById('adminEmail').value.trim();
+      const password = document.getElementById('adminPassword').value;
+      const errEl = document.getElementById('adminError');
+      errEl.style.display = 'none';
+
+      if (!email || !password) { errEl.textContent = 'Email and password required.'; errEl.style.display = 'block'; return; }
+
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password, role: 'admin' }),
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          errEl.textContent = data.message || 'Login failed.';
+          errEl.style.display = 'block';
+          return;
+        }
+
+        localStorage.setItem('bm_token', data.token);
+        localStorage.setItem('bm_user', JSON.stringify(data.user));
+        localStorage.setItem('userRole', 'admin');
+        window.location.href = 'admin_portal.html';
+      } catch (err) {
+        errEl.textContent = 'Network error.';
+        errEl.style.display = 'block';
+      }
     }
   </script>
 </body>

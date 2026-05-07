@@ -62,7 +62,7 @@ const validateLogin = (req, res, next) => {
     errors.push('Password is required.');
   }
 
-  if (!role || !['buyer', 'manufacturer'].includes(role)) {
+  if (!role || !['buyer', 'manufacturer', 'admin'].includes(role)) {
     errors.push('Role is required. Please select Buyer or Manufacturer.');
   }
 
