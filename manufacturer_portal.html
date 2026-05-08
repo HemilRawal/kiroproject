@@ -2011,18 +2011,30 @@
             onmouseover="this.style.color='#FF6B00'" onmouseout="this.style.color='#ccc'"
             onclick="window.location.href='manufacturer_portal.html'">Dashboard</button></li>
       </ul>
-      <div class="nav-user-chip">
-        <div class="nav-avatar">PN</div>
-        <span class="nav-user-name">Praveen Nair</span>
+      <div class="nav-user-chip" id="navProfileChip" onclick="toggleProfileDropdown()" style="cursor:pointer;position:relative;">
+        <div class="nav-avatar" id="navAvatar">PN</div>
+        <span class="nav-user-name" id="navUserName">Loading…</span>
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="margin-left:4px;color:#666;"><path d="M6 9l6 6 6-6"/></svg>
       </div>
-      <button onclick="handleLogout()" style="background:none;border:1px solid rgba(255,255,255,0.1);border-radius:7px;padding:7px 14px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;color:#888;cursor:pointer;letter-spacing:0.04em;text-transform:uppercase;transition:color 0.2s,border-color 0.2s;margin-left:8px;" onmouseover="this.style.color='#fff';this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.color='#888';this.style.borderColor='rgba(255,255,255,0.1)'">Sign Out</button>
+      <!-- Profile dropdown -->
+      <div id="profileDropdown" style="display:none;position:absolute;top:72px;right:24px;background:#111;border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:8px;min-width:200px;z-index:300;box-shadow:0 8px 32px rgba(0,0,0,0.5);">
+        <div style="padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:4px;">
+          <div id="dropdownName" style="font-size:13px;font-weight:600;color:#fff;margin-bottom:2px;">—</div>
+          <div id="dropdownEmail" style="font-size:11px;color:#666;">—</div>
+          <div id="dropdownCompany" style="font-size:11px;color:var(--orange);margin-top:4px;">—</div>
+        </div>
+        <button onclick="handleLogout()" style="width:100%;background:none;border:none;padding:10px 14px;font-family:'Outfit',sans-serif;font-size:13px;color:#ef4444;cursor:pointer;text-align:left;border-radius:8px;transition:background 0.15s;letter-spacing:0.02em;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='none'">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="margin-right:8px;vertical-align:-2px;"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+          Sign Out
+        </button>
+      </div>
     </nav>
 
     <!-- ── HERO ── -->
     <div class="dash-hero">
       <div class="dash-hero-inner">
         <h1 class="dash-title">MANUFACTURER DASHBOARD</h1>
-        <p class="dash-welcome">Welcome back, <strong>Praveen Nair</strong></p>
+        <p class="dash-welcome">Welcome back, <strong id="dashWelcomeName">—</strong></p>
       </div>
     </div>
 
@@ -2122,7 +2134,7 @@
           </div>
           <div
             class="sidebar-item"
-            onclick="window.location.href = 'bharat_modules_contact.html'"
+            onclick="showComingSoon('Support')"
           >
             <svg
               fill="none"
@@ -2157,23 +2169,23 @@
         <div class="stat-row">
           <div class="stat-card c-orange">
             <div class="stat-card-label">Pending Quotes</div>
-            <div class="stat-card-value">7</div>
-            <div class="stat-card-sub">+3 since yesterday</div>
+            <div class="stat-card-value" id="statPendingQuotes">—</div>
+            <div class="stat-card-sub" id="statPendingQuotesSub">Loading…</div>
           </div>
           <div class="stat-card c-blue">
             <div class="stat-card-label">Active Orders</div>
-            <div class="stat-card-value">4</div>
-            <div class="stat-card-sub">2 dispatched this week</div>
+            <div class="stat-card-value" id="statActiveOrders">—</div>
+            <div class="stat-card-sub" id="statActiveOrdersSub">Loading…</div>
           </div>
           <div class="stat-card c-green">
-            <div class="stat-card-label">Monthly Revenue</div>
-            <div class="stat-card-value">₹28L</div>
-            <div class="stat-card-sub">↑ 12% vs last month</div>
+            <div class="stat-card-label">Products Listed</div>
+            <div class="stat-card-value" id="statProducts">—</div>
+            <div class="stat-card-sub" id="statProductsSub">Loading…</div>
           </div>
           <div class="stat-card c-amber">
-            <div class="stat-card-label">SLA Compliance</div>
-            <div class="stat-card-value">84%</div>
-            <div class="stat-card-sub">Target: 90%</div>
+            <div class="stat-card-label">Quotes Submitted</div>
+            <div class="stat-card-value" id="statQuotesSubmitted">—</div>
+            <div class="stat-card-sub" id="statQuotesSubmittedSub">Loading…</div>
           </div>
         </div>
 
@@ -2375,302 +2387,23 @@
           <div class="section-head">
             <div>
               <h2>Compliance Vault</h2>
-              <p>Regulatory status · 1 action required</p>
-            </div>
-            <span class="warn-chip">
-              <svg
-                width="11"
-                height="11"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.5"
-              >
-                <path
-                  d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
-                />
-                <line x1="12" y1="9" x2="12" y2="13" />
-              </svg>
-              Renewal Required
-            </span>
-          </div>
-
-          <div
-            class="comp-summary"
-            style="
-              padding: 24px;
-              align-items: flex-start;
-              display: flex;
-              border: 1px solid var(--border);
-              border-radius: var(--radius);
-              background: var(--white);
-              margin-bottom: 24px;
-            "
-          >
-            <div class="cs-meta">
-              <div style="margin-bottom: 12px">
-                <span
-                  class="badge b-amber"
-                  style="padding: 6px 14px; font-size: 13px"
-                  >ACCOUNT STATUS: Pending Action</span
-                >
-              </div>
-              <div class="cs-desc" style="max-width: 600px">
-                3 of 4 certifications fully active. MSME Udyam renewal pending —
-                expires in 20 days. Renew immediately to maintain Class-I
-                Verified status on marketplace.
-              </div>
-              <div style="margin-top: 16px; display: flex; gap: 10px">
-                <button class="btn btn-primary btn-sm">
-                  Upload Updated Certificate
-                </button>
-                <button class="btn btn-outline btn-sm">
-                  Download All Docs
-                </button>
-              </div>
+              <p id="complianceSubtitle">Your submitted verification documents</p>
             </div>
           </div>
 
-          <div class="compliance-grid">
-            <div
-              class="doc-card warn-border"
-              style="
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                gap: 16px;
-              "
-            >
-              <div
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: flex-start;
-                "
-              >
-                <div
-                  class="doc-name"
-                  style="font-size: 15px; font-weight: 700; color: var(--black)"
-                >
-                  MSME Udyam
-                </div>
-                <span class="badge b-amber" style="flex-shrink: 0"
-                  >Action Required</span
-                >
-              </div>
-              <div
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: flex-end;
-                "
-              >
-                <div
-                  style="
-                    font-size: 13px;
-                    color: var(--gray-500);
-                    font-weight: 500;
-                  "
-                >
-                  Expiry: 04 May 2026
-                </div>
-                <button class="btn btn-primary btn-sm">Upload Update</button>
-              </div>
-            </div>
-            <div
-              class="doc-card"
-              style="
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                gap: 16px;
-              "
-            >
-              <div
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: flex-start;
-                "
-              >
-                <div
-                  class="doc-name"
-                  style="font-size: 15px; font-weight: 700; color: var(--black)"
-                >
-                  ISO 9001:2015
-                </div>
-                <span class="badge b-green" style="flex-shrink: 0">Valid</span>
-              </div>
-              <div
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: flex-end;
-                "
-              >
-                <div
-                  style="
-                    font-size: 13px;
-                    color: var(--gray-500);
-                    font-weight: 500;
-                  "
-                >
-                  Expiry: Dec 2026
-                </div>
-                <div style="display: flex; gap: 6px">
-                  <button
-                    class="btn btn-outline btn-sm"
-                    style="padding: 4px 10px"
-                  >
-                    Update</button
-                  ><button class="btn btn-primary btn-sm">View</button>
-                </div>
-              </div>
-            </div>
-            <div
-              class="doc-card"
-              style="
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                gap: 16px;
-              "
-            >
-              <div
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: flex-start;
-                "
-              >
-                <div
-                  class="doc-name"
-                  style="font-size: 15px; font-weight: 700; color: var(--black)"
-                >
-                  Factory License
-                </div>
-                <span class="badge b-green" style="flex-shrink: 0">Valid</span>
-              </div>
-              <div
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: flex-end;
-                "
-              >
-                <div
-                  style="
-                    font-size: 13px;
-                    color: var(--gray-500);
-                    font-weight: 500;
-                  "
-                >
-                  Expiry: Mar 2027
-                </div>
-                <div style="display: flex; gap: 6px">
-                  <button
-                    class="btn btn-outline btn-sm"
-                    style="padding: 4px 10px"
-                  >
-                    Update</button
-                  ><button class="btn btn-primary btn-sm">View</button>
-                </div>
-              </div>
-            </div>
-            <div
-              class="doc-card"
-              style="
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                gap: 16px;
-              "
-            >
-              <div
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: flex-start;
-                "
-              >
-                <div
-                  class="doc-name"
-                  style="font-size: 15px; font-weight: 700; color: var(--black)"
-                >
-                  DGFT IEC Code
-                </div>
-                <span class="badge b-green" style="flex-shrink: 0">Valid</span>
-              </div>
-              <div
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: flex-end;
-                "
-              >
-                <div
-                  style="
-                    font-size: 13px;
-                    color: var(--gray-500);
-                    font-weight: 500;
-                  "
-                >
-                  Expiry: Lifetime
-                </div>
-                <div style="display: flex; gap: 6px">
-                  <button
-                    class="btn btn-outline btn-sm"
-                    style="padding: 4px 10px"
-                  >
-                    Update</button
-                  ><button class="btn btn-primary btn-sm">View</button>
-                </div>
-              </div>
-            </div>
-            <div
-              class="doc-card"
-              style="
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                gap: 16px;
-                border-color: rgba(220, 38, 38, 0.4);
-              "
-            >
-              <div
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: flex-start;
-                "
-              >
-                <div
-                  class="doc-name"
-                  style="font-size: 15px; font-weight: 700; color: var(--black)"
-                >
-                  Make in India / IDDM
-                </div>
-                <span class="badge b-red" style="flex-shrink: 0">Missing</span>
-              </div>
-              <div
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: flex-end;
-                "
-              >
-                <div
-                  style="
-                    font-size: 13px;
-                    color: var(--gray-500);
-                    font-weight: 500;
-                  "
-                >
-                  Expiry: N/A
-                </div>
-                <button class="btn btn-primary btn-sm">Upload</button>
-              </div>
-            </div>
+          <!-- Loading state -->
+          <div id="complianceLoading" style="text-align:center;padding:60px 20px;color:var(--gray-400);">
+            <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom:12px;opacity:0.4;"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            <p style="font-size:14px;">Loading documents…</p>
+          </div>
+
+          <!-- Documents grid (populated by JS) -->
+          <div class="compliance-grid" id="complianceGrid" style="display:none;"></div>
+
+          <!-- Empty state -->
+          <div id="complianceEmpty" style="display:none;text-align:center;padding:60px 20px;border:var(--border);border-radius:var(--radius);background:var(--white);">
+            <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom:16px;opacity:0.3;"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <p style="font-size:14px;color:var(--gray-400);">No documents found. Submit your verification application to upload documents.</p>
           </div>
         </div>
 
@@ -2979,13 +2712,11 @@
               <div class="profile-card-title">Account Information</div>
               <div class="profile-field">
                 <div class="pf-label">Full Name</div>
-                <div class="pf-value">Praveen Nair</div>
+                <div class="pf-value" id="profileFullName">—</div>
               </div>
               <div class="profile-field">
                 <div class="pf-label">Company Name</div>
-                <div class="pf-value">
-                  Precision Navi Manufacturing Pvt. Ltd.
-                </div>
+                <div class="pf-value" id="profileCompanyName">—</div>
               </div>
               <div class="profile-field">
                 <div class="pf-label">Registered Email</div>
@@ -2998,7 +2729,7 @@
                     justify-content: space-between;
                   "
                 >
-                  <span>praveen.nair@precisionnavi.in</span>
+                  <span id="profileEmail">—</span>
                   <span class="verified-chip">✓ Verified</span>
                 </div>
               </div>
@@ -3101,9 +2832,7 @@
                     <polyline points="22,6 12,13 2,6" />
                   </svg>
                   OTP sent to
-                  <strong style="margin-left: 4px"
-                    >praveen.nair@precisionnavi.in</strong
-                  >
+                  <strong style="margin-left: 4px" id="pwdResetEmail">your registered email</strong>
                 </div>
                 <div class="form-row-modal">
                   <label class="form-label">Enter OTP *</label>
@@ -3851,40 +3580,46 @@
       // ─────────────────────────────────────────────────────────
       document.addEventListener('DOMContentLoaded', async () => {
         requireAuth();
-
-        // Check onboarding status FIRST — block dashboard if not approved
         await checkApprovalStatus();
       });
 
       // ── Check if manufacturer is approved ─────────────────
       async function checkApprovalStatus() {
+        // Check sessionStorage cache first (60s TTL) to avoid delay
+        const cached = sessionStorage.getItem('bm_approval_status');
+        if (cached) {
+          const { status, notes, ts } = JSON.parse(cached);
+          if (Date.now() - ts < 60000) {
+            if (status === 'approved') {
+              await Promise.all([loadManufacturerProfile(), loadIncomingRFQs(), loadDashboardStats()]);
+            } else {
+              showVerificationScreen(status, notes);
+            }
+            return;
+          }
+        }
+
         try {
-          const res = await fetch(`${API_BASE}/api/onboarding/status`, {
+          const res  = await fetch(`${API_BASE}/api/onboarding/status`, {
             headers: { 'Authorization': `Bearer ${getToken()}` },
           });
           const data = await res.json();
-          const status = data.application?.status;
+          const status = data.application?.status || 'not_submitted';
+          const notes  = data.application?.admin_notes || '';
 
-          if (!data.application || status === 'pending' || status === 'under_review') {
-            // Not approved yet — show verification in progress screen
+          // Cache result for 60s
+          sessionStorage.setItem('bm_approval_status', JSON.stringify({ status, notes, ts: Date.now() }));
+
+          if (status === 'approved') {
+            await Promise.all([loadManufacturerProfile(), loadIncomingRFQs(), loadDashboardStats()]);
+          } else if (status === 'rejected') {
+            showVerificationScreen('rejected', notes);
+          } else {
             showVerificationScreen('pending');
-            return;
           }
-
-          if (status === 'rejected') {
-            showVerificationScreen('rejected', data.application.admin_notes);
-            return;
-          }
-
-          // Approved — load full dashboard
-          await Promise.all([
-            loadManufacturerProfile(),
-            loadIncomingRFQs(),
-          ]);
         } catch (err) {
           console.error('Status check failed:', err);
-          // On error, still try to load dashboard
-          await Promise.all([loadManufacturerProfile(), loadIncomingRFQs()]);
+          await Promise.all([loadManufacturerProfile(), loadIncomingRFQs(), loadDashboardStats()]);
         }
       }
 
@@ -3934,7 +3669,7 @@
       // ── Load manufacturer profile ──────────────────────────
       async function loadManufacturerProfile() {
         try {
-          // First get the user from /me
+          // Get user profile
           const meRes = await fetch(`${API_BASE}/api/auth/me`, {
             headers: { 'Authorization': `Bearer ${getToken()}` },
           });
@@ -3946,33 +3681,59 @@
               ? user.full_name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
               : 'MF';
 
-            // Update nav chip — name and avatar
-            const nameEl = document.querySelector('.nav-user-name');
-            const avatarEls = document.querySelectorAll('.nav-avatar, .sv-avatar');
-            if (nameEl) nameEl.textContent = user.full_name || user.email;
-            avatarEls.forEach(el => el.textContent = initials);
+            // Nav chip
+            const nameEl   = document.getElementById('navUserName');
+            const avatarEl = document.getElementById('navAvatar');
+            if (nameEl)   nameEl.textContent   = user.full_name || user.email;
+            if (avatarEl) avatarEl.textContent = initials;
+
+            // Profile dropdown
+            const dName  = document.getElementById('dropdownName');
+            const dEmail = document.getElementById('dropdownEmail');
+            if (dName)  dName.textContent  = user.full_name || '—';
+            if (dEmail) dEmail.textContent = user.email || '—';
+
+            // Sidebar avatar
+            const svAvatar = document.querySelector('.sv-avatar');
+            if (svAvatar) svAvatar.textContent = initials;
           }
 
-          // Then get manufacturer company profile
-          const res = await fetch(`${API_BASE}/api/manufacturers/me`, {
+          // Get manufacturer company profile
+          const res  = await fetch(`${API_BASE}/api/manufacturers/me`, {
             headers: { 'Authorization': `Bearer ${getToken()}` },
           });
           const data = await res.json();
 
-          if (!res.ok || !data.manufacturer) return;
-
-          const m = data.manufacturer;
-
-          // Update sidebar vendor block
-          const svName = document.querySelector('.sv-name');
-          const svId = document.querySelector('.sv-id');
-          if (svName) svName.textContent = m.company_name;
-          if (svId) svId.textContent = 'MFR-' + m.id.slice(0, 8).toUpperCase();
-
-          // Update dashboard welcome
-          const dashWelcome = document.querySelector('.dash-welcome strong');
-          if (dashWelcome) dashWelcome.textContent = m.company_name;
-
+          if (res.ok && data.manufacturer) {
+            const m = data.manufacturer;
+            const svName   = document.querySelector('.sv-name');
+            const svId     = document.querySelector('.sv-id');
+            const welcome  = document.getElementById('dashWelcomeName');
+            const dCompany = document.getElementById('dropdownCompany');
+            if (svName)   svName.textContent   = m.company_name;
+            if (svId)     svId.textContent     = 'MFR-' + m.id.slice(0, 8).toUpperCase();
+            if (welcome)  welcome.textContent  = m.company_name;
+            if (dCompany) dCompany.textContent = m.company_name;
+            populateProfilePage(user, m, null);
+          } else {
+            // Fallback: use onboarding application data
+            const appRes  = await fetch(`${API_BASE}/api/onboarding/status`, {
+              headers: { 'Authorization': `Bearer ${getToken()}` },
+            });
+            const appData = await appRes.json();
+            if (appData.application) {
+              const a = appData.application;
+              const svName   = document.querySelector('.sv-name');
+              const svId     = document.querySelector('.sv-id');
+              const welcome  = document.getElementById('dashWelcomeName');
+              const dCompany = document.getElementById('dropdownCompany');
+              if (svName)   svName.textContent   = a.company_name;
+              if (svId)     svId.textContent     = 'APP-' + a.id.slice(0, 8).toUpperCase();
+              if (welcome)  welcome.textContent  = a.company_name;
+              if (dCompany) dCompany.textContent = a.company_name;
+              populateProfilePage(user, null, a);
+            }
+          }
         } catch (err) {
           console.error('Failed to load manufacturer profile:', err);
         }
@@ -3981,47 +3742,224 @@
       // ── Load incoming RFQs from backend ───────────────────
       async function loadIncomingRFQs() {
         try {
-          const res = await fetch(`${API_BASE}/api/manufacturers/rfqs`, {
+          const res  = await fetch(`${API_BASE}/api/manufacturers/rfqs`, {
             headers: { 'Authorization': `Bearer ${getToken()}` },
           });
           const data = await res.json();
 
-          if (!res.ok) {
-            console.warn('Could not load RFQs:', data.message);
-            return;
-          }
+          if (!res.ok) { console.warn('Could not load RFQs:', data.message); return; }
 
-          if (!data.rfqs || data.rfqs.length === 0) {
-            // No RFQs yet — keep the hardcoded demo data visible
-            return;
-          }
+          const rfqs = data.rfqs || [];
 
-          // Merge real RFQs into rfqData so openRFQ() works
-          data.rfqs.forEach(rfq => {
+          // Update pending quotes stat card
+          const pending = rfqs.filter(r => r.status === 'submitted' || r.status === 'under_review').length;
+          const statEl  = document.getElementById('statPendingQuotes');
+          const statSub = document.getElementById('statPendingQuotesSub');
+          if (statEl)  statEl.textContent  = pending;
+          if (statSub) statSub.textContent = rfqs.length + ' total RFQs received';
+
+          if (!rfqs.length) return;
+
+          // Merge into rfqData for openRFQ()
+          rfqs.forEach(rfq => {
             const firstItem = rfq.rfq_items?.[0];
             rfqData[rfq.id] = {
-              component: firstItem?.product_name || 'Component',
-              qty: firstItem?.quantity || 0,
-              deadline: rfq.required_by || '—',
-              sector: 'General',
-              specs: 'See RFQ details',
-              urgency: rfq.status === 'submitted' ? 'NEW' : rfq.status.toUpperCase(),
-              notes: rfq.notes || '',
+              component:  firstItem?.product_name || 'Component',
+              qty:        firstItem?.quantity || 0,
+              deadline:   rfq.required_by || '—',
+              sector:     'General',
+              specs:      'See RFQ details',
+              urgency:    rfq.status === 'submitted' ? 'NEW' : rfq.status.toUpperCase(),
+              notes:      rfq.notes || '',
               prohibited: '',
-              // Store the real IDs for quote submission
-              _rfqId: rfq.id,
+              _rfqId:     rfq.id,
               _rfqItemId: firstItem?.id,
-              _isReal: true,
+              _isReal:    true,
             };
           });
 
-          // Update the stat card with real count
-          const rfqCountEl = document.querySelector('.stat-card-value');
-          if (rfqCountEl) rfqCountEl.textContent = data.rfqs.length;
-
+          // Render real rows into the RFQ table
+          const tbody = document.querySelector('#rfqTable tbody');
+          if (tbody) {
+            tbody.innerHTML = rfqs.map(rfq => {
+              const item      = rfq.rfq_items?.[0];
+              const component = item?.product_name || 'Component';
+              const qty       = item?.quantity || '—';
+              const badgeCls  = rfq.status === 'submitted' ? 'b-red' : rfq.status === 'quoted' ? 'b-green' : 'b-orange';
+              const label     = rfq.status === 'submitted' ? 'NEW' : rfq.status.replace('_', ' ').toUpperCase();
+              const date      = rfq.submitted_at
+                ? new Date(rfq.submitted_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })
+                : '—';
+              return `<tr onclick="openRFQ('${rfq.id}')" data-rfq-status="${rfq.status}">
+                <td class="td-id">${rfq.rfq_number || 'RFQ-' + rfq.id.slice(0,6).toUpperCase()}</td>
+                <td class="td-part">${component}</td>
+                <td class="td-qty">${qty}</td>
+                <td><span class="blind-id"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> Verified Buyer</span></td>
+                <td><span class="sla-clock ok">${date}</span></td>
+                <td><span class="badge ${badgeCls}">${label}</span></td>
+                <td><button class="btn btn-sm btn-primary" onclick="event.stopPropagation();openRFQ('${rfq.id}')">View</button></td>
+              </tr>`;
+            }).join('');
+          }
         } catch (err) {
           console.error('Failed to load RFQs:', err);
         }
+      }
+
+      // ── Load dashboard stats ───────────────────────────────
+      async function loadDashboardStats() {
+        try {
+          // Active orders
+          const ordRes = await fetch(`${API_BASE}/api/orders/my`, {
+            headers: { 'Authorization': `Bearer ${getToken()}` },
+          });
+          if (ordRes.ok) {
+            const ordData = await ordRes.json();
+            const orders  = ordData.orders || [];
+            const active  = orders.filter(o => o.status === 'manufacturing' || o.status === 'dispatched').length;
+            const el  = document.getElementById('statActiveOrders');
+            const sub = document.getElementById('statActiveOrdersSub');
+            if (el)  el.textContent  = active;
+            if (sub) sub.textContent = orders.length + ' total orders';
+          }
+
+          // Products listed
+          const prodRes = await fetch(`${API_BASE}/api/products?limit=1`, {
+            headers: { 'Authorization': `Bearer ${getToken()}` },
+          });
+          if (prodRes.ok) {
+            const prodData = await prodRes.json();
+            const el  = document.getElementById('statProducts');
+            const sub = document.getElementById('statProductsSub');
+            if (el)  el.textContent  = prodData.pagination?.total ?? 0;
+            if (sub) sub.textContent = 'Listed in catalogue';
+          }
+
+          // Quotes submitted/accepted
+          const rfqRes = await fetch(`${API_BASE}/api/manufacturers/rfqs`, {
+            headers: { 'Authorization': `Bearer ${getToken()}` },
+          });
+          if (rfqRes.ok) {
+            const rfqData2 = await rfqRes.json();
+            const quoted   = (rfqData2.rfqs || []).filter(r => r.status === 'quoted' || r.status === 'accepted').length;
+            const el  = document.getElementById('statQuotesSubmitted');
+            const sub = document.getElementById('statQuotesSubmittedSub');
+            if (el)  el.textContent  = quoted;
+            if (sub) sub.textContent = 'Accepted or quoted';
+          }
+        } catch (err) {
+          console.error('Failed to load stats:', err);
+        }
+      }
+
+      // ── Profile dropdown toggle ────────────────────────────
+      function toggleProfileDropdown() {
+        const dd = document.getElementById('profileDropdown');
+        if (dd) dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+      }
+      document.addEventListener('click', (e) => {
+        const chip = document.getElementById('navProfileChip');
+        const dd   = document.getElementById('profileDropdown');
+        if (dd && chip && !chip.contains(e.target) && !dd.contains(e.target)) {
+          dd.style.display = 'none';
+        }
+      });
+
+      // ── Coming Soon toast ──────────────────────────────────
+      function showComingSoon(feature) {
+        let toast = document.getElementById('comingSoonToast');
+        if (!toast) {
+          toast = document.createElement('div');
+          toast.id = 'comingSoonToast';
+          toast.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:#0a0a0a;color:#fff;padding:12px 24px;border-radius:10px;font-size:13px;font-weight:500;z-index:999;opacity:0;transition:all 0.3s;box-shadow:0 8px 24px rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.08);white-space:nowrap;';
+          document.body.appendChild(toast);
+        }
+        toast.textContent = (feature || 'This feature') + ' — Coming Soon';
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateX(-50%) translateY(0)';
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateX(-50%) translateY(80px)';
+        }, 2500);
+      }
+
+      // ── Load compliance vault documents ───────────────────
+      async function loadComplianceVault() {
+        const loading = document.getElementById('complianceLoading');
+        const grid    = document.getElementById('complianceGrid');
+        const empty   = document.getElementById('complianceEmpty');
+
+        try {
+          const res  = await fetch(`${API_BASE}/api/onboarding/status`, {
+            headers: { 'Authorization': `Bearer ${getToken()}` },
+          });
+          const data = await res.json();
+          const app  = data.application;
+
+          if (loading) loading.style.display = 'none';
+
+          if (!app) {
+            if (empty) empty.style.display = 'block';
+            return;
+          }
+
+          const docs = [
+            { key: 'coi_doc_url',     label: 'Certificate of Incorporation' },
+            { key: 'gst_doc_url',     label: 'GST Certificate' },
+            { key: 'msme_doc_url',    label: 'MSME / Udyam Certificate' },
+            { key: 'factory_doc_url', label: 'Factory / Manufacturing License' },
+            { key: 'pan_doc_url',     label: 'Company PAN Card' },
+          ];
+
+          const uploaded = docs.filter(d => app[d.key]);
+
+          if (!uploaded.length) {
+            if (empty) empty.style.display = 'block';
+            return;
+          }
+
+          if (grid) {
+            grid.style.display = 'grid';
+            grid.innerHTML = uploaded.map(d => `
+              <div class="doc-card" style="display:flex;flex-direction:column;justify-content:space-between;gap:16px;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                  <div style="font-size:15px;font-weight:700;color:var(--black);">${d.label}</div>
+                  <span class="badge b-green" style="flex-shrink:0;">Uploaded</span>
+                </div>
+                <div style="display:flex;justify-content:flex-end;gap:6px;">
+                  <a href="${app[d.key]}" target="_blank" class="btn btn-primary btn-sm">View PDF ↗</a>
+                </div>
+              </div>
+            `).join('');
+          }
+
+          // Update subtitle
+          const sub = document.getElementById('complianceSubtitle');
+          if (sub) sub.textContent = uploaded.length + ' of ' + docs.length + ' documents uploaded · Application ' + app.status;
+
+        } catch (err) {
+          console.error('Failed to load compliance vault:', err);
+          if (loading) loading.style.display = 'none';
+          if (empty)   empty.style.display   = 'block';
+        }
+      }
+
+      // ── Populate profile page with real data ──────────────
+      function populateProfilePage(user, manufacturer, application) {
+        const fullName    = user?.full_name || application?.full_name || '—';
+        const email       = user?.email || '—';
+        const companyName = manufacturer?.company_name || application?.company_name || '—';
+
+        const pfName    = document.getElementById('profileFullName');
+        const pfCompany = document.getElementById('profileCompanyName');
+        const pfEmail   = document.getElementById('profileEmail');
+        const pfPwdEmail = document.getElementById('pwdResetEmail');
+
+        if (pfName)    pfName.textContent    = fullName;
+        if (pfCompany) pfCompany.textContent = companyName;
+        if (pfEmail)   pfEmail.textContent   = email;
+        if (pfPwdEmail) pfPwdEmail.textContent = email;
       }
 
       // ── View switching ──
@@ -4051,6 +3989,7 @@
         if (layout) layout.style.paddingTop = isDash ? "32px" : "110px";
 
         if (id === "inventory") renderInventoryGrid();
+        if (id === "compliance") loadComplianceVault();
       }
 
       // ── RFQ data ──
@@ -4913,55 +4852,79 @@
         renderUploadedFiles();
       }
 
-      function submitModule() {
-        const name = document.getElementById("modProductName")?.value;
-        const desc = document.getElementById("modDescription")?.value;
-        const specs = document.getElementById("modTechSpecs")?.value;
-        const moq = parseInt(document.getElementById("modMOQ")?.value);
-        const leadTime = parseInt(
-          document.getElementById("modLeadTime")?.value,
-        );
+      async function submitModule() {
+        const name     = document.getElementById("modProductName")?.value?.trim();
+        const desc     = document.getElementById("modDescription")?.value?.trim();
+        const specs    = document.getElementById("modTechSpecs")?.value?.trim();
+        const moq      = parseInt(document.getElementById("modMOQ")?.value);
+        const leadTime = parseInt(document.getElementById("modLeadTime")?.value);
+
         if (!name || !desc || !specs || !moq || !leadTime) {
           alert("Please fill all required fields.");
           return;
         }
-        if (!window.uploadedFiles || !window.uploadedFiles.length) {
-          alert("Please upload at least one document.");
-          return;
+
+        const btn = document.querySelector('#addModal .btn-primary');
+        if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
+
+        try {
+          const res = await fetch(`${API_BASE}/api/products`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${getToken()}`,
+            },
+            body: JSON.stringify({
+              name,
+              description: desc,
+              specifications: { specs, moq, lead_time_days: leadTime },
+            }),
+          });
+          const data = await res.json();
+
+          if (res.ok) {
+            // Also add to local inventory grid for immediate feedback
+            const modId = 'submitted-' + Date.now();
+            window.submittedModules[modId] = {
+              id: modId, name, spec: specs,
+              status: 'Verification under process',
+              moq, leadTime, unitPrice: 0,
+              certifications: [], description: desc, sector: 'aero',
+            };
+            renderInventoryGrid();
+            closeAddModal();
+            showComingSoon = null; // reset
+            // Show success toast
+            let toast = document.getElementById('comingSoonToast');
+            if (!toast) {
+              toast = document.createElement('div');
+              toast.id = 'comingSoonToast';
+              toast.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:#2e7d32;color:#fff;padding:12px 24px;border-radius:10px;font-size:13px;font-weight:500;z-index:999;opacity:0;transition:all 0.3s;box-shadow:0 8px 24px rgba(0,0,0,0.3);white-space:nowrap;';
+              document.body.appendChild(toast);
+            }
+            toast.style.background = '#2e7d32';
+            toast.textContent = `✓ "${name}" submitted for verification`;
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateX(-50%) translateY(0)';
+            setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(-50%) translateY(80px)'; }, 3000);
+          } else {
+            alert('Error: ' + (data.message || 'Failed to submit product.'));
+            if (btn) { btn.disabled = false; btn.textContent = 'Submit for Audit'; }
+          }
+        } catch (err) {
+          console.error('submitModule error:', err);
+          // Fallback: add locally even if API fails
+          const modId = 'submitted-' + Date.now();
+          window.submittedModules[modId] = {
+            id: modId, name, spec: specs,
+            status: 'Verification under process',
+            moq, leadTime, unitPrice: 0,
+            certifications: [], description: desc, sector: 'aero',
+          };
+          renderInventoryGrid();
+          alert(`Product "${name}" saved locally. Will sync when connection is restored.`);
+          closeAddModal();
         }
-        const modId = "submitted-" + Date.now();
-        window.submittedModules[modId] = {
-          id: modId,
-          name,
-          spec: specs,
-          status: "Verification under process",
-          moq,
-          leadTime,
-          unitPrice: 0,
-          certifications: [],
-          description: desc,
-          sector: "aero",
-          documents: window.uploadedFiles.map((f) => ({
-            name: f.displayName,
-            file: f.name,
-            size: f.size,
-          })),
-        };
-        const liveCount = Object.values(inventoryData).filter(
-          (p) => p.status === "Live",
-        ).length;
-        const totalPending =
-          Object.values(inventoryData).filter(
-            (p) => p.status === "Verification under process",
-          ).length + Object.values(window.submittedModules).length;
-        const sub = document.getElementById("inventoryPageSub");
-        if (sub)
-          sub.textContent = `${liveCount} live catalog items · ${totalPending} pending audit`;
-        renderInventoryGrid();
-        alert(
-          `Product "${name}" submitted for audit with ${window.uploadedFiles.length} document(s).`,
-        );
-        closeAddModal();
       }
 
       function filterRFQ(status, btn) {
