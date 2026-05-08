@@ -1331,8 +1331,11 @@
   <!-- OTP VERIFICATION OVERLAY -->
   <div id="otpOverlay" class="otp-overlay">
     <div class="otp-card" style="position: relative;">
-      <button onclick="hideOTPOverlay()" aria-label="Close" style="position: absolute; top: 16px; right: 16px; background: none; border: none; color: #888; cursor: pointer; padding: 4px; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#888'">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <button onclick="hideOTPOverlay()" aria-label="Close"
+        style="position: absolute; top: 16px; right: 16px; background: none; border: none; color: #888; cursor: pointer; padding: 4px; transition: color 0.2s;"
+        onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#888'">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
@@ -1344,7 +1347,8 @@
         </svg>
       </div>
       <h2 id="otpTitle">Verify Your Email</h2>
-      <p class="otp-subtitle">We've sent a 6-digit code to your <span id="otpSubtitleType">email</span><br><strong id="otpDisplayValue">your@email.com</strong></p>
+      <p class="otp-subtitle">We've sent a 6-digit code to your <span id="otpSubtitleType">email</span><br><strong
+          id="otpDisplayValue">your@email.com</strong></p>
       <div class="otp-inputs" id="otpInputs">
         <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="one-time-code">
         <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
@@ -1496,9 +1500,10 @@
             const seenKey = 'has_seen_approval_' + data.user.email;
             if (!localStorage.getItem(seenKey)) {
               localStorage.setItem(seenKey, 'true');
-              alert('Your application has been approved');
+              window.location.href = 'onboarding2.html#status';
+            } else {
+              window.location.href = 'manufacturer_portal.html';
             }
-            window.location.href = 'manufacturer_portal.html';
           } else {
             window.location.href = 'oem_register_landingpage.html';
           }
@@ -1545,7 +1550,7 @@
       const pwHasLetter = /[a-zA-Z]/.test(rPwVal);
       const pwHasNumber = /\d/.test(rPwVal);
       rPwField.classList.remove("error");
-      
+
       if (!rPwVal || rPwVal.length < 8) {
         rPwField.classList.add("error");
         rPwField.querySelector('.error-message').textContent = "Password must be at least 8 characters";
@@ -1559,9 +1564,9 @@
       const rConfField = document.getElementById("regFieldConfirm");
       const rConfVal = document.getElementById("regConfirmPassword").value;
       rConfField.classList.remove("error");
-      if (rConfVal !== rPwVal) { 
-        rConfField.classList.add("error"); 
-        valid = false; 
+      if (rConfVal !== rPwVal) {
+        rConfField.classList.add("error");
+        valid = false;
       }
 
       if (!valid) {
@@ -1572,7 +1577,7 @@
       // Determine role from the toggle UI
       const roleToggle = document.getElementById("registerRoleToggle");
       const selectedRole = roleToggle ? roleToggle.getAttribute('data-role') : 'buyer';
-      
+
       console.log("Attempting registration for:", rEmailVal, "Role:", selectedRole);
 
       const btn = event.target.querySelector('button[type="submit"]');
@@ -1638,8 +1643,8 @@
     document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
       anchor.addEventListener("click", function (e) {
         const href = this.getAttribute("href");
-        if (href === "#") return; 
-        
+        if (href === "#") return;
+
         try {
           const target = document.querySelector(href);
           if (target) {
@@ -1856,24 +1861,37 @@
 
   <!-- Hidden admin login — only visible if you know it's here -->
   <div style="position:fixed;bottom:16px;right:20px;z-index:10;">
-    <a href="#" onclick="showAdminLogin();return false;" style="font-size:11px;color:rgba(0,0,0,0.25);text-decoration:none;letter-spacing:0.08em;font-family:'Outfit',sans-serif;">admin</a>
+    <a href="#" onclick="showAdminLogin();return false;"
+      style="font-size:11px;color:rgba(0,0,0,0.25);text-decoration:none;letter-spacing:0.08em;font-family:'Outfit',sans-serif;">admin</a>
   </div>
 
   <!-- Admin login modal -->
-  <div id="adminModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:600;align-items:center;justify-content:center;">
-    <div style="background:#0a0a0a;border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:36px 32px;width:360px;position:relative;">
-      <button onclick="document.getElementById('adminModal').style.display='none'" style="position:absolute;top:14px;right:14px;background:none;border:none;color:#555;cursor:pointer;font-size:20px;">×</button>
-      <p style="font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#555;margin-bottom:20px;">Admin Access</p>
+  <div id="adminModal"
+    style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:600;align-items:center;justify-content:center;">
+    <div
+      style="background:#0a0a0a;border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:36px 32px;width:360px;position:relative;">
+      <button onclick="document.getElementById('adminModal').style.display='none'"
+        style="position:absolute;top:14px;right:14px;background:none;border:none;color:#555;cursor:pointer;font-size:20px;">×</button>
+      <p
+        style="font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#555;margin-bottom:20px;">
+        Admin Access</p>
       <div style="margin-bottom:14px;">
-        <label style="display:block;font-size:11px;color:#666;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em;">Email</label>
-        <input type="email" id="adminEmail" placeholder="admin@bharatmodules.com" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:11px 14px;font-family:'Outfit',sans-serif;font-size:14px;color:#fff;outline:none;" />
+        <label
+          style="display:block;font-size:11px;color:#666;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em;">Email</label>
+        <input type="email" id="adminEmail" placeholder="admin@bharatmodules.com"
+          style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:11px 14px;font-family:'Outfit',sans-serif;font-size:14px;color:#fff;outline:none;" />
       </div>
       <div style="margin-bottom:20px;">
-        <label style="display:block;font-size:11px;color:#666;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em;">Password</label>
-        <input type="password" id="adminPassword" placeholder="••••••••" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:11px 14px;font-family:'Outfit',sans-serif;font-size:14px;color:#fff;outline:none;" onkeydown="if(event.key==='Enter')adminLogin()" />
+        <label
+          style="display:block;font-size:11px;color:#666;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em;">Password</label>
+        <input type="password" id="adminPassword" placeholder="••••••••"
+          style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:11px 14px;font-family:'Outfit',sans-serif;font-size:14px;color:#fff;outline:none;"
+          onkeydown="if(event.key==='Enter')adminLogin()" />
       </div>
       <div id="adminError" style="font-size:12px;color:#ef4444;margin-bottom:12px;display:none;"></div>
-      <button onclick="adminLogin()" style="width:100%;background:#e85c0d;color:#fff;border:none;border-radius:8px;padding:13px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;">Sign In as Admin</button>
+      <button onclick="adminLogin()"
+        style="width:100%;background:#e85c0d;color:#fff;border:none;border-radius:8px;padding:13px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;">Sign
+        In as Admin</button>
     </div>
   </div>
 
