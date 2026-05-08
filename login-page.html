@@ -1489,10 +1489,19 @@
         localStorage.setItem('bm_user', JSON.stringify(data.user));
         localStorage.setItem('userRole', data.user.role);
 
-        // Manufacturer → OEM landing page (they click Start Verification → onboarding)
+        // Manufacturer → manufacturer portal if approved, otherwise OEM landing page (onboarding)
         // Buyer → customer dashboard
         if (data.user.role === 'manufacturer') {
-          window.location.href = 'oem_register_landingpage.html';
+          if (data.user.application_status === 'approved') {
+            const seenKey = 'has_seen_approval_' + data.user.email;
+            if (!localStorage.getItem(seenKey)) {
+              localStorage.setItem(seenKey, 'true');
+              alert('Your application has been approved');
+            }
+            window.location.href = 'manufacturer_portal.html';
+          } else {
+            window.location.href = 'oem_register_landingpage.html';
+          }
         } else {
           window.location.href = 'customer_dashboard_3.html';
         }
