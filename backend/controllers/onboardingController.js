@@ -329,10 +329,48 @@ const reviewApplication = async (req, res, next) => {
   }
 };
 
+// ── PATCH /api/manufacturers/compliance-docs ─────────────────
+// Manufacturer updates their compliance document URLs
+const updateComplianceDocs = async (req, res, next) => {
+  try {
+    const { gst_doc_url, msme_doc_url, pan_doc_url, coi_doc_url, factory_doc_url } = req.body;
+
+    const { data: existing, error: fetchErr } = await supabase
+      .from('onboarding_applications')
+      .select('id, status')
+      .eq('user_id', req.user.id)
+      .single();
+
+    if (fetchErr || !existing) {
+      return res.status(404).json({ success: false, message: 'No application found.' });
+    }
+
+    const updates = {};
+    if (gst_doc_url     !== undefined) updates.gst_doc_url     = gst_doc_url;
+    if (msme_doc_url    !== undefined) updates.msme_doc_url    = msme_doc_url;
+    if (pan_doc_url     !== undefined) updates.pan_doc_url     = pan_doc_url;
+    if (coi_doc_url     !== undefined) updates.coi_doc_url     = coi_doc_url;
+    if (factory_doc_url !== undefined) updates.factory_doc_url = factory_doc_url;
+    updates.updated_at = new Date().toISOString();
+
+    const { error: updateErr } = await supabase
+      .from('onboarding_applications')
+      .update(updates)
+      .eq('id', existing.id);
+
+    if (updateErr) throw updateErr;
+
+    res.json({ success: true, message: 'Compliance documents updated successfully.' });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   submitApplication,
   getMyStatus,
   listApplications,
   getApplication,
   reviewApplication,
+  updateComplianceDocs,
 };

@@ -169,4 +169,31 @@ const submitQuote = async (req, res, next) => {
   }
 };
 
-module.exports = { onboard, getMyProfile, getIncomingRFQs, submitQuote };
+// ── GET /api/manufacturers/products ─────────────────────────
+// Manufacturer sees their own product inventory
+const getMyProducts = async (req, res, next) => {
+  try {
+    const { data: manufacturer } = await supabase
+      .from('manufacturers')
+      .select('id')
+      .eq('user_id', req.user.id)
+      .single();
+
+    if (!manufacturer) {
+      return res.status(403).json({ success: false, message: 'Manufacturer profile not found.' });
+    }
+
+    const { data: products, error } = await supabase
+      .from('products')
+      .select('id, name, sku, description, specifications, is_active, is_verified, created_at')
+      .eq('manufacturer_id', manufacturer.id)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    res.json({ success: true, products: products || [] });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { onboard, getMyProfile, getIncomingRFQs, submitQuote, getMyProducts };

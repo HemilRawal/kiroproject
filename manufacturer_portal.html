@@ -1409,6 +1409,7 @@
       .modal-body {
         padding: 24px 28px;
         overflow-y: auto;
+        max-height: calc(90vh - 140px);
         flex: 1;
       }
       .modal-ftr {
@@ -2134,7 +2135,7 @@
           </div>
           <div
             class="sidebar-item"
-            onclick="showComingSoon('Support')"
+            onclick="window.location.href='contact_us.html'"
           >
             <svg
               fill="none"
@@ -3890,6 +3891,10 @@
         const grid    = document.getElementById('complianceGrid');
         const empty   = document.getElementById('complianceEmpty');
 
+        if (loading) loading.style.display = 'block';
+        if (grid)    grid.style.display    = 'none';
+        if (empty)   empty.style.display   = 'none';
+
         try {
           const res  = await fetch(`${API_BASE}/api/onboarding/status`, {
             headers: { 'Authorization': `Bearer ${getToken()}` },
@@ -3904,45 +3909,145 @@
             return;
           }
 
-          const docs = [
-            { key: 'coi_doc_url',     label: 'Certificate of Incorporation' },
-            { key: 'gst_doc_url',     label: 'GST Certificate' },
-            { key: 'msme_doc_url',    label: 'MSME / Udyam Certificate' },
-            { key: 'factory_doc_url', label: 'Factory / Manufacturing License' },
-            { key: 'pan_doc_url',     label: 'Company PAN Card' },
+          const docDefs = [
+            { key: 'coi_doc_url',     label: 'Certificate of Incorporation',    required: true  },
+            { key: 'gst_doc_url',     label: 'GST Certificate',                 required: true  },
+            { key: 'msme_doc_url',    label: 'MSME / Udyam Certificate',         required: false },
+            { key: 'factory_doc_url', label: 'Factory / Manufacturing License',  required: false },
+            { key: 'pan_doc_url',     label: 'Company PAN Card',                 required: true  },
           ];
 
-          const uploaded = docs.filter(d => app[d.key]);
-
-          if (!uploaded.length) {
-            if (empty) empty.style.display = 'block';
-            return;
-          }
+          const uploaded = docDefs.filter(d => app[d.key]).length;
 
           if (grid) {
             grid.style.display = 'grid';
-            grid.innerHTML = uploaded.map(d => `
-              <div class="doc-card" style="display:flex;flex-direction:column;justify-content:space-between;gap:16px;">
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-                  <div style="font-size:15px;font-weight:700;color:var(--black);">${d.label}</div>
-                  <span class="badge b-green" style="flex-shrink:0;">Uploaded</span>
-                </div>
-                <div style="display:flex;justify-content:flex-end;gap:6px;">
-                  <a href="${app[d.key]}" target="_blank" class="btn btn-primary btn-sm">View PDF ↗</a>
-                </div>
-              </div>
-            `).join('');
+            grid.innerHTML = docDefs.map(d => {
+              const url       = app[d.key];
+              const hasDoc    = !!url;
+              const badgeCls  = hasDoc ? 'b-green' : (d.required ? 'b-red' : 'b-gray');
+              const badgeTxt  = hasDoc ? 'Uploaded' : (d.required ? 'Missing' : 'Not provided');
+              return `
+                <div class="doc-card" style="display:flex;flex-direction:column;justify-content:space-between;gap:16px;">
+                  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+                    <div>
+                      <div style="font-size:15px;font-weight:700;color:var(--black);margin-bottom:4px;">${d.label}</div>
+                      ${d.required ? '<div style="font-size:11px;color:var(--gray-400);">Required for verification</div>' : '<div style="font-size:11px;color:var(--gray-400);">Optional</div>'}
+                    </div>
+                    <span class="badge ${badgeCls}" style="flex-shrink:0;">${badgeTxt}</span>
+                  </div>
+                  <div style="display:flex;justify-content:flex-end;gap:8px;align-items:center;">
+                    ${hasDoc ? `<a href="${url}" target="_blank" class="btn btn-outline btn-sm">View ↗</a>` : ''}
+                    <button class="btn btn-primary btn-sm" onclick="openComplianceUpdate('${d.key}', '${d.label}')">
+                      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                      ${hasDoc ? 'Update' : 'Upload'}
+                    </button>
+                  </div>
+                </div>`;
+            }).join('');
           }
 
-          // Update subtitle
           const sub = document.getElementById('complianceSubtitle');
-          if (sub) sub.textContent = uploaded.length + ' of ' + docs.length + ' documents uploaded · Application ' + app.status;
+          if (sub) sub.textContent = `${uploaded} of ${docDefs.length} documents uploaded · Application ${app.status}`;
 
         } catch (err) {
           console.error('Failed to load compliance vault:', err);
           if (loading) loading.style.display = 'none';
           if (empty)   empty.style.display   = 'block';
         }
+      }
+
+      // ── Compliance document update ─────────────────────────
+      function openComplianceUpdate(docKey, docLabel) {
+        // Create a hidden file input and trigger it
+        let inp = document.getElementById('complianceFileInput');
+        if (!inp) {
+          inp = document.createElement('input');
+          inp.type    = 'file';
+          inp.id      = 'complianceFileInput';
+          inp.accept  = '.pdf,.jpg,.jpeg,.png';
+          inp.style.display = 'none';
+          document.body.appendChild(inp);
+        }
+        inp.onchange = async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          // Show uploading toast
+          showUploadingToast(`Uploading ${docLabel}…`);
+
+          try {
+            // Upload to Cloudinary via a FormData POST
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', 'bharat_modules_docs');
+
+            const cloudName = 'bharatmodules'; // update if different
+            const uploadRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, {
+              method: 'POST',
+              body: formData,
+            });
+
+            if (!uploadRes.ok) throw new Error('Cloudinary upload failed');
+            const uploadData = await uploadRes.json();
+            const fileUrl = uploadData.secure_url;
+
+            // Save URL to backend
+            const saveRes = await fetch(`${API_BASE}/api/manufacturers/compliance-docs`, {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getToken()}`,
+              },
+              body: JSON.stringify({ [docKey]: fileUrl }),
+            });
+
+            if (!saveRes.ok) throw new Error('Failed to save document URL');
+
+            showSuccessToast(`${docLabel} updated successfully`);
+            // Invalidate cache and reload
+            sessionStorage.removeItem('bm_approval_status');
+            loadComplianceVault();
+          } catch (err) {
+            console.error('Compliance doc update failed:', err);
+            alert('Upload failed. Please try again or contact support.');
+          }
+          inp.value = '';
+        };
+        inp.click();
+      }
+
+      function showUploadingToast(msg) {
+        let toast = document.getElementById('comingSoonToast');
+        if (!toast) {
+          toast = document.createElement('div');
+          toast.id = 'comingSoonToast';
+          toast.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:#0a0a0a;color:#fff;padding:12px 24px;border-radius:10px;font-size:13px;font-weight:500;z-index:999;opacity:0;transition:all 0.3s;box-shadow:0 8px 24px rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.08);white-space:nowrap;';
+          document.body.appendChild(toast);
+        }
+        toast.style.background = '#0a0a0a';
+        toast.textContent = msg;
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateX(-50%) translateY(0)';
+        clearTimeout(toast._timer);
+      }
+
+      function showSuccessToast(msg) {
+        let toast = document.getElementById('comingSoonToast');
+        if (!toast) {
+          toast = document.createElement('div');
+          toast.id = 'comingSoonToast';
+          toast.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:#2e7d32;color:#fff;padding:12px 24px;border-radius:10px;font-size:13px;font-weight:500;z-index:999;opacity:0;transition:all 0.3s;box-shadow:0 8px 24px rgba(0,0,0,0.3);white-space:nowrap;';
+          document.body.appendChild(toast);
+        }
+        toast.style.background = '#2e7d32';
+        toast.textContent = '✓ ' + msg;
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateX(-50%) translateY(0)';
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateX(-50%) translateY(80px)';
+        }, 3000);
       }
 
       // ── Populate profile page with real data ──────────────
@@ -3988,7 +4093,7 @@
         if (stats) stats.style.display = isDash ? "grid" : "none";
         if (layout) layout.style.paddingTop = isDash ? "32px" : "110px";
 
-        if (id === "inventory") renderInventoryGrid();
+        if (id === "inventory") loadInventoryFromDB();
         if (id === "compliance") loadComplianceVault();
       }
 
@@ -4568,99 +4673,89 @@
       }
 
       // ── Inventory ──
-      const inventoryData = {
-        p1: {
-          name: "Servo Actuator Mk-IV",
-          spec: "24V DC · 40Nm · IP67",
-          status: "Live",
-          moq: 20,
-          leadTime: 21,
-          unitPrice: 48500,
-          certifications: ["ISO 9001", "MIL-STD-810G"],
-          sector: "def",
-        },
-        p2: {
-          name: "IMU Sensor Module",
-          spec: "9-axis · ±2000°/s · SPI/I2C",
-          status: "Live",
-          moq: 100,
-          leadTime: 14,
-          unitPrice: 12800,
-          certifications: ["ISO 9001"],
-          sector: "space",
-        },
-        p3: {
-          name: "EO/IR Camera Gimbal",
-          spec: "3-axis · ±0.005° · EO+IR",
-          status: "Live",
-          moq: 2,
-          leadTime: 45,
-          unitPrice: 2850000,
-          certifications: ["ISO 9001", "ITAR"],
-          sector: "def",
-        },
-        p4: {
-          name: "Fiber Optic Gyro",
-          spec: "0.01°/h bias · RS-422 · MIL",
-          status: "Live",
-          moq: 5,
-          leadTime: 60,
-          unitPrice: 385000,
-          certifications: ["MIL-PRF-28800"],
-          sector: "aero",
-        },
-        p5: {
-          name: "Radar Antenna Array (Ka)",
-          spec: "76.5GHz · 16-elem · ±45°",
-          status: "Verification under process",
-          moq: 1,
-          leadTime: 90,
-          unitPrice: 0,
-          certifications: [],
-          sector: "def",
-        },
-        p6: {
-          name: "Thermal Camera Core",
-          spec: "640×512 · LWIR · NETD<30mK",
-          status: "Verification under process",
-          moq: 5,
-          leadTime: 30,
-          unitPrice: 0,
-          certifications: [],
-          sector: "def",
-        },
-      };
-      window.submittedModules = {};
+      // Products are loaded from the backend per-manufacturer.
+      window.inventoryProducts = {};  // { id: displayObj }
+
+      function dbProductToDisplay(p) {
+        const specs = p.specifications || {};
+        return {
+          name:           p.name,
+          spec:           specs.specs || p.description || '—',
+          description:    p.description || '',
+          status:         p.is_verified ? 'Live' : 'Verification under process',
+          moq:            specs.moq || 0,
+          leadTime:       specs.lead_time_days || 0,
+          unitPrice:      specs.floor_price || 0,
+          certifications: specs.certifications || [],
+          sector:         specs.sector || 'aero',
+          hsn:            specs.hsn || '',
+          promisedDocs:   specs.promised_docs || [],
+          indigenous:     specs.indigenous_content || '',
+          _dbId:          p.id,
+        };
+      }
+
+      async function loadInventoryFromDB() {
+        const grid = document.getElementById('inventoryGrid');
+        if (!grid) return;
+        grid.innerHTML = '<div style="padding:40px;text-align:center;color:var(--gray-400);font-size:13px;">Loading inventory…</div>';
+        try {
+          const res  = await fetch(`${API_BASE}/api/manufacturers/products`, {
+            headers: { 'Authorization': `Bearer ${getToken()}` },
+          });
+          const data = await res.json();
+          if (res.ok) {
+            window.inventoryProducts = {};
+            (data.products || []).forEach(p => {
+              window.inventoryProducts[p.id] = dbProductToDisplay(p);
+            });
+          }
+        } catch (err) {
+          console.warn('Could not load inventory from DB:', err);
+        }
+        renderInventoryGrid();
+      }
 
       function renderInventoryGrid() {
-        const allProducts = { ...inventoryData, ...window.submittedModules };
-        const grid = document.getElementById("inventoryGrid");
+        const grid = document.getElementById('inventoryGrid');
         if (!grid) return;
-        grid.innerHTML = Object.entries(allProducts)
-          .map(
-            ([id, p]) => `
-    <div class="inv-card" onclick="openModuleDetails('${id}')">
-      <div class="inv-hdr" style="flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 16px;">
-        <div class="inv-name" style="width: 100%; white-space: normal; line-height: 1.4; font-size: 15px;">${p.name}</div>
-        <div style="display: flex; width: 100%; justify-content: space-between; align-items: center;">
-          <div class="inv-spec" style="margin-top: 0;">${p.spec}</div>
-          <span class="badge ${p.status === "Live" ? "b-green" : p.status === "Verification under process" ? "b-amber" : "b-gray"}" style="font-size: 10.5px; padding: 4px 10px;">${p.status}</span>
-        </div>
-      </div>
-      <div class="inv-meta">
-        <div><div class="im-label">MOQ</div><div class="im-val">${p.moq} units</div></div>
-        <div><div class="im-label">Lead Time</div><div class="im-val">${p.leadTime} days</div></div>
-        ${p.unitPrice ? `<div><div class="im-label">Unit Price</div><div class="im-val">₹${(p.unitPrice / 1000).toFixed(0)}K</div></div>` : ""}
-      </div>
-    </div>
-  `,
-          )
-          .join("");
+        const entries = Object.entries(window.inventoryProducts);
+
+        if (!entries.length) {
+          grid.innerHTML = `
+            <div style="grid-column:1/-1;text-align:center;padding:60px 20px;border:var(--border);border-radius:var(--radius);background:var(--white);">
+              <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom:16px;opacity:0.3;"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+              <p style="font-size:14px;color:var(--gray-400);">No products yet. Click <strong>Add Module</strong> to list your first product.</p>
+            </div>`;
+          const sub = document.getElementById('inventoryPageSub');
+          if (sub) sub.textContent = '0 products listed';
+          return;
+        }
+
+        const live    = entries.filter(([,p]) => p.status === 'Live').length;
+        const pending = entries.filter(([,p]) => p.status !== 'Live').length;
+        const sub = document.getElementById('inventoryPageSub');
+        if (sub) sub.textContent = `${live} live · ${pending} pending audit`;
+
+        grid.innerHTML = entries.map(([id, p]) => `
+          <div class="inv-card" onclick="openModuleDetails('${id}')">
+            <div class="inv-hdr" style="flex-direction:column;align-items:flex-start;gap:10px;margin-bottom:16px;">
+              <div class="inv-name" style="width:100%;white-space:normal;line-height:1.4;font-size:15px;">${p.name}</div>
+              <div style="display:flex;width:100%;justify-content:space-between;align-items:center;">
+                <div class="inv-spec" style="margin-top:0;">${p.spec}</div>
+                <span class="badge ${p.status === 'Live' ? 'b-green' : 'b-amber'}" style="font-size:10.5px;padding:4px 10px;">${p.status}</span>
+              </div>
+            </div>
+            <div class="inv-meta">
+              <div><div class="im-label">MOQ</div><div class="im-val">${p.moq || '—'} units</div></div>
+              <div><div class="im-label">Lead Time</div><div class="im-val">${p.leadTime || '—'} days</div></div>
+              ${p.unitPrice ? `<div><div class="im-label">Unit Price</div><div class="im-val">₹${(p.unitPrice/1000).toFixed(0)}K</div></div>` : ''}
+            </div>
+          </div>`).join('');
       }
 
       function openModuleDetails(id) {
-        const allProducts = { ...inventoryData, ...window.submittedModules };
-        const p = allProducts[id];
+        const p = window.inventoryProducts[id];
         if (!p) return;
 
         document.getElementById("mdTitle").textContent =
@@ -4711,12 +4806,17 @@
         document.getElementById("addModal").classList.remove("open");
         window.uploadedFiles = [];
         renderUploadedFiles();
+        // Reset document tags
+        documentTags = [];
+        renderTags();
         [
           "modProductName",
           "modDescription",
           "modTechSpecs",
           "modMOQ",
           "modLeadTime",
+          "modFloorPrice",
+          "modIndigenous",
         ].forEach((id) => {
           const el = document.getElementById(id);
           if (el) el.value = "";
@@ -4885,7 +4985,7 @@
           if (res.ok) {
             // Also add to local inventory grid for immediate feedback
             const modId = 'submitted-' + Date.now();
-            window.submittedModules[modId] = {
+            window.inventoryProducts[modId] = {
               id: modId, name, spec: specs,
               status: 'Verification under process',
               moq, leadTime, unitPrice: 0,
@@ -4915,7 +5015,7 @@
           console.error('submitModule error:', err);
           // Fallback: add locally even if API fails
           const modId = 'submitted-' + Date.now();
-          window.submittedModules[modId] = {
+          window.inventoryProducts[modId] = {
             id: modId, name, spec: specs,
             status: 'Verification under process',
             moq, leadTime, unitPrice: 0,
@@ -5064,7 +5164,9 @@
       updateClock();
       setInterval(updateClock, 1000);
 
-      renderInventoryGrid();
+      // Inventory is loaded on demand when the user navigates to the Inventory view.
+      // Initialize empty so the grid is ready.
+      window.inventoryProducts = window.inventoryProducts || {};
 
       function toggleCert(el) {
         el.classList.toggle("selected");
