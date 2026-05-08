@@ -1856,158 +1856,24 @@
 
             <div class="form-group" id="fg-email">
               <label>Email</label>
-              <div style="display: flex; gap: 10px">
-                <input
-                  type="email"
-                  class="form-input"
-                  id="obEmail"
-                  placeholder="Email Address"
-                  value=""
-                  style="flex: 1;"
-                />
-                <button
-                  type="button"
-                  class="btn-verify"
-                  id="btn-verify-email"
-                  onclick="startVerification('email')"
-                >
-                  Verify
-                </button>
-              </div>
-              <div
-                class="otp-container"
-                id="otp-container-email"
-                style="
-                  display: none;
-                  margin-top: 12px;
-                  background: var(--off-white);
-                  padding: 16px;
-                  border-radius: 10px;
-                  border: 1px solid var(--gray-200);
-                  animation: headerSlide 0.3s ease;
-                "
-              >
-                <label
-                  style="
-                    font-size: 13px;
-                    color: var(--gray-600);
-                    margin-bottom: 10px;
-                    display: block;
-                  "
-                  >Enter OTP sent to
-                  <span
-                    id="otp-target-email"
-                    style="font-weight: 600; color: var(--black)"
-                  ></span
-                ></label>
-                <div style="display: flex; gap: 10px">
-                  <input
-                    type="text"
-                    class="form-input"
-                    id="otp-input-email"
-                    placeholder="4-digit code"
-                    maxlength="4"
-                    style="
-                      flex: 1;
-                      letter-spacing: 0.2em;
-                      text-align: center;
-                      font-weight: 700;
-                      font-size: 16px;
-                    "
-                  />
-                  <button
-                    class="btn-verify-confirm"
-                    onclick="confirmOTP('email')"
-                  >
-                    Confirm
-                  </button>
-                </div>
-                <div
-                  class="field-error"
-                  id="otp-error-email"
-                  style="margin-top: 8px"
-                >
-                  Invalid OTP. (Try '1234')
-                </div>
-              </div>
+              <input
+                type="email"
+                class="form-input"
+                id="obEmail"
+                placeholder="Email Address"
+                value=""
+              />
             </div>
-
             <div class="form-group" id="fg-phone">
               <label>Phone Number</label>
-              <div style="display: flex; gap: 10px">
-                <input
-                  type="tel"
-                  class="form-input"
-                  id="obPhone"
-                  placeholder="Phone Number"
-                  value=""
-                  style="flex: 1;"
-                />
-                <button
-                  type="button"
-                  class="btn-verify"
-                  id="btn-verify-phone"
-                  onclick="startVerification('phone')"
-                >
-                  Verify
-                </button>
-              </div>
-              <div
-                class="otp-container"
-                id="otp-container-phone"
-                style="
-                  display: none;
-                  margin-top: 12px;
-                  background: var(--off-white);
-                  padding: 16px;
-                  border-radius: 10px;
-                  border: 1px solid var(--gray-200);
-                  animation: headerSlide 0.3s ease;
-                "
-              >
-                <label
-                  style="
-                    font-size: 13px;
-                    color: var(--gray-600);
-                    margin-bottom: 10px;
-                    display: block;
-                  "
-                  >Enter OTP sent to
-                  <span
-                    id="otp-target-phone"
-                    style="font-weight: 600; color: var(--black)"
-                  ></span
-                ></label>
-                <div style="display: flex; gap: 10px">
-                  <input
-                    type="text"
-                    class="form-input"
-                    id="otp-input-phone"
-                    placeholder="4-digit code"
-                    maxlength="4"
-                    style="
-                      flex: 1;
-                      letter-spacing: 0.2em;
-                      text-align: center;
-                      font-weight: 700;
-                      font-size: 16px;
-                    "
-                  />
-                  <button
-                    class="btn-verify-confirm"
-                    onclick="confirmOTP('phone')"
-                  >
-                    Confirm
-                  </button>
-                </div>
-                <div
-                  class="field-error"
-                  id="otp-error-phone"
-                  style="margin-top: 8px"
-                >
-                  Invalid OTP. (Try '1234')
-                </div>
-              </div>
+              <input
+                type="tel"
+                class="form-input"
+                id="obPhone"
+                placeholder="Phone Number"
+                value=""
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+              />
             </div>
 
             <div class="section-sep"></div>
@@ -2218,7 +2084,7 @@
             </div>
             <div class="form-group">
               <label>Pincode <span class="req">*</span></label>
-              <input type="text" class="form-input" id="obPincode" placeholder="6-digit Pincode" maxlength="6" />
+              <input type="text" class="form-input" id="obPincode" placeholder="6-digit Pincode" maxlength="6" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
             </div>
 
             <div class="section-title" style="margin-top: 24px;">Required Certifications</div>
@@ -4067,20 +3933,7 @@
       function validatePhase1() {
         let passed = true;
 
-        // Require Email Verification
-        if (!verifiedStatus.email) {
-          const btn = document.getElementById("btn-verify-email");
-          btn.style.boxShadow = "0 0 0 2px var(--error)";
-          setTimeout(() => (btn.style.boxShadow = ""), 2000);
-          passed = false;
-        }
-        // Require Phone Verification
-        if (!verifiedStatus.phone) {
-          const btn = document.getElementById("btn-verify-phone");
-          btn.style.boxShadow = "0 0 0 2px var(--error)";
-          setTimeout(() => (btn.style.boxShadow = ""), 2000);
-          passed = false;
-        }
+        // Verification no longer required
 
         const inputs = document.querySelectorAll(
           '.dropdown-item input[type="checkbox"]:checked',
@@ -4096,10 +3949,7 @@
         if (passed) {
           goToPhase(2);
         } else {
-          const notice =
-            !verifiedStatus.email || !verifiedStatus.phone
-              ? document.getElementById("fg-email")
-              : fgCat;
+          const notice = fgCat;
           notice.scrollIntoView({ behavior: "smooth", block: "center" });
         }
       }

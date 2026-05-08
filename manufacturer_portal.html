@@ -1992,6 +1992,37 @@
         width: auto;
         cursor: pointer;
       }
+
+      /* ── PASSWORD TOGGLE ── */
+      .password-input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+
+      .password-toggle {
+        position: absolute;
+        right: 14px;
+        background: none;
+        border: none;
+        color: #666;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4px;
+        transition: color 0.2s;
+        z-index: 2;
+      }
+
+      .password-toggle:hover {
+        color: var(--black);
+      }
+
+      .password-toggle svg {
+        width: 18px;
+        height: 18px;
+      }
     </style>
     <!-- Lenis Premium Smooth Scroll -->
   <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
@@ -2879,22 +2910,34 @@
               </div>
               <div id="pwdStep2" style="display: none">
                 <div class="form-row-modal">
-                  <label class="form-label">New Password *</label
-                  ><input
-                    class="form-input"
-                    type="password"
-                    id="newPwd"
-                    placeholder="Min. 8 characters"
-                  />
+                  <label class="form-label">New Password *</label>
+                  <div class="password-input-wrapper">
+                    <input
+                      class="form-input"
+                      type="password"
+                      id="newPwd"
+                      placeholder="Min. 8 characters"
+                      style="padding-right: 44px;"
+                    />
+                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility('newPwd', this)" aria-label="Toggle password visibility">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </button>
+                  </div>
                 </div>
                 <div class="form-row-modal">
-                  <label class="form-label">Confirm New Password *</label
-                  ><input
-                    class="form-input"
-                    type="password"
-                    id="confirmPwd"
-                    placeholder="Re-enter password"
-                  />
+                  <label class="form-label">Confirm New Password *</label>
+                  <div class="password-input-wrapper">
+                    <input
+                      class="form-input"
+                      type="password"
+                      id="confirmPwd"
+                      placeholder="Re-enter password"
+                      style="padding-right: 44px;"
+                    />
+                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility('confirmPwd', this)" aria-label="Toggle password visibility">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </button>
+                  </div>
                 </div>
                 <div style="display: flex; gap: 10px">
                   <button class="btn btn-primary" onclick="savePwd()">
@@ -3073,6 +3116,7 @@
                 id="modMOQ"
                 type="text"
                 placeholder=""
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
               />
             </div>
             <div class="form-row-modal" style="margin-bottom: 0">
@@ -3082,6 +3126,7 @@
                 id="modLeadTime"
                 type="text"
                 placeholder=""
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
               />
             </div>
           </div>
@@ -3092,6 +3137,7 @@
               id="modFloorPrice"
               type="number"
               placeholder=""
+              oninput="this.value = this.value.replace(/[^0-9]/g, '')"
             />
             <div
               style="
@@ -3171,6 +3217,7 @@
               id="modIndigenous"
               type="number"
               placeholder=""
+              oninput="this.value = this.value.replace(/[^0-9]/g, '')"
             />
           </div>
 
@@ -4414,16 +4461,16 @@
                 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;">
                 <div>
                   <label class="inp-label" style="font-size:10px;">Unit Price (₹) *</label>
-                  <input class="num-input" type="number" id="qUnitPrice" placeholder="0" oninput="calcTotal(${d.qty})" style="width:100%;box-sizing:border-box;padding:7px 10px;font-size:13px;">
+                  <input class="num-input" type="number" id="qUnitPrice" placeholder="0" oninput="calcTotal(${d.qty}); this.value = this.value.replace(/[^0-9]/g, '')" style="width:100%;box-sizing:border-box;padding:7px 10px;font-size:13px;">
                   <div class="inp-hint" style="font-size:10px;">Ex-works, excl. GST</div>
                 </div>
                 <div>
                   <label class="inp-label" style="font-size:10px;">Lead Time (days) *</label>
-                  <input class="num-input" type="number" id="qLeadTime" placeholder="0" oninput="calcTotal(${d.qty})" style="width:100%;box-sizing:border-box;padding:7px 10px;font-size:13px;">
+                  <input class="num-input" type="number" id="qLeadTime" placeholder="0" oninput="calcTotal(${d.qty}); this.value = this.value.replace(/[^0-9]/g, '')" style="width:100%;box-sizing:border-box;padding:7px 10px;font-size:13px;">
                 </div>
                 <div>
                   <label class="inp-label" style="font-size:10px;">Validity (days) *</label>
-                  <input class="num-input" type="number" id="qValidity" placeholder="0" style="width:100%;box-sizing:border-box;padding:7px 10px;font-size:13px;">
+                  <input class="num-input" type="number" id="qValidity" placeholder="0" oninput="this.value = this.value.replace(/[^0-9]/g, '')" style="width:100%;box-sizing:border-box;padding:7px 10px;font-size:13px;">
                 </div>
               </div>
               
@@ -4449,7 +4496,7 @@
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
                 <div>
                   <label class="inp-label" style="font-size:10px;">Est. Batch Weight (kg) *</label>
-                  <input class="num-input" type="number" id="qBatchWeight" placeholder="0" style="width:100%;box-sizing:border-box;padding:7px 10px;font-size:13px;">
+                  <input class="num-input" type="number" id="qBatchWeight" placeholder="0" oninput="this.value = this.value.replace(/[^0-9]/g, '')" style="width:100%;box-sizing:border-box;padding:7px 10px;font-size:13px;">
                 </div>
                 <div>
                   <label class="inp-label" style="font-size:10px;">Box Dimensions (L x W x H cm) *</label>
@@ -5114,6 +5161,17 @@
           closeAddModal();
         }
       });
+
+      function togglePasswordVisibility(inputId, buttonEl) {
+        const input = document.getElementById(inputId);
+        const isPassword = input.type === "password";
+        input.type = isPassword ? "text" : "password";
+        
+        // Toggle eye icon
+        buttonEl.innerHTML = isPassword 
+          ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`
+          : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+      }
 
       // ── Logout ──
       function handleLogout() {

@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
   <head>
   <link rel="stylesheet" href="responsive.css" />
@@ -1424,7 +1424,7 @@
         <td>
           <div class="cart-qty-wrap">
             <button class="cart-qty-btn" onclick="changeQty('${item.id}', -1)">−</button>
-            <input class="cart-qty-val" type="number" min="1" value="${item.qty}" onchange="setQty('${item.id}', this.value)">
+            <input class="cart-qty-val" type="number" min="1" value="${item.qty}" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onchange="setQty('${item.id}', this.value)">
             <button class="cart-qty-btn" onclick="changeQty('${item.id}', 1)">+</button>
           </div>
         </td>

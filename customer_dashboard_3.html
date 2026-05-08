@@ -2952,6 +2952,7 @@
                   type="number"
                   value="1"
                   min="1"
+                  oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                 />
               </div>
               <button class="wl-rfq-add-btn" onclick="showView('rfqs')">
