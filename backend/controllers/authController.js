@@ -425,16 +425,31 @@ const login = async (req, res, next) => {
     };
     const token = signToken(tokenUser);
 
+    let applicationStatus = null;
+    if (requestedRole === 'manufacturer') {
+      const { data: appData } = await supabase
+        .from('onboarding_applications')
+        .select('status')
+        .eq('user_id', tokenUser.id)
+        .order('submitted_at', { ascending: false })
+        .limit(1)
+        .single();
+      if (appData) {
+        applicationStatus = appData.status;
+      }
+    }
+
     res.json({
       success: true,
       message: 'Logged in successfully.',
       token,
       user: {
-        id: mainUser?.id || user.id,
+        id: tokenUser.id,
         email: user.email,
         full_name: user.full_name,
         role: requestedRole,
         is_verified: true,
+        application_status: applicationStatus,
       },
     });
   } catch (err) {
