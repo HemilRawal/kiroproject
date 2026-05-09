@@ -99,6 +99,7 @@ app.use('/api/orders', require('./routes/orders'));
 app.use('/api/manufacturers', require('./routes/manufacturers'));
 app.use('/api/contact', require('./routes/contact'));
 app.use('/api/onboarding', require('./routes/onboarding'));
+app.use('/api/payments', require('./routes/payments'));
 
 // ── 7. 404 HANDLER ───────────────────────────────────────────
 app.use((req, res) => {

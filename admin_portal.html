@@ -125,6 +125,27 @@
     .toast.show { transform: translateY(0); opacity: 1; }
     .toast.green { background: var(--green); }
     .toast.red { background: var(--red); }
+
+    /* PAYMENTS TAB */
+    .pay-form-card { background: var(--white); border: var(--border); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow); max-width: 560px; }
+    .pay-form-title { font-size: 15px; font-weight: 700; color: var(--black); margin-bottom: 20px; padding-bottom: 14px; border-bottom: var(--border); }
+    .pay-field { margin-bottom: 18px; }
+    .pay-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-600); margin-bottom: 7px; display: block; }
+    .pay-input { width: 100%; background: var(--white); border: var(--border); border-radius: 8px; padding: 10px 14px; font-family: 'Outfit', sans-serif; font-size: 14px; color: var(--black); outline: none; transition: border-color 0.18s; }
+    .pay-input:focus { border-color: var(--black); }
+    .pay-input::placeholder { color: var(--gray-400); }
+    .btn-add-payment { background: var(--black); color: #fff; border: none; border-radius: 8px; padding: 12px 28px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: background 0.2s; letter-spacing: 0.04em; }
+    .btn-add-payment:hover { background: var(--gray-700); }
+    .pending-list { margin-top: 32px; }
+    .pending-list-title { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 12px; }
+    .pending-item { background: var(--white); border: var(--border); border-radius: var(--radius); padding: 16px 20px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 16px; box-shadow: var(--shadow); }
+    .pi-left { flex: 1; }
+    .pi-company { font-size: 14px; font-weight: 700; color: var(--black); }
+    .pi-desc { font-size: 12px; color: var(--gray-400); margin-top: 3px; }
+    .pi-date { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+    .pi-amount { font-size: 18px; font-weight: 700; color: var(--red); white-space: nowrap; }
+    .btn-remove-pay { background: none; border: 1px solid var(--gray-200); border-radius: 6px; padding: 5px 10px; font-size: 11px; font-weight: 600; color: var(--gray-400); cursor: pointer; transition: all 0.15s; font-family: 'Outfit', sans-serif; }
+    .btn-remove-pay:hover { border-color: var(--red); color: var(--red); }
   </style>
 </head>
 <body>
@@ -146,6 +167,7 @@
   <div class="tabs-row">
     <button class="tab-btn active" onclick="switchTab('applications')">Manufacturer Applications</button>
     <button class="tab-btn" onclick="switchTab('products')">Product Verification</button>
+    <button class="tab-btn" onclick="switchTab('payments')">Pending Payments</button>
   </div>
 
   <!-- APPLICATIONS VIEW -->
@@ -248,9 +270,36 @@
       </table>
     </div>
   </div>
-</div>
+  <!-- PAYMENTS VIEW -->
+  <div id="paymentsView" style="display:none;">
+    <div class="pay-form-card">
+      <div class="pay-form-title">Add Pending Amount for Manufacturer</div>
+      <div class="pay-field">
+        <label class="pay-label" for="payManufacturerEmail">Manufacturer Email *</label>
+        <input class="pay-input" type="email" id="payManufacturerEmail" placeholder="manufacturer@company.com" />
+      </div>
+      <div class="pay-field">
+        <label class="pay-label" for="payManufacturerName">Manufacturer / Company Name *</label>
+        <input class="pay-input" type="text" id="payManufacturerName" placeholder="e.g. Precision Navi Mfg." />
+      </div>
+      <div class="pay-field">
+        <label class="pay-label" for="payAmount">Pending Amount (₹) *</label>
+        <input class="pay-input" type="number" id="payAmount" placeholder="e.g. 150000" min="1" />
+      </div>
+      <div class="pay-field">
+        <label class="pay-label" for="payDescription">Description *</label>
+        <input class="pay-input" type="text" id="payDescription" placeholder="e.g. Platform fee Q2 2026 — Invoice #INV-0042" />
+      </div>
+      <button class="btn-add-payment" onclick="addPendingPayment()">Add Pending Amount</button>
+    </div>
 
-<!-- Slideout overlay -->
+    <div class="pending-list">
+      <div class="pending-list-title">All Pending Amounts</div>
+      <div id="pendingPaymentsList"></div>
+    </div>
+  </div>
+
+</div>
 <div class="overlay" id="overlay" onclick="closeSlideout()"></div>
 
 <!-- Slideout panel -->
@@ -284,9 +333,13 @@
     
     document.getElementById('applicationsView').style.display = tabId === 'applications' ? 'block' : 'none';
     document.getElementById('productsView').style.display = tabId === 'products' ? 'block' : 'none';
+    document.getElementById('paymentsView').style.display = tabId === 'payments' ? 'block' : 'none';
 
     if (tabId === 'products' && allProducts.length === 0) {
       loadProducts();
+    }
+    if (tabId === 'payments') {
+      loadPendingPayments();
     }
   }
 
@@ -679,6 +732,101 @@
         btn.textContent = decision === 'verified' ? '✓ Verify & Publish' : (decision === 'rejected' ? '✗ Revoke Verification' : '✗ Reject Product');
       }
     }
+  }
+
+  // ── Pending Payments ──
+  async function loadPendingPayments() {
+    try {
+      const res = await fetch(`${API_BASE}/api/payments/admin/pending`, {
+        headers: { 'Authorization': `Bearer ${getToken()}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+      renderPendingPayments(data.payments || []);
+    } catch (err) {
+      showToast('Failed to load pending payments: ' + err.message, 'red');
+    }
+  }
+
+  async function addPendingPayment() {
+    const email = document.getElementById('payManufacturerEmail').value.trim();
+    const name  = document.getElementById('payManufacturerName').value.trim();
+    const amount = document.getElementById('payAmount').value;
+    const desc  = document.getElementById('payDescription').value.trim();
+
+    if (!email || !name || !amount || !desc) {
+      showToast('Please fill in all fields.', 'red');
+      return;
+    }
+
+    const btn = document.querySelector('.btn-add-payment');
+    btn.disabled = true;
+    btn.textContent = 'Adding…';
+
+    try {
+      const res = await fetch(`${API_BASE}/api/payments/admin/pending`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({
+          manufacturer_email: email,
+          manufacturer_name:  name,
+          amount:             parseFloat(amount),
+          description:        desc,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+
+      document.getElementById('payManufacturerEmail').value = '';
+      document.getElementById('payManufacturerName').value  = '';
+      document.getElementById('payAmount').value            = '';
+      document.getElementById('payDescription').value       = '';
+
+      showToast('✓ Pending amount added.', 'green');
+      await loadPendingPayments();
+    } catch (err) {
+      showToast('Error: ' + err.message, 'red');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Add Pending Amount';
+    }
+  }
+
+  async function removePendingPayment(id) {
+    if (!confirm('Remove this pending amount entry?')) return;
+    try {
+      const res = await fetch(`${API_BASE}/api/payments/admin/pending/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${getToken()}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+      showToast('Entry removed.', '');
+      await loadPendingPayments();
+    } catch (err) {
+      showToast('Error: ' + err.message, 'red');
+    }
+  }
+
+  function renderPendingPayments(list) {
+    const container = document.getElementById('pendingPaymentsList');
+    if (!list.length) {
+      container.innerHTML = `<div class="empty"><svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg><p>No pending amounts added yet.</p></div>`;
+      return;
+    }
+    container.innerHTML = list.map(p => `
+      <div class="pending-item">
+        <div class="pi-left">
+          <div class="pi-company">${p.manufacturer_name}</div>
+          <div class="pi-desc">${p.description}</div>
+          <div class="pi-date">${p.manufacturer_email} · Added ${new Date(p.created_at).toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'})}</div>
+        </div>
+        <div class="pi-amount">₹${Number(p.amount).toLocaleString('en-IN')}</div>
+        <button class="btn-remove-pay" onclick="removePendingPayment('${p.id}')">Remove</button>
+      </div>`).join('');
   }
 
   // ── Toast notification ──

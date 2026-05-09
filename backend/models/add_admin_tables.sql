@@ -67,3 +67,20 @@ CREATE INDEX IF NOT EXISTS idx_onboarding_email   ON onboarding_applications(ema
 -- INSERT INTO users (email, password_hash, full_name, role, is_verified)
 -- VALUES ('admin@bharatmodules.com', '<bcrypt_hash_here>', 'Admin', 'admin', true)
 -- ON CONFLICT (email) DO NOTHING;
+
+-- ─────────────────────────────────────────────────────────────
+-- MANUFACTURER PENDING PAYMENTS
+-- Admin-assigned pending amounts visible in manufacturer portal
+-- ─────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS manufacturer_pending_payments (
+  id                UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  manufacturer_email TEXT NOT NULL,
+  manufacturer_name  TEXT NOT NULL,
+  amount             NUMERIC(14, 2) NOT NULL CHECK (amount > 0),
+  description        TEXT NOT NULL,
+  added_by           UUID REFERENCES users(id),   -- admin user id
+  created_at         TIMESTAMPTZ DEFAULT NOW(),
+  updated_at         TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_pending_payments_email ON manufacturer_pending_payments(manufacturer_email);

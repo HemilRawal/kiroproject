@@ -140,7 +140,10 @@ const getMyStatus = async (req, res, next) => {
   try {
     const { data: application, error } = await supabase
       .from('onboarding_applications')
-      .select('id, status, admin_notes, submitted_at, reviewed_at, company_name')
+      .select(`
+        id, status, admin_notes, submitted_at, reviewed_at, company_name,
+        gst_doc_url, msme_doc_url, pan_doc_url, coi_doc_url, factory_doc_url
+      `)
       .eq('user_id', req.user.id)
       .single();
 
