@@ -33,11 +33,14 @@ app.use(helmet({
 // Example .env entry: ALLOWED_ORIGINS=https://bharatmodules.com,https://www.bharatmodules.com
 const allowedOrigins = [
   process.env.FRONTEND_URL || 'http://localhost:3000',
-  'http://localhost:4000',     // Frontend served from same server
+  'http://localhost:4000',
   'http://127.0.0.1:4000',
-  'http://127.0.0.1:5500',   // VS Code Live Server
+  'http://127.0.0.1:5500',
   'http://localhost:5500',
-  'null',                    // Allow local file:// execution
+  'https://bharat-modules.vercel.app',
+  'https://bharat-modules-git-pass-hemilrawals-projects.vercel.app',
+  'https://bharat-modules-p5ixgzduv-hemilrawals-projects.vercel.app',
+  'null',
   ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : []),
 ];
 
