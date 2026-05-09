@@ -1465,6 +1465,22 @@
     // Use relative paths if on localhost to avoid CORS/origin issues
     const API_BASE = 'https://bharat-modules-api.onrender.com';
 
+    // Fetch with timeout — handles Render cold-start gracefully
+    async function fetchWithTimeout(url, options = {}, timeoutMs = 20000) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        return await fetch(url, { ...options, signal: controller.signal });
+      } catch (err) {
+        if (err.name === 'AbortError') {
+          throw new Error('Server is waking up, please try again in a moment.');
+        }
+        throw err;
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+
     // ── OTP STATE ──
     let pendingVerification = { email: '', role: 'buyer', phone: '' };
     let currentVerificationStep = 'email'; // 'email' or 'phone'
@@ -1496,7 +1512,7 @@
 
       const btn = event.target.querySelector('button[type="submit"]');
       btn.disabled = true;
-      btn.textContent = 'Logging in…';
+      btn.textContent = 'Connecting…';
 
       // Get selected role from login toggle
       const loginRoleToggle = document.getElementById("loginRoleToggle");
@@ -1510,11 +1526,10 @@
       }
 
       try {
-        const res = await fetch(`${API_BASE}/api/auth/login`, {
+        const res = await fetchWithTimeout(`${API_BASE}/api/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: emailVal, password: passwordVal, role: loginRole }),
-
         });
         const data = await res.json();
 
@@ -1579,7 +1594,9 @@
           window.location.href = 'customer_dashboard_3.html';
         }
       } catch (err) {
-        alert('Network error. Please check your connection and try again.');
+        const passwordField = document.getElementById("fieldPassword");
+        passwordField.classList.add("error");
+        passwordField.querySelector('.error-message').textContent = err.message || 'Network error. Please try again.';
       } finally {
         btn.disabled = false;
         btn.textContent = 'Login';
