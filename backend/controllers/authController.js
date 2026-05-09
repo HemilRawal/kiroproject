@@ -14,6 +14,8 @@ const bcrypt = require('bcryptjs');
 const jwt    = require('jsonwebtoken');
 const resend = require('../config/resend');
 const supabase = require('../config/db');
+const { OAuth2Client } = require('google-auth-library');
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // ── Helpers ──────────────────────────────────────────────────
 
@@ -632,6 +634,115 @@ module.exports = {
   getMe,
   forgotPassword,
   verifyResetOTP,
-  resetPassword
+  resetPassword,
+  googleAuth: async (req, res, next) => {
+    try {
+      const { credential, role = 'buyer' } = req.body;
+      if (!credential) {
+        return res.status(400).json({ success: false, message: 'Google credential is required.' });
+      }
+
+      // 1. Verify the ID token from Google
+      const ticket = await client.verifyIdToken({
+        idToken: credential,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+      const payload = ticket.getPayload();
+      const { email, name, sub: googleId, picture } = payload;
+
+      const table = tableFor(role);
+
+      // 2. Check if user already exists in this role's table
+      let { data: user } = await supabase
+        .from(table)
+        .select('*')
+        .eq('email', email)
+        .single();
+
+      if (!user) {
+        // Create new user
+        const { data: newUser, error: insertError } = await supabase
+          .from(table)
+          .insert({
+            email,
+            full_name: name,
+            email_verified: true, // Google accounts are verified
+            is_active: true,
+            // phone can be added later by the user
+          })
+          .select()
+          .single();
+
+        if (insertError) throw insertError;
+        user = newUser;
+      }
+
+      // 3. Sync to main users table
+      let { data: mainUser } = await supabase
+        .from('users')
+        .select('id')
+        .eq('email', email)
+        .single();
+
+      if (!mainUser) {
+        const { data: newMainUser } = await supabase
+          .from('users')
+          .insert({
+            email,
+            full_name: name,
+            role,
+            is_verified: true,
+          })
+          .select('id')
+          .single();
+        mainUser = newMainUser;
+      } else {
+        await supabase
+          .from('users')
+          .update({ is_verified: true })
+          .eq('id', mainUser.id);
+      }
+
+      // 4. Sign JWT
+      const tokenUser = {
+        id: mainUser?.id || user.id,
+        email: user.email,
+        role,
+      };
+      const token = signToken(tokenUser);
+
+      // 5. Get application status if manufacturer
+      let applicationStatus = null;
+      if (role === 'manufacturer') {
+        const { data: appData } = await supabase
+          .from('onboarding_applications')
+          .select('status')
+          .eq('user_id', tokenUser.id)
+          .order('submitted_at', { ascending: false })
+          .limit(1)
+          .single();
+        if (appData) {
+          applicationStatus = appData.status;
+        }
+      }
+
+      res.json({
+        success: true,
+        message: 'Logged in with Google successfully.',
+        token,
+        user: {
+          id: tokenUser.id,
+          email: user.email,
+          full_name: user.full_name,
+          role,
+          is_verified: true,
+          application_status: applicationStatus,
+        },
+      });
+    } catch (err) {
+      console.error('Google Auth Error:', err);
+      res.status(401).json({ success: false, message: 'Google authentication failed.' });
+    }
+  }
 };
 

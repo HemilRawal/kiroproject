@@ -28,4 +28,7 @@ router.post('/verify-reset-otp', verifyResetOTP);
 // POST /api/auth/reset-password
 router.post('/reset-password', resetPassword);
 
+// POST /api/auth/google
+router.post('/google', require('../controllers/authController').googleAuth);
+
 module.exports = router;
