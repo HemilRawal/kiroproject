@@ -4404,7 +4404,7 @@
         document.getElementById('phase5')?.classList.add('active');
 
         try {
-          const res = await fetch('http://localhost:4000/api/onboarding/status', {
+          const res = await fetch('https://bharat-modules-api.onrender.com/api/onboarding/status', {
             headers: { 'Authorization': `Bearer ${token}` },
           });
           const data = await res.json();
@@ -4496,7 +4496,7 @@
             }
 
             // ── Submit to backend ──
-            const res = await fetch('http://localhost:4000/api/onboarding/submit', {
+            const res = await fetch('https://bharat-modules-api.onrender.com/api/onboarding/submit', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
