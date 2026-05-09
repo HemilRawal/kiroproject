@@ -4729,7 +4729,7 @@
           name:           p.name,
           spec:           specs.specs || p.description || '—',
           description:    p.description || '',
-          status:         p.is_verified ? 'Live' : 'Verification under process',
+          status:         p.is_verified ? 'Live' : (p.is_active === false ? 'Rejected' : 'Verification under process'),
           moq:            specs.moq || 0,
           leadTime:       specs.lead_time_days || 0,
           unitPrice:      specs.floor_price || 0,
@@ -4809,7 +4809,7 @@
           p.name || "Unknown Module";
 
         const statusBadge = document.getElementById("mdStatusBadge");
-        statusBadge.className = `badge ${p.status === "Live" ? "b-green" : p.status === "Verification under process" ? "b-amber" : "b-gray"}`;
+        statusBadge.className = `badge ${p.status === "Live" ? "b-green" : p.status === "Rejected" ? "b-red" : "b-amber"}`;
         statusBadge.textContent = p.status || "Draft";
 
         document.getElementById("mdPrice").textContent = p.unitPrice

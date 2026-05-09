@@ -204,6 +204,7 @@ const getApplication = async (req, res, next) => {
 
 // ── PATCH /api/admin/applications/:id/review ─────────────────
 // Admin: approve or reject an application
+// NOTE: No email is sent. Manufacturer sees status via dashboard polling.
 const reviewApplication = async (req, res, next) => {
   try {
     const { decision, admin_notes } = req.body; // decision: 'approved' | 'rejected'

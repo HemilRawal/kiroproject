@@ -55,6 +55,12 @@
     .stat-value.green { color: var(--green); }
     .stat-value.red { color: var(--red); }
 
+    /* TABS */
+    .tabs-row { display: flex; gap: 24px; border-bottom: var(--border); margin-bottom: 24px; }
+    .tab-btn { padding: 12px 0; font-size: 14px; font-weight: 600; color: var(--gray-400); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: all 0.2s; font-family: 'Outfit', sans-serif; }
+    .tab-btn:hover { color: var(--gray-700); }
+    .tab-btn.active { color: var(--black); border-bottom-color: var(--black); }
+
     /* FILTER TABS */
     .filter-row { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
     .filter-btn { padding: 8px 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; border-radius: 8px; cursor: pointer; border: 1.5px solid var(--gray-200); background: var(--white); color: var(--gray-700); transition: all 0.15s; font-family: 'Outfit', sans-serif; }
@@ -136,52 +142,111 @@
 
 <div class="page">
 
-  <!-- Stats -->
-  <div class="stats-row">
-    <div class="stat-card">
-      <div class="stat-label">Total Applications</div>
-      <div class="stat-value" id="statTotal">—</div>
+  <!-- TABS -->
+  <div class="tabs-row">
+    <button class="tab-btn active" onclick="switchTab('applications')">Manufacturer Applications</button>
+    <button class="tab-btn" onclick="switchTab('products')">Product Verification</button>
+  </div>
+
+  <!-- APPLICATIONS VIEW -->
+  <div id="applicationsView">
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total Applications</div>
+        <div class="stat-value" id="statTotal">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pending Review</div>
+        <div class="stat-value orange" id="statPending">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Approved</div>
+        <div class="stat-value green" id="statApproved">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Rejected</div>
+        <div class="stat-value red" id="statRejected">—</div>
+      </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-label">Pending Review</div>
-      <div class="stat-value orange" id="statPending">—</div>
+
+    <!-- Filter -->
+    <div class="filter-row">
+      <button class="filter-btn active" onclick="filterApps('all', this)">All</button>
+      <button class="filter-btn" onclick="filterApps('pending', this)">Pending</button>
+      <button class="filter-btn" onclick="filterApps('under_review', this)">Under Review</button>
+      <button class="filter-btn" onclick="filterApps('approved', this)">Approved</button>
+      <button class="filter-btn" onclick="filterApps('rejected', this)">Rejected</button>
     </div>
-    <div class="stat-card">
-      <div class="stat-label">Approved</div>
-      <div class="stat-value green" id="statApproved">—</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Rejected</div>
-      <div class="stat-value red" id="statRejected">—</div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>GSTIN</th>
+            <th>Categories</th>
+            <th>Status</th>
+            <th>Submitted</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="appTableBody">
+          <tr><td colspan="6"><div class="empty"><svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><p>Loading applications…</p></div></td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
-  <!-- Filter -->
-  <div class="filter-row">
-    <button class="filter-btn active" onclick="filterApps('all', this)">All</button>
-    <button class="filter-btn" onclick="filterApps('pending', this)">Pending</button>
-    <button class="filter-btn" onclick="filterApps('under_review', this)">Under Review</button>
-    <button class="filter-btn" onclick="filterApps('approved', this)">Approved</button>
-    <button class="filter-btn" onclick="filterApps('rejected', this)">Rejected</button>
-  </div>
+  <!-- PRODUCTS VIEW -->
+  <div id="productsView" style="display:none;">
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total Products</div>
+        <div class="stat-value" id="statProdTotal">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pending Verification</div>
+        <div class="stat-value orange" id="statProdPending">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Verified (Live)</div>
+        <div class="stat-value green" id="statProdVerified">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Rejected</div>
+        <div class="stat-value red" id="statProdRejected">—</div>
+      </div>
+    </div>
 
-  <!-- Table -->
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Company</th>
-          <th>GSTIN</th>
-          <th>Categories</th>
-          <th>Status</th>
-          <th>Submitted</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody id="appTableBody">
-        <tr><td colspan="6"><div class="empty"><svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><p>Loading applications…</p></div></td></tr>
-      </tbody>
-    </table>
+    <!-- Filter -->
+    <div class="filter-row">
+      <button class="filter-btn active" onclick="filterProducts('all', this)">All</button>
+      <button class="filter-btn" onclick="filterProducts('pending', this)">Pending</button>
+      <button class="filter-btn" onclick="filterProducts('verified', this)">Verified</button>
+      <button class="filter-btn" onclick="filterProducts('rejected', this)">Rejected</button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Product Name</th>
+            <th>Manufacturer</th>
+            <th>Categories</th>
+            <th>Status</th>
+            <th>Submitted</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="prodTableBody">
+          <tr><td colspan="6"><div class="empty"><svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><p>Loading products…</p></div></td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 
@@ -205,8 +270,25 @@
 <script>
   const API_BASE = 'http://localhost:4000';
   let allApps = [];
+  let allProducts = [];
   let currentFilter = 'all';
+  let currentProdFilter = 'all';
   let currentAppId = null;
+  let currentProdId = null;
+  let activeTab = 'applications';
+
+  function switchTab(tabId) {
+    activeTab = tabId;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    document.getElementById('applicationsView').style.display = tabId === 'applications' ? 'block' : 'none';
+    document.getElementById('productsView').style.display = tabId === 'products' ? 'block' : 'none';
+
+    if (tabId === 'products' && allProducts.length === 0) {
+      loadProducts();
+    }
+  }
 
   function getToken() { return localStorage.getItem('bm_token'); }
 
@@ -437,6 +519,165 @@
       showToast('Error: ' + err.message, 'red');
       btn.disabled = false;
       btn.textContent = decision === 'approved' ? '✓ Approve Application' : '✗ Reject Application';
+    }
+  }
+
+  // ── Load all products ──
+  async function loadProducts() {
+    try {
+      const res = await fetch(`${API_BASE}/api/products/admin/all`, {
+        headers: { 'Authorization': `Bearer ${getToken()}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+
+      allProducts = data.products || [];
+      updateProdStats();
+      renderProductsTable(allProducts);
+    } catch (err) {
+      console.error('Failed to load products:', err);
+      showToast('Failed to load products', 'red');
+    }
+  }
+
+  // ── Update product stat cards ──
+  function updateProdStats() {
+    document.getElementById('statProdTotal').textContent    = allProducts.length;
+    document.getElementById('statProdPending').textContent  = allProducts.filter(p => !p.is_verified && p.is_active !== false).length;
+    document.getElementById('statProdVerified').textContent = allProducts.filter(p => p.is_verified).length;
+    document.getElementById('statProdRejected').textContent = allProducts.filter(p => !p.is_verified && p.is_active === false).length;
+  }
+
+  // ── Filter Products ──
+  function filterProducts(status, btn) {
+    currentProdFilter = status;
+    btn.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    
+    let filtered = allProducts;
+    if (status === 'pending') filtered = allProducts.filter(p => !p.is_verified && p.is_active !== false);
+    if (status === 'verified') filtered = allProducts.filter(p => p.is_verified);
+    if (status === 'rejected') filtered = allProducts.filter(p => !p.is_verified && p.is_active === false);
+    
+    renderProductsTable(filtered);
+  }
+
+  // ── Render Products Table ──
+  function renderProductsTable(products) {
+    const tbody = document.getElementById('prodTableBody');
+    if (!products.length) {
+      tbody.innerHTML = `<tr><td colspan="6"><div class="empty">
+        <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        <p>No products found.</p></div></td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = products.map(p => `
+      <tr onclick="openProductSlideout('${p.id}')">
+        <td>
+          <div class="td-company">${p.name}</div>
+          <div class="td-email">SKU: ${p.sku || '—'}</div>
+        </td>
+        <td>
+          <div class="td-company">${p.manufacturers?.company_name || '—'}</div>
+        </td>
+        <td style="font-size:12px;color:var(--gray-600);">${p.specifications?.sector || '—'}</td>
+        <td><span class="badge ${p.is_verified ? 'b-approved' : (p.is_active === false ? 'b-rejected' : 'b-pending')}">${p.is_verified ? 'Verified (Live)' : (p.is_active === false ? 'Rejected' : 'Pending Verification')}</span></td>
+        <td style="font-size:12px;">${new Date(p.created_at).toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'})}</td>
+        <td>
+          <button onclick="event.stopPropagation();openProductSlideout('${p.id}')" style="background:var(--black);color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;">
+            Review
+          </button>
+        </td>
+      </tr>`).join('');
+  }
+
+  // ── Open slideout for product detail ──
+  function openProductSlideout(id) {
+    const prod = allProducts.find(p => p.id === id);
+    if (!prod) return;
+    currentProdId = id;
+
+    document.getElementById('slideTitle').textContent = prod.name;
+
+    const isPending = !prod.is_verified;
+
+    document.getElementById('slideBody').innerHTML = `
+      <div class="detail-section">
+        <div class="detail-section-title">Product Information</div>
+        <div class="detail-row"><span class="detail-key">Name</span><span class="detail-val">${prod.name}</span></div>
+        <div class="detail-row"><span class="detail-key">SKU</span><span class="detail-val">${prod.sku || '—'}</span></div>
+        <div class="detail-row"><span class="detail-key">Description</span><span class="detail-val" style="text-align:left;max-width:100%;margin-top:8px;font-weight:400;">${prod.description || '—'}</span></div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">Specifications</div>
+        <div class="detail-row"><span class="detail-key">Specs</span><span class="detail-val" style="text-align:left;max-width:100%;margin-top:8px;font-weight:400;white-space:pre-wrap;">${prod.specifications?.specs || '—'}</span></div>
+        <div class="detail-row"><span class="detail-key">MOQ</span><span class="detail-val">${prod.specifications?.moq || '—'}</span></div>
+        <div class="detail-row"><span class="detail-key">Lead Time (Days)</span><span class="detail-val">${prod.specifications?.lead_time_days || '—'}</span></div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">Manufacturer</div>
+        <div class="detail-row"><span class="detail-key">Company</span><span class="detail-val">${prod.manufacturers?.company_name || '—'}</span></div>
+        <div class="detail-row"><span class="detail-key">Location</span><span class="detail-val">${[prod.manufacturers?.city, prod.manufacturers?.state].filter(Boolean).join(', ') || '—'}</span></div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">Status</div>
+        <div class="detail-row"><span class="detail-key">Current Status</span><span class="detail-val"><span class="badge ${prod.is_verified ? 'b-approved' : (prod.is_active === false ? 'b-rejected' : 'b-pending')}">${prod.is_verified ? 'Verified (Live)' : (prod.is_active === false ? 'Rejected' : 'Pending Verification')}</span></span></div>
+        <div class="detail-row"><span class="detail-key">Submitted</span><span class="detail-val">${new Date(prod.created_at).toLocaleString('en-IN')}</span></div>
+      </div>
+
+      <div class="decision-area">
+        <div class="decision-title">Verification Decision</div>
+        <div style="font-size:12px;color:var(--gray-600);margin-bottom:12px;">Approving this product will make it live and visible to buyers in the public catalogue.</div>
+        <div class="decision-btns">
+          ${!prod.is_verified ? `<button class="btn-approve" onclick="submitProductDecision('verified')">✓ Verify & Publish</button>` : ''}
+          ${prod.is_verified ? `<button class="btn-reject" onclick="submitProductDecision('rejected')">✗ Revoke Verification</button>` : (prod.is_active !== false ? `<button class="btn-reject" onclick="submitProductDecision('rejected')">✗ Reject Product</button>` : '')}
+        </div>
+      </div>
+    `;
+
+    document.getElementById('overlay').classList.add('open');
+    document.getElementById('slideout').classList.add('open');
+  }
+
+  // ── Submit product decision ──
+  async function submitProductDecision(decision) {
+    if (!currentProdId) return;
+
+    const btn = decision === 'verified'
+      ? document.querySelector('.btn-approve')
+      : document.querySelector('.btn-reject');
+    if (btn) { btn.disabled = true; btn.textContent = 'Processing…'; }
+
+    try {
+      const res = await fetch(`${API_BASE}/api/products/admin/${currentProdId}/verify`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({ decision }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message);
+
+      showToast(
+        decision === 'verified' ? '✓ Product verified and published.' : '✗ Product verification revoked.',
+        decision === 'verified' ? 'green' : 'red'
+      );
+
+      closeSlideout();
+      await loadProducts();
+    } catch (err) {
+      showToast('Error: ' + err.message, 'red');
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = decision === 'verified' ? '✓ Verify & Publish' : (decision === 'rejected' ? '✗ Revoke Verification' : '✗ Reject Product');
+      }
     }
   }
 

@@ -125,6 +125,7 @@ const createProduct = async (req, res, next) => {
         sku,
         description,
         specifications,
+        is_active: true, // true means pending, false means rejected (if is_verified is false)
       })
       .select()
       .single();
@@ -137,4 +138,74 @@ const createProduct = async (req, res, next) => {
   }
 };
 
-module.exports = { getProducts, getProductById, getCategories, createProduct };
+// ── GET /api/products/admin/all ──────────────────────────────
+// Admin: list ALL products (including unverified) with manufacturer info
+const adminListProducts = async (req, res, next) => {
+  try {
+    const { data: products, error } = await supabase
+      .from('products')
+      .select(`
+        id, name, sku, description, specifications, images,
+        is_active, is_verified, created_at,
+        manufacturers (id, company_name, city, state, verification_status)
+      `)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    res.json({ success: true, products: products || [] });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ── PATCH /api/products/admin/:id/verify ─────────────────────
+// Admin: verify or reject a product
+const adminVerifyProduct = async (req, res, next) => {
+  try {
+    const { decision } = req.body; // 'verified' or 'rejected'
+
+    if (!['verified', 'rejected'].includes(decision)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Decision must be "verified" or "rejected".',
+      });
+    }
+
+    const isVerified = decision === 'verified';
+
+    const { data: product, error: fetchErr } = await supabase
+      .from('products')
+      .select('id, name, manufacturer_id')
+      .eq('id', req.params.id)
+      .single();
+
+    if (fetchErr || !product) {
+      return res.status(404).json({ success: false, message: 'Product not found.' });
+    }
+
+    const { error: updateErr } = await supabase
+      .from('products')
+      .update({
+        is_verified: isVerified,
+        is_active: isVerified, // auto-activate on verify, deactivate on reject
+      })
+      .eq('id', req.params.id);
+
+    if (updateErr) throw updateErr;
+
+    console.log(`Product ${req.params.id} (${product.name}) ${decision} by admin ${req.user.id}`);
+
+    res.json({
+      success: true,
+      message: `Product ${decision} successfully.`,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = {
+  getProducts, getProductById, getCategories, createProduct,
+  adminListProducts, adminVerifyProduct,
+};

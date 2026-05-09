@@ -1499,11 +1499,19 @@
       const loginRoleToggle = document.getElementById("loginRoleToggle");
       const loginRole = loginRoleToggle ? loginRoleToggle.dataset.role : 'buyer';
 
+      if (loginRole === 'buyer') {
+        alert('Buyer portal is coming soon. Please stay tuned!');
+        btn.disabled = false;
+        btn.textContent = 'Login';
+        return;
+      }
+
       try {
         const res = await fetch(`${API_BASE}/api/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: emailVal, password: passwordVal, role: loginRole }),
+
         });
         const data = await res.json();
 
@@ -1634,6 +1642,13 @@
       // Determine role from the toggle UI
       const roleToggle = document.getElementById("registerRoleToggle");
       const selectedRole = roleToggle ? roleToggle.getAttribute('data-role') : 'buyer';
+
+      if (selectedRole === 'buyer') {
+        alert('Buyer registration is coming soon. Please stay tuned!');
+        btn.disabled = false;
+        btn.textContent = 'Register';
+        return;
+      }
 
       console.log("Attempting registration for:", rEmailVal, "Role:", selectedRole);
 
