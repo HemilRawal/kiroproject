@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { register, login, verifyEmail, resendOTP, getMe } = require('../controllers/authController');
+const { register, login, verifyEmail, resendOTP, getMe, forgotPassword, resetPassword, verifyResetOTP } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
 const { validateRegister, validateLogin, validateVerifyOTP, validateResendOTP } = require('../middleware/validate');
 
@@ -19,5 +19,13 @@ router.post('/resend-otp', validateResendOTP, resendOTP);
 // GET /api/auth/me  (requires token)
 router.get('/me', protect, getMe);
 
+// POST /api/auth/forgot-password
+router.post('/forgot-password', validateResendOTP, forgotPassword);
+
+// POST /api/auth/verify-reset-otp
+router.post('/verify-reset-otp', verifyResetOTP);
+
+// POST /api/auth/reset-password
+router.post('/reset-password', resetPassword);
 
 module.exports = router;

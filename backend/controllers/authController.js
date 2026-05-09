@@ -476,11 +476,162 @@ const getMe = async (req, res, next) => {
   }
 };
 
+// ── POST /api/auth/forgot-password ────────────────────────────
+const forgotPassword = async (req, res, next) => {
+  try {
+    const { email, role = 'buyer' } = req.body;
+    const table = tableFor(role);
+
+    const { data: user } = await supabase
+      .from(table)
+      .select('id')
+      .eq('email', email)
+      .single();
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'No account found with this email address.' });
+    }
+
+    const otp = generateOTP();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+
+    const { error: insertError } = await supabase.from('verification_otps').insert({
+      identifier: 'reset:' + email,
+      otp_code:   otp,
+      otp_type:   'email',
+      user_role:  role,
+      expires_at: expiresAt,
+    });
+
+    if (insertError) {
+      console.error('OTP Insert Error:', insertError);
+      return res.status(500).json({ success: false, message: 'Database error generating OTP.' });
+    }
+
+    const roleLabel = role === 'manufacturer' ? 'Manufacturer' : 'Buyer';
+    try {
+      await resend.emails.send({
+        from: process.env.FROM_EMAIL || 'no-reply@bharatmodules.com',
+        to: email,
+        subject: `Password Reset Code: ${otp}`,
+        html: `
+          <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;">
+            <h2 style="color:#0a0a0a;margin-bottom:8px;">Reset your ${roleLabel} password</h2>
+            <p style="color:#555;margin-bottom:24px;">Use the code below to reset your password. It expires in 10 minutes.</p>
+            <div style="background:#f5f5f3;border-radius:12px;padding:24px;text-align:center;margin-bottom:24px;">
+              <span style="font-size:36px;font-weight:700;letter-spacing:0.2em;color:#e85c0d;">${otp}</span>
+            </div>
+            <p style="color:#999;font-size:13px;">If you didn't request this, you can safely ignore this email.</p>
+          </div>
+        `,
+      });
+    } catch (err) {
+      console.error('Resend email failed:', err.message);
+    }
+
+    res.json({ success: true, message: 'A password reset code has been sent to your email.' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ── POST /api/auth/reset-password ─────────────────────────────
+const resetPassword = async (req, res, next) => {
+  try {
+    const { email, otp, new_password, role = 'buyer' } = req.body;
+
+    if (!email || !otp || !new_password) {
+      return res.status(400).json({ success: false, message: 'Email, OTP, and new password are required.' });
+    }
+
+    if (new_password.length < 8) {
+      return res.status(400).json({ success: false, message: 'Password must be at least 8 characters.' });
+    }
+
+    const { data: record, error } = await supabase
+      .from('verification_otps')
+      .select('*')
+      .eq('identifier', 'reset:' + email)
+      .eq('otp_type', 'email')
+      .eq('user_role', role)
+      .eq('used', false)
+      .gt('expires_at', new Date().toISOString())
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error || !record || String(record.otp_code).trim() !== String(otp).trim()) {
+      console.log('Reset Password failed. Error:', error, 'Record:', record, 'Provided OTP:', otp);
+      return res.status(400).json({ success: false, message: 'Invalid or expired verification code.' });
+    }
+
+    await supabase
+      .from('verification_otps')
+      .update({ used: true })
+      .eq('id', record.id);
+
+    const password_hash = await bcrypt.hash(new_password, 12);
+    const table = tableFor(role);
+
+    // Update role specific table
+    await supabase
+      .from(table)
+      .update({ password_hash, updated_at: new Date().toISOString() })
+      .eq('email', email);
+
+    // Update main users table if exists
+    await supabase
+      .from('users')
+      .update({ password_hash })
+      .eq('email', email);
+
+    res.json({ success: true, message: 'Password has been reset successfully. You can now log in.' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ── POST /api/auth/verify-reset-otp ───────────────────────────
+const verifyResetOTP = async (req, res, next) => {
+  try {
+    const { email, otp, role = 'buyer' } = req.body;
+
+    if (!email || !otp) {
+      return res.status(400).json({ success: false, message: 'Email and OTP are required.' });
+    }
+
+    const { data: record, error } = await supabase
+      .from('verification_otps')
+      .select('*')
+      .eq('identifier', 'reset:' + email)
+      .eq('otp_type', 'email')
+      .eq('user_role', role)
+      .eq('used', false)
+      .gt('expires_at', new Date().toISOString())
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error || !record || String(record.otp_code).trim() !== String(otp).trim()) {
+      console.log('Verify Reset OTP failed. Error:', error, 'Record:', record, 'Provided OTP:', otp);
+      return res.status(400).json({ success: false, message: 'Invalid or expired verification code.' });
+    }
+
+    // Do NOT mark used yet, wait for actual reset
+    res.json({ success: true, message: 'Code verified successfully.' });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = { 
   register, 
   login, 
   verifyEmail, 
   resendOTP, 
-  getMe 
+  getMe,
+  forgotPassword,
+  verifyResetOTP,
+  resetPassword
 };
 

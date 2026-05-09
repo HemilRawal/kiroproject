@@ -1239,7 +1239,10 @@
           </div>
 
           <div class="form-group" id="fieldPassword">
-            <label for="password">Password</label>
+            <label for="password" style="display:flex; justify-content:space-between;">
+              <span>Password</span>
+              <a href="forgot-password.html" style="text-transform: none; letter-spacing: normal; color: #111; font-weight: 500; text-decoration: none;" onclick="const role = document.getElementById('loginRoleToggle').dataset.role; this.href='forgot-password.html?role='+role;">Forgot password?</a>
+            </label>
             <div class="password-input-wrapper">
               <input type="password" id="password" name="password" autocomplete="current-password"
                 placeholder="Enter your password" style="width: 100%; padding-right: 44px;" />
