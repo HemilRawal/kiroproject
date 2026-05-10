@@ -133,8 +133,14 @@
   <script>
     const API_BASE = 'http://localhost:4000';
     const params = new URLSearchParams(window.location.search);
-    const email = params.get("email");
-    const role = params.get("role") || localStorage.getItem("userRole") || "buyer";
+    const tempVerif = JSON.parse(localStorage.getItem('bm_temp_verification') || '{}');
+    const email = params.get("email") || tempVerif.email;
+    const role = params.get("role") || tempVerif.role || localStorage.getItem("userRole") || "buyer";
+
+    // Sync localStorage if we have data from params
+    if (email && role && (!tempVerif.email || tempVerif.email !== email)) {
+      localStorage.setItem('bm_temp_verification', JSON.stringify({ email, role }));
+    }
 
     function toggleMenu() {
       document.getElementById("navLinks").classList.toggle("open");
@@ -183,7 +189,9 @@
         const data = await res.json();
 
         if (data.success) {
-          // OTP is correct → go to reset password page
+          // OTP is correct → save to localStorage and go to reset password page
+          const currentVerif = JSON.parse(localStorage.getItem('bm_temp_verification') || '{}');
+          localStorage.setItem('bm_temp_verification', JSON.stringify({ ...currentVerif, email, role, otp: otpVal }));
           window.location.href = `reset-password.html?email=${encodeURIComponent(email)}&role=${encodeURIComponent(role)}&otp=${encodeURIComponent(otpVal)}`;
         } else {
           statusMsg.textContent = data.message || "Invalid or expired code.";

@@ -3844,8 +3844,19 @@
         if (fg) fg.classList.remove("has-error");
       }
 
-      /* ── PHASE 1 VALIDATION & VERIFICATION ── */
-      let verifiedStatus = { email: false, phone: false };
+      // Restore verified status from localStorage
+      let verifiedStatus = JSON.parse(localStorage.getItem('bm_onboarding_verified_status') || '{"email":false,"phone":false}');
+
+      function applyVerifiedUI() {
+        if (verifiedStatus.email) {
+          const btn = document.getElementById("btn-verify-email");
+          if (btn) { btn.innerHTML = `✓ Verified`; btn.classList.add("verified"); }
+        }
+        if (verifiedStatus.phone) {
+          const btn = document.getElementById("btn-verify-phone");
+          if (btn) { btn.innerHTML = `✓ Verified`; btn.classList.add("verified"); }
+        }
+      }
 
       function startVerification(type) {
         const targetEl =
@@ -3879,6 +3890,7 @@
         if (val === "1234") {
           err.style.display = "none";
           verifiedStatus[type] = true;
+          localStorage.setItem('bm_onboarding_verified_status', JSON.stringify(verifiedStatus));
 
           const container = document.getElementById("otp-container-" + type);
           container.style.display = "none";
@@ -4363,6 +4375,7 @@
       window.addEventListener("load", () => {
         resizeCanvas();
         updateSigGate();
+        applyVerifiedUI();
 
         // Pre-fill fields from registration data saved during signup
         const saved = localStorage.getItem('bharat_modules_registration');
@@ -4525,6 +4538,7 @@
               // Clean up only auth-unrelated localStorage
               localStorage.removeItem('bharat_modules_onboarding_phase');
               localStorage.removeItem('bm_onboarding_form_data');
+              localStorage.removeItem('bm_onboarding_verified_status');
               // Show phase 5 — "Verification in Progress"
               _originalGoToPhase(5);
             } else {
@@ -4586,6 +4600,15 @@
             target.scrollIntoView({ behavior: "smooth", block: "start" });
           }
         });
+      });
+
+      // ── Check for messages ──
+      document.addEventListener("DOMContentLoaded", () => {
+        const params = new URLSearchParams(window.location.search);
+        const msg = params.get('msg');
+        if (msg === 'approval_pending') {
+          alert('Onboarding Required: Please complete the verification process and wait for admin approval to access the product catalogue.');
+        }
       });
     </script>
     <!-- SEO: Structured descriptive content (visually hidden, accessible to search engines) -->

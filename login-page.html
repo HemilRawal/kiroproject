@@ -1147,10 +1147,59 @@
     // store temporarily
     localStorage.setItem("userRole", userRole);
 
-    // On DOM content loaded, apply role UI
+    // On DOM content loaded, apply role UI and restore form data
     document.addEventListener("DOMContentLoaded", () => {
       setRole(userRole, false); // false = don't update localstorage again on init
+      restoreFormData();
+      setupFormPersistence();
+      checkMessages();
     });
+
+    function checkMessages() {
+      const params = new URLSearchParams(window.location.search);
+      const msg = params.get('msg');
+      if (msg === 'auth_required') {
+        const header = document.querySelector('.login-header p');
+        if (header) {
+          header.innerHTML = '<span style="color: #e85d04; font-weight: 600;">Authentication Required:</span> Please log in first to access the product catalogue.';
+        }
+      }
+    }
+
+    function restoreFormData() {
+      // Restore Login Data
+      const loginData = JSON.parse(localStorage.getItem('bm_login_form_data') || '{}');
+      if (loginData.email) document.getElementById('email').value = loginData.email;
+
+      // Restore Register Data
+      const regData = JSON.parse(localStorage.getItem('bm_register_form_data') || '{}');
+      if (regData.fullName) document.getElementById('regFullName').value = regData.fullName;
+      if (regData.businessName) document.getElementById('regBusinessName').value = regData.businessName;
+      if (regData.email) document.getElementById('regEmail').value = regData.email;
+      if (regData.phone) document.getElementById('regPhone').value = regData.phone;
+    }
+
+    function setupFormPersistence() {
+      // Login Persistence
+      const loginEmail = document.getElementById('email');
+      loginEmail.addEventListener('input', () => {
+        localStorage.setItem('bm_login_form_data', JSON.stringify({ email: loginEmail.value }));
+      });
+
+      // Register Persistence
+      const regFields = ['regFullName', 'regBusinessName', 'regEmail', 'regPhone'];
+      regFields.forEach(id => {
+        document.getElementById(id).addEventListener('input', () => {
+          const data = {
+            fullName: document.getElementById('regFullName').value,
+            businessName: document.getElementById('regBusinessName').value,
+            email: document.getElementById('regEmail').value,
+            phone: document.getElementById('regPhone').value
+          };
+          localStorage.setItem('bm_register_form_data', JSON.stringify(data));
+        });
+      });
+    }
 
     function setRole(role, save = true) {
       if (save) {
@@ -1444,6 +1493,17 @@
 
     (function () {
       if (window.location.hash === "#register") showView("register");
+
+      // Restore pending verification if exists
+      const savedPending = localStorage.getItem('bm_pending_verification');
+      if (savedPending) {
+        try {
+          const d = JSON.parse(savedPending);
+          pendingVerification = { email: d.email, role: d.role, phone: d.phone };
+          // Small delay to ensure DOM is ready
+          setTimeout(() => showOTPOverlay(d.displayVal, d.currentStep), 500);
+        } catch (e) { }
+      }
     })();
 
     // ── MOBILE MENU ──
@@ -1575,6 +1635,9 @@
         localStorage.setItem('bm_token', data.token);
         localStorage.setItem('bm_user', JSON.stringify(data.user));
         localStorage.setItem('userRole', data.user.role);
+        
+        // Clear temporary form data on success
+        localStorage.removeItem('bm_login_form_data');
 
         // Manufacturer → manufacturer portal if approved, otherwise OEM landing page (onboarding)
         // Buyer → customer dashboard
@@ -1703,6 +1766,9 @@
         localStorage.setItem('bharat_modules_registration', JSON.stringify({
           name: rNameVal, business: rBizVal, email: rEmailVal, phone: rPhoneVal,
         }));
+        
+        // Clear temporary form data on success
+        localStorage.removeItem('bm_register_form_data');
 
         // Show OTP verification overlay
         console.log("Success! Showing OTP overlay for:", data.email);
@@ -1751,6 +1817,12 @@
     // ── OTP OVERLAY FUNCTIONS ──
     function showOTPOverlay(displayVal, type = 'email') {
       currentVerificationStep = type;
+      // Persist pending verification state
+      localStorage.setItem('bm_pending_verification', JSON.stringify({
+        ...pendingVerification,
+        currentStep: type,
+        displayVal: displayVal
+      }));
       document.getElementById('otpTitle').textContent = type === 'email' ? 'Verify Your Email' : 'Verify Your Phone';
       document.getElementById('otpSubtitleType').textContent = type;
       document.getElementById('otpDisplayValue').textContent = displayVal;
@@ -1769,6 +1841,8 @@
     function hideOTPOverlay() {
       document.getElementById('otpOverlay').classList.remove('active');
       if (resendTimer) clearInterval(resendTimer);
+      // Clear pending verification state
+      localStorage.removeItem('bm_pending_verification');
     }
 
     // OTP input auto-advance and paste handling
