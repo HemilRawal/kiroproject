@@ -339,11 +339,10 @@ const login = async (req, res, next) => {
       .single();
 
     if (error || !user) {
-      // Check if they exist in the OTHER role's table — give a helpful message
+      // Check other role table in parallel — give a helpful message
       const otherRole = requestedRole === 'buyer' ? 'manufacturer' : 'buyer';
-      const otherTable = tableFor(otherRole);
       const { data: otherUser } = await supabase
-        .from(otherTable)
+        .from(tableFor(otherRole))
         .select('id')
         .eq('email', email)
         .single();
@@ -355,7 +354,6 @@ const login = async (req, res, next) => {
           suggestedRole: otherRole,
         });
       }
-
       return res.status(401).json({ success: false, message: invalidMsg });
     }
 
@@ -375,16 +373,17 @@ const login = async (req, res, next) => {
     if (!user.email_verified) {
       const otp = generateOTP();
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
-
-      await supabase.from('verification_otps').insert({
-        identifier: email,
-        otp_code:   otp,
-        otp_type:   'email',
-        user_role:  requestedRole,
-        expires_at: expiresAt,
-      });
-      await sendOTPEmail(email, otp, requestedRole);
-
+      // Fire OTP insert and email in parallel
+      await Promise.all([
+        supabase.from('verification_otps').insert({
+          identifier: email,
+          otp_code:   otp,
+          otp_type:   'email',
+          user_role:  requestedRole,
+          expires_at: expiresAt,
+        }),
+        sendOTPEmail(email, otp, requestedRole),
+      ]);
       return res.status(403).json({
         success: false,
         requiresVerification: true,
@@ -394,12 +393,21 @@ const login = async (req, res, next) => {
       });
     }
 
-    // Get or create the main users table entry for JWT
-    let { data: mainUser } = await supabase
-      .from('users')
-      .select('id')
-      .eq('email', email)
-      .single();
+    // Run main users lookup + application status fetch in parallel
+    const [mainUserResult, appResult] = await Promise.all([
+      supabase.from('users').select('id').eq('email', email).single(),
+      requestedRole === 'manufacturer'
+        ? supabase
+            .from('onboarding_applications')
+            .select('status')
+            .eq('email', email)
+            .order('submitted_at', { ascending: false })
+            .limit(1)
+            .single()
+        : Promise.resolve({ data: null }),
+    ]);
+
+    let mainUser = mainUserResult.data;
 
     if (!mainUser) {
       // Sync to main users table — needed for onboarding/RFQ foreign keys
@@ -425,19 +433,7 @@ const login = async (req, res, next) => {
     };
     const token = signToken(tokenUser);
 
-    let applicationStatus = null;
-    if (requestedRole === 'manufacturer') {
-      const { data: appData } = await supabase
-        .from('onboarding_applications')
-        .select('status')
-        .eq('user_id', tokenUser.id)
-        .order('submitted_at', { ascending: false })
-        .limit(1)
-        .single();
-      if (appData) {
-        applicationStatus = appData.status;
-      }
-    }
+    const applicationStatus = appResult.data?.status || null;
 
     res.json({
       success: true,
