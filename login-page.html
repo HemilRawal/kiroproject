@@ -1152,7 +1152,19 @@
       setRole(userRole, false); // false = don't update localstorage again on init
       restoreFormData();
       setupFormPersistence();
+      checkMessages();
     });
+
+    function checkMessages() {
+      const params = new URLSearchParams(window.location.search);
+      const msg = params.get('msg');
+      if (msg === 'auth_required') {
+        const header = document.querySelector('.login-header p');
+        if (header) {
+          header.innerHTML = '<span style="color: #e85d04; font-weight: 600;">Authentication Required:</span> Please log in first to access the product catalogue.';
+        }
+      }
+    }
 
     function restoreFormData() {
       // Restore Login Data

@@ -1716,6 +1716,32 @@
   <link rel="stylesheet" href="navbar.css" />
 </head>
   <body>
+    <script>
+      // ── Authentication Guard ──
+      (function() {
+        const token = localStorage.getItem('bm_token');
+        const userStr = localStorage.getItem('bm_user');
+        
+        if (!token || !userStr) {
+          // Store the current URL to redirect back after login
+          localStorage.setItem('auth_redirect_back', window.location.href);
+          window.location.href = 'login-page.html?msg=auth_required';
+          return;
+        }
+
+        try {
+          const user = JSON.parse(userStr);
+          // If manufacturer, they must be approved to see the catalogue
+          if (user.role === 'manufacturer' && user.application_status !== 'approved') {
+            window.location.href = 'onboarding2.html?msg=approval_pending';
+            return;
+          }
+        } catch (e) {
+          console.error("Auth Guard Error:", e);
+          window.location.href = 'login-page.html';
+        }
+      })();
+    </script>
     <div class="nav-backdrop-fade"></div>
 
     <!-- ══════════════ NAV ══════════════ -->
@@ -2371,10 +2397,12 @@
 
       /* ══════════════════════════════════════════
    LOAD PRODUCTS FROM BACKEND
-   Falls back to hardcoded PRODUCTS if API
-   returns nothing (dev / empty DB)
+   Only real manufacturer-added products are shown.
 ══════════════════════════════════════════ */
       document.addEventListener('DOMContentLoaded', async () => {
+        // Initialize with empty if not loaded yet
+        window.PRODUCTS = [];
+
         try {
           const params = new URLSearchParams();
           if (window.initialCategory && window.initialCategory !== 'All') {
@@ -2385,7 +2413,7 @@
           const res = await fetch(`${API_BASE}/api/products?${params}`);
           const data = await res.json();
 
-          if (res.ok && data.products && data.products.length > 0) {
+          if (res.ok && data.products) {
             // Map API shape to the shape renderGrid() expects
             const apiProducts = data.products.map(p => ({
               id: p.id,
@@ -2400,15 +2428,14 @@
               certs: [],
               compliance: [],
             }));
-            // Replace the hardcoded PRODUCTS with real ones
+            // Update PRODUCTS
             window.PRODUCTS = apiProducts;
           }
-          // else: keep using the hardcoded PRODUCTS from products.js
         } catch (err) {
-          console.warn('Could not load products from API, using local data:', err.message);
+          console.error('Failed to fetch products:', err);
         }
 
-        // Now render with whatever data we have
+        // Now render with real data
         if (window.initialCategory && window.initialCategory !== 'All') {
           filterByCategory(window.initialCategory);
         } else {
@@ -2430,9 +2457,10 @@
         const grid = document.getElementById("productGrid");
         document.getElementById("resultCount").textContent = products.length;
         if (!products.length) {
-          grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 0;color:var(--gray-400)">
-      <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom:12px;opacity:.4"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <p style="font-size:14px">No products match your filters.</p></div>`;
+          grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:120px 0;color:var(--gray-400)">
+      <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24" style="margin-bottom:20px;opacity:.25"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+      <p style="font-size:16px; font-weight:500; color:var(--gray-700)">Still no product added.</p>
+      <p style="font-size:13px; margin-top:8px; opacity:0.7;">Check back later once manufacturers upload their inventory.</p></div>`;
           return;
         }
         grid.innerHTML = products

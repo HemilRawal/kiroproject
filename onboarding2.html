@@ -4601,6 +4601,15 @@
           }
         });
       });
+
+      // ── Check for messages ──
+      document.addEventListener("DOMContentLoaded", () => {
+        const params = new URLSearchParams(window.location.search);
+        const msg = params.get('msg');
+        if (msg === 'approval_pending') {
+          alert('Onboarding Required: Please complete the verification process and wait for admin approval to access the product catalogue.');
+        }
+      });
     </script>
     <!-- SEO: Structured descriptive content (visually hidden, accessible to search engines) -->
     <div
