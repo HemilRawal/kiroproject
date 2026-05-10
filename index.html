@@ -2079,6 +2079,11 @@
       </div>
       <div class="footer-bottom">
         <p>© 2026 Bharat Modules. All rights reserved.</p>
+        <button onclick="showAdminLogin()"
+          style="background:none;border:none;color:#333;font-family:'Outfit',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:color 0.2s;padding:4px 0;"
+          onmouseover="this.style.color='#666'" onmouseout="this.style.color='#333'">
+          Admin Portal
+        </button>
         <a href="#hero" class="scroll-top" aria-label="Back to top">
           <svg
             width="14"
@@ -2093,16 +2098,6 @@
         </a>
       </div>
     </footer>
-
-    <!-- Admin login toggle -->
-    <div style="position:fixed;bottom:24px;right:80px;z-index:200;">
-      <button onclick="showAdminLogin()" 
-        style="background:#111;border:1px solid rgba(255,255,255,0.1);color:#fff;padding:10px 20px;border-radius:100px;font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.3s;font-family:'Outfit',sans-serif;box-shadow:0 10px 25px rgba(0,0,0,0.25);"
-        onmouseover="this.style.background='#000';this.style.transform='translateY(-2px)';this.style.boxShadow='0 15px 30px rgba(0,0,0,0.4)'"
-        onmouseout="this.style.background='#111';this.style.transform='translateY(0)';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.25)'">
-        Admin Portal
-      </button>
-    </div>
 
     <!-- Admin login modal -->
     <div id="adminModal"
@@ -2322,7 +2317,7 @@
         requestAnimationFrame(tick);
       }
       // ── Admin Login Logic ──
-      const API_BASE = 'https://bharat-modules-api.onrender.com';
+      const API_BASE = 'http://localhost:4000';
 
       function showAdminLogin() {
         document.getElementById('adminModal').style.display = 'flex';

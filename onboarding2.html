@@ -2045,7 +2045,7 @@
           <h2>Company Documents</h2>
           <p class="sub">
             Upload the required business certificates. All documents must be PDF
-            (max 5 MB).
+            (Max 2 MB).
           </p>
 
           <form id="form-phase2" onsubmit="return false;" novalidate>
@@ -2116,12 +2116,12 @@
                 </div>
                 <div class="upload-text">
                   <strong>Upload PDF</strong>
-                  <span>Certificate of Incorporation (MCA) · Max 5 MB</span>
+                  <span>Certificate of Incorporation (MCA) · Max 2 MB</span>
                 </div>
                 <span class="upload-status" id="us-coi">PDF only</span>
               </div>
               <div class="field-error" id="fe-coi">
-                Please upload your Certificate of Incorporation (PDF, max 5 MB).
+                Please upload your Certificate of Incorporation (PDF, Max 2 MB).
               </div>
             </div>
 
@@ -2149,18 +2149,18 @@
                 </div>
                 <div class="upload-text">
                   <strong>Upload PDF</strong>
-                  <span>GST certificate document · Max 5 MB</span>
+                  <span>GST certificate document · Max 2 MB</span>
                 </div>
                 <span class="upload-status" id="us-gst">PDF only</span>
               </div>
               <div class="field-error" id="fe-gst">
-                Please upload your GST certificate (PDF, max 5 MB).
+                Please upload your GST certificate (PDF, Max 2 MB).
               </div>
             </div>
 
             <div class="form-group" id="fg-msme">
               <label
-                >3. MSME / Udyam Certificate <span class="req">*</span></label
+                >3. MSME / Udyam Certificate <span style="font-size:11px;color:var(--gray-400);font-weight:400;">(Optional)</span></label
               >
               <div class="file-upload" id="fu-msme">
                 <input
@@ -2184,12 +2184,12 @@
                 </div>
                 <div class="upload-text">
                   <strong>Upload PDF</strong>
-                  <span>MSME or Udyam registration certificate · Max 5 MB</span>
+                  <span>MSME or Udyam registration certificate · Max 2 MB</span>
                 </div>
                 <span class="upload-status" id="us-msme">PDF only</span>
               </div>
               <div class="field-error" id="fe-msme">
-                Please upload your MSME certificate (PDF, max 5 MB).
+                Please upload your MSME certificate (PDF, Max 2 MB).
               </div>
             </div>
 
@@ -2222,12 +2222,12 @@
                 </div>
                 <div class="upload-text">
                   <strong>Upload PDF</strong>
-                  <span>Factory or manufacturing license · Max 5 MB</span>
+                  <span>Factory or manufacturing license · Max 2 MB</span>
                 </div>
                 <span class="upload-status" id="us-factory">PDF only</span>
               </div>
               <div class="field-error" id="fe-factory">
-                Please upload your factory license (PDF, max 5 MB).
+                Please upload your factory license (PDF, Max 2 MB).
               </div>
             </div>
 
@@ -2255,12 +2255,12 @@
                 </div>
                 <div class="upload-text">
                   <strong>Upload PDF</strong>
-                  <span>Company PAN Card document · Max 5 MB</span>
+                  <span>Company PAN Card document · Max 2 MB</span>
                 </div>
                 <span class="upload-status" id="us-pan">PDF only</span>
               </div>
               <div class="field-error" id="fe-pan">
-                Please upload your Company PAN Card (PDF, max 5 MB).
+                Please upload your Company PAN Card (PDF, Max 2 MB).
               </div>
             </div>
 
@@ -3408,7 +3408,7 @@
                 </div>
                 <div class="upload-text">
                   <strong>Upload Document or Image</strong>
-                  <span>Signature or stamped document · Max 5 MB</span>
+                  <span>Signature or stamped document · Max 2 MB</span>
                 </div>
                 <span class="upload-status" id="us-sigdoc">PDF/Image</span>
               </div>
@@ -3709,7 +3709,7 @@
 
       /* ── STATE ── */
       let currentPhase = 1;
-      const MAX_FILE_BYTES = 5 * 1024 * 1024; // FIX #5: 5 MB limit
+      const MAX_FILE_BYTES = 2 * 1024 * 1024; // 2 MB limit
       const uploadedFiles = {
         gst: false,
         msme: false,
@@ -3809,7 +3809,7 @@
           uploadedFiles[key] = false;
           if (fg) {
             fg.querySelector(".field-error").textContent =
-              "File too large. Maximum allowed size is 5 MB.";
+              "File too large. Maximum allowed size is 2 MB.";
             fg.classList.add("has-error");
           }
           return;
@@ -3958,7 +3958,7 @@
       function validatePhase2() {
         let valid = true;
 
-        ["coi", "gst", "msme", "factory", "pan"].forEach((key) => {
+        ["coi", "gst", "factory", "pan"].forEach((key) => {
           const fg = document.getElementById("fg-" + key);
           if (!uploadedFiles[key]) {
             fg.classList.add("has-error");
@@ -4404,7 +4404,7 @@
         document.getElementById('phase5')?.classList.add('active');
 
         try {
-          const res = await fetch('https://bharat-modules-api.onrender.com/api/onboarding/status', {
+          const res = await fetch('http://localhost:4000/api/onboarding/status', {
             headers: { 'Authorization': `Bearer ${token}` },
           });
           const data = await res.json();
@@ -4496,7 +4496,7 @@
             }
 
             // ── Submit to backend ──
-            const res = await fetch('https://bharat-modules-api.onrender.com/api/onboarding/submit', {
+            const res = await fetch('http://localhost:4000/api/onboarding/submit', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -4621,7 +4621,7 @@
         required compliance documents including your GST registration
         certificate, MSME certificate, company bank statement, factory or
         manufacturing license, and company PAN card. All documents must be in
-        PDF format and under 5 MB.
+        PDF format and under 2 MB.
       </p>
       <p>
         Step 3 requires you to read and acknowledge all eight sections of the

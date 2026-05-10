@@ -2807,7 +2807,7 @@
       if (btn) { btn.disabled = true; btn.textContent = 'Creating account…'; }
 
       // Call register API with role = manufacturer
-      fetch('https://bharat-modules-api.onrender.com/api/auth/register', {
+      fetch('http://localhost:4000/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -2860,7 +2860,7 @@
         window.location.href = 'login-page.html?role=manufacturer';
         return;
       }
-      fetch('https://bharat-modules-api.onrender.com/api/onboarding/status', {
+      fetch('http://localhost:4000/api/onboarding/status', {
         headers: { 'Authorization': `Bearer ${token}` },
       })
       .then(r => r.json())
