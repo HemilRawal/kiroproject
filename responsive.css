@@ -1,0 +1,6 @@
+/* Dummy responsive.css to prevent 404 errors */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+}
