@@ -4896,39 +4896,117 @@
 
       // Password reset flow
       function initPwdReset() {
-        document.getElementById("pwdStep0").style.display = "none";
-        document.getElementById("pwdStep1").style.display = "block";
+        const user = JSON.parse(localStorage.getItem('bm_user') || '{}');
+        const email = user.email || '';
+        const emailEl = document.getElementById('pwdResetEmail');
+        if (emailEl) emailEl.textContent = email || 'your registered email';
+
+        const btn = document.querySelector('#pwdStep0 .btn');
+        if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+
+        fetch(`${API_BASE}/api/auth/forgot-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, role: 'manufacturer' }),
+        })
+        .then(r => r.json())
+        .then(data => {
+          if (!data.success) {
+            alert(data.message || 'Failed to send OTP.');
+            if (btn) { btn.disabled = false; btn.textContent = 'Change Password'; }
+            return;
+          }
+          document.getElementById('pwdStep0').style.display = 'none';
+          document.getElementById('pwdStep1').style.display = 'block';
+          if (btn) { btn.disabled = false; btn.textContent = 'Change Password'; }
+        })
+        .catch(() => {
+          alert('Network error. Please try again.');
+          if (btn) { btn.disabled = false; btn.textContent = 'Change Password'; }
+        });
       }
+
       function verifyOtp() {
-        const otp = document.getElementById("otpInput").value.trim();
+        const otp = document.getElementById('otpInput').value.trim();
         if (otp.length < 6) {
-          alert("Enter the 6-digit OTP.");
+          alert('Enter the 6-digit OTP.');
           return;
         }
-        document.getElementById("pwdStep1").style.display = "none";
-        document.getElementById("pwdStep2").style.display = "block";
+
+        const user = JSON.parse(localStorage.getItem('bm_user') || '{}');
+        const email = user.email || '';
+        const btn = document.querySelector('#pwdStep1 .btn.btn-primary');
+        if (btn) { btn.disabled = true; btn.textContent = 'Verifying…'; }
+
+        fetch(`${API_BASE}/api/auth/verify-reset-otp`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, otp, role: 'manufacturer' }),
+        })
+        .then(r => r.json())
+        .then(data => {
+          if (!data.success) {
+            alert(data.message || 'Invalid or expired code.');
+            if (btn) { btn.disabled = false; btn.textContent = 'Verify & Continue'; }
+            return;
+          }
+          document.getElementById('pwdStep1').style.display = 'none';
+          document.getElementById('pwdStep2').style.display = 'block';
+          if (btn) { btn.disabled = false; btn.textContent = 'Verify & Continue'; }
+        })
+        .catch(() => {
+          alert('Network error. Please try again.');
+          if (btn) { btn.disabled = false; btn.textContent = 'Verify & Continue'; }
+        });
       }
+
       function savePwd() {
-        const np = document.getElementById("newPwd").value;
-        const cp = document.getElementById("confirmPwd").value;
-        if (np.length < 8) {
-          alert("Password must be at least 8 characters.");
-          return;
-        }
-        if (np !== cp) {
-          alert("Passwords do not match.");
-          return;
-        }
-        document.getElementById("pwdStep2").style.display = "none";
-        document.getElementById("pwdStep3").style.display = "block";
+        const np = document.getElementById('newPwd').value;
+        const cp = document.getElementById('confirmPwd').value;
+        if (np.length < 8) { alert('Password must be at least 8 characters.'); return; }
+        if (np !== cp)     { alert('Passwords do not match.'); return; }
+
+        const user = JSON.parse(localStorage.getItem('bm_user') || '{}');
+        const email = user.email || '';
+        const otp   = document.getElementById('otpInput').value.trim();
+        const btn   = document.querySelector('#pwdStep2 .btn.btn-primary');
+        if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+
+        fetch(`${API_BASE}/api/auth/reset-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, otp, new_password: np, role: 'manufacturer' }),
+        })
+        .then(r => r.json())
+        .then(data => {
+          if (!data.success) {
+            alert(data.message || 'Failed to reset password.');
+            if (btn) { btn.disabled = false; btn.textContent = 'Save New Password'; }
+            return;
+          }
+          document.getElementById('pwdStep2').style.display = 'none';
+          document.getElementById('pwdStep3').style.display = 'block';
+          if (btn) { btn.disabled = false; btn.textContent = 'Save New Password'; }
+        })
+        .catch(() => {
+          alert('Network error. Please try again.');
+          if (btn) { btn.disabled = false; btn.textContent = 'Save New Password'; }
+        });
       }
+
       function cancelPwdReset() {
-        ["pwdStep1", "pwdStep2", "pwdStep3"].forEach(
-          (id) => (document.getElementById(id).style.display = "none"),
+        ['pwdStep1', 'pwdStep2', 'pwdStep3'].forEach(
+          (id) => (document.getElementById(id).style.display = 'none'),
         );
-        document.getElementById("pwdStep0").style.display = "block";
-        if (document.getElementById("otpInput"))
-          document.getElementById("otpInput").value = "";
+        document.getElementById('pwdStep0').style.display = 'block';
+        const otpEl = document.getElementById('otpInput');
+        if (otpEl) otpEl.value = '';
+        const newPwdEl = document.getElementById('newPwd');
+        if (newPwdEl) newPwdEl.value = '';
+        const confirmPwdEl = document.getElementById('confirmPwd');
+        if (confirmPwdEl) confirmPwdEl.value = '';
+        const btn = document.querySelector('#pwdStep0 .btn');
+        if (btn) { btn.disabled = false; btn.textContent = 'Change Password'; }
       }
 
       document.addEventListener("keydown", (e) => {
