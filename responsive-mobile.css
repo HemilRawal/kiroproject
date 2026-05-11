@@ -1,0 +1,207 @@
+/* ── BASE RESETS (non-breaking) ── */
+*, *::before, *::after { box-sizing: border-box; }
+html { overflow-x: hidden; scroll-behavior: smooth; }
+body { overflow-x: hidden; min-width: 320px; }
+img, video, iframe, table { max-width: 100%; }
+input, select, textarea, button { font-size: 16px !important; } /* prevent iOS zoom */
+a, button { min-height: 44px; min-width: 44px; } /* tap targets */
+
+/* ── MOBILE PORTRAIT ≤480px ── */
+@media (max-width: 480px) {
+
+  /* Layout */
+  .container, [class*="container"], [class*="wrapper"] {
+    width: 100% !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  /* Columns → stack */
+  [class*="col-"], [class*="column"], [class*="grid"] {
+    width: 100% !important;
+    float: none !important;
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Flex rows → column */
+  [class*="row"], [class*="flex"], [style*="display:flex"], [style*="display: flex"] {
+    flex-direction: column !important;
+    flex-wrap: wrap !important;
+  }
+
+  /* Typography fluid */
+  h1 { font-size: clamp(1.6rem, 6vw, 2.2rem) !important; }
+  h2 { font-size: clamp(1.3rem, 5vw, 1.8rem) !important; }
+  h3 { font-size: clamp(1.1rem, 4vw, 1.4rem) !important; }
+  p, li, td, th, label, input, select, textarea {
+    font-size: clamp(0.875rem, 3.5vw, 1rem) !important;
+    line-height: 1.6 !important;
+  }
+
+  /* Tables horizontal scroll */
+  table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Forms full width */
+  input, select, textarea {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Auth card pages (login/forgot/reset/verify) */
+  [class*="card"], [class*="form-box"], [class*="login"], [class*="auth"] {
+    width: 90% !important;
+    max-width: 400px !important;
+    margin: 20px auto !important;
+    padding: 24px 16px !important;
+  }
+
+  /* Sidebar → hide, show toggle */
+  [class*="sidebar"] {
+    position: fixed !important;
+    left: -100% !important;
+    top: 0 !important;
+    height: 100vh !important;
+    z-index: 9999 !important;
+    transition: left 0.3s ease !important;
+    width: 260px !important;
+  }
+  [class*="sidebar"].mobile-open {
+    left: 0 !important;
+  }
+
+  /* Main content full width when sidebar hidden */
+  [class*="main-content"], [class*="content-area"] {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  /* Navbar mobile */
+  [class*="nav-links"], [class*="nav-menu"] {
+    display: none !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    position: absolute !important;
+    top: 60px !important;
+    left: 0 !important;
+    background: inherit !important;
+    z-index: 9998 !important;
+    padding: 16px 0 !important;
+  }
+  [class*="nav-links"].mobile-open,
+  [class*="nav-menu"].mobile-open {
+    display: flex !important;
+  }
+  [class*="nav-links"] a, [class*="nav-menu"] a {
+    padding: 12px 20px !important;
+    width: 100% !important;
+    display: block !important;
+  }
+
+  /* Product/card grids */
+  [class*="product-grid"], [class*="card-grid"], [class*="catalogue"] {
+    grid-template-columns: 1fr !important;
+    display: grid !important;
+  }
+
+  /* Stats/dashboard cards */
+  [class*="stat-card"], [class*="dashboard-card"], [class*="summary-card"] {
+    width: 100% !important;
+    margin-bottom: 12px !important;
+  }
+
+  /* Hero sections */
+  [class*="hero"], [class*="banner"] {
+    min-height: auto !important;
+    padding: 40px 16px !important;
+    text-align: center !important;
+  }
+
+  /* Map iframe */
+  iframe[src*="map"], iframe[src*="google"] {
+    width: 100% !important;
+    height: 280px !important;
+  }
+
+  /* Fixed width elements */
+  [style*="width:"], [style*="width: "] {
+    max-width: 100% !important;
+  }
+}
+
+/* ── TABLET 481–768px ── */
+@media (min-width: 481px) and (max-width: 768px) {
+
+  [class*="col-"], [class*="column"] {
+    flex: 0 0 50% !important;
+    max-width: 50% !important;
+  }
+
+  [class*="product-grid"], [class*="card-grid"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  [class*="sidebar"] {
+    position: fixed !important;
+    left: -100% !important;
+    width: 280px !important;
+    height: 100vh !important;
+    z-index: 9999 !important;
+    transition: left 0.3s ease !important;
+  }
+  [class*="sidebar"].mobile-open { left: 0 !important; }
+
+  [class*="main-content"], [class*="content-area"] {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+}
+
+/* ── TABLET LANDSCAPE 769–1024px ── */
+@media (min-width: 769px) and (max-width: 1024px) {
+
+  [class*="product-grid"], [class*="card-grid"] {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+
+  [class*="container"], [class*="wrapper"] {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+}
+
+/* ── HAMBURGER BUTTON (injected, always visible ≤768px) ── */
+@media (max-width: 768px) {
+  .mobile-hamburger {
+    display: flex !important;
+    flex-direction: column !important;
+    cursor: pointer !important;
+    gap: 5px !important;
+    padding: 8px !important;
+    z-index: 10000 !important;
+    background: transparent !important;
+    border: none !important;
+  }
+  .mobile-hamburger span {
+    display: block !important;
+    width: 24px !important;
+    height: 2px !important;
+    background: currentColor !important;
+    border-radius: 2px !important;
+  }
+  .mobile-sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 9997;
+  }
+  .mobile-sidebar-overlay.mobile-open { display: block; }
+}
+@media (min-width: 769px) {
+  .mobile-hamburger { display: none !important; }
+}

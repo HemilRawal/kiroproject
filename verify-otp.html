@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verify Code – Bharat Modules</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="navbar.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: auto; }
+    body { font-family: "Outfit", sans-serif; background: #fafafa; color: #050505; overflow-x: hidden; }
+
+    nav { position: fixed; top: 16px; left: 24px; right: 24px; z-index: 100; background: rgba(10,10,10,0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; height: 60px; display: flex; align-items: center; padding: 0 28px; justify-content: space-between; box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.04) inset; }
+    .nav-logo { text-decoration: none !important; }
+    .nav-logo-img { height: 50px; width: auto; cursor: pointer; }
+    .nav-links { display: flex; align-items: center; gap: 36px; list-style: none; }
+    .nav-links a { font-family: "Outfit", sans-serif; font-size: 13.5px; font-weight: 500; color: #ccc; text-decoration: none; letter-spacing: 0.04em; text-transform: uppercase; transition: color 0.2s; }
+    .nav-links a:hover { color: #ff6b00; }
+    .hamburger { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 4px; }
+    .hamburger span { width: 22px; height: 2px; background: #fff; display: block; transition: all 0.3s; }
+
+    .page-wrapper { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 120px 40px 80px; position: relative; overflow: hidden; }
+    .page-wrapper::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,0,0,0.04) 39px, rgba(0,0,0,0.04) 40px), repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0,0,0,0.04) 39px, rgba(0,0,0,0.04) 40px); pointer-events: none; }
+    .page-wrapper::after { content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600px; height: 600px; background: radial-gradient(ellipse at center, rgba(0,0,0,0.035) 0%, transparent 70%); pointer-events: none; }
+
+    .card { position: relative; z-index: 1; max-width: 460px; width: 100%; background: rgba(255,255,255,0.72); backdrop-filter: blur(24px) saturate(1.8); -webkit-backdrop-filter: blur(24px) saturate(1.8); border: 1px solid rgba(255,255,255,0.5); border-radius: 20px; padding: 44px 44px 52px; box-shadow: 0 4px 6px rgba(0,0,0,0.04), 0 12px 40px rgba(0,0,0,0.08), 0 1px 0 rgba(255,255,255,0.9) inset; animation: fadeUp 0.65s cubic-bezier(0.22,1,0.36,1) forwards; background-image: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0.7) 100%); }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(24px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+    .back-button { display: flex; align-items: center; gap: 6px; margin-bottom: 20px; background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; padding: 8px 16px; font-family: "Outfit", sans-serif; font-size: 12px; font-weight: 600; color: #444; letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer; transition: all 0.25s ease; text-decoration: none; }
+    .back-button:hover { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.2); color: #111; }
+
+    .card-header { margin-bottom: 36px; }
+    .card-header::before { content: ""; display: block; width: 32px; height: 2px; background: #111; border-radius: 2px; margin-bottom: 20px; }
+    .card-header h1 { font-size: 30px; font-weight: 700; color: #0f0f0f; letter-spacing: -0.02em; margin-bottom: 6px; }
+    .card-header p { font-size: 14px; color: #888; line-height: 1.6; font-weight: 400; }
+    .card-header strong { color: #e85d04; }
+
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #555; margin-bottom: 8px; }
+    .form-group input { width: 100%; background: rgba(255,255,255,0.75); border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; padding: 14px 16px; font-family: "Outfit", sans-serif; font-size: 14px; color: #111; outline: none; transition: all 0.3s ease; }
+    .form-group input::placeholder { color: #bbb; font-weight: 300; }
+    .form-group input:focus { background: rgba(255,255,255,0.95); border-color: #111; box-shadow: 0 0 0 3px rgba(0,0,0,0.06); transform: translateY(-1px); }
+    .form-group.error input { border-color: #ef4444; background: rgba(239,68,68,0.03); box-shadow: 0 0 0 3px rgba(239,68,68,0.08); }
+    .error-message { display: none; font-size: 11px; color: #ef4444; margin-top: 6px; }
+    .form-group.error .error-message { display: block; }
+
+    .otp-input { letter-spacing: 0.5em !important; font-weight: 600 !important; text-align: center !important; font-size: 20px !important; }
+
+    .btn-primary { width: 100%; background: #0f0f0f; color: #fff; padding: 15px; font-family: "Outfit", sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; border: none; border-radius: 10px; cursor: pointer; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); margin-top: 28px; position: relative; overflow: hidden; }
+    .btn-primary::before { content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent); transition: left 0.5s ease; }
+    .btn-primary:hover::before { left: 100%; }
+    .btn-primary:hover { background: #1a1a1a; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.22); }
+    .btn-primary:active { transform: translateY(0) scale(0.99); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .status-msg { text-align: center; margin-top: 16px; font-size: 13px; min-height: 20px; }
+    .status-msg.success { color: #16a34a; }
+    .status-msg.error { color: #ef4444; }
+
+    .resend-link { text-align: center; margin-top: 20px; font-size: 13px; color: #888; }
+    .resend-link a { color: #111; font-weight: 600; text-decoration: none; cursor: pointer; border-bottom: 1px solid transparent; transition: all 0.2s; }
+    .resend-link a:hover { border-bottom-color: #000; }
+    .resend-link a.disabled { color: #bbb; pointer-events: none; }
+
+    @media (max-width: 768px) {
+      nav { left: 12px; right: 12px; top: 10px; padding: 0 16px; border-radius: 12px; height: 56px; }
+      .hamburger { display: flex; }
+      .nav-links { display: none !important; position: fixed; top: 76px; left: 12px; right: 12px; background: rgba(10,10,10,0.97); backdrop-filter: blur(20px); flex-direction: column; gap: 0; padding: 0; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden; opacity: 0; pointer-events: none; transform: translateY(-8px) scale(0.98); transition: all 0.3s; z-index: 300; }
+      .nav-links.open { display: flex !important; opacity: 1; pointer-events: all; transform: translateY(0) scale(1); }
+      .nav-links li { border-bottom: 1px solid #1e1e1e; width: 100%; text-align: center; }
+      .nav-links a { padding: 16px 24px; display: block; font-size: 15px; }
+      .page-wrapper { padding: 120px 20px 60px; }
+      .card { padding: 44px 28px; border-radius: 16px; }
+      .nav-logo-img { height: 36px !important; }
+    }
+    @media (max-width: 480px) {
+      .card { padding: 36px 20px; border-radius: 14px; }
+      .card-header h1 { font-size: 26px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav id="nav">
+    <a href="index.html" class="nav-logo">
+      <img src="logo.jpeg" alt="Bharat Modules Logo" class="nav-logo-img" />
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="catalogue.html">Products</a></li>
+      <li><a href="contact_us.html">Contact Us</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="page-wrapper">
+    <div class="card">
+      <a href="forgot-password.html" class="back-button">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path d="M19 12H5M12 5l-7 7 7 7" />
+        </svg>
+        Back
+      </a>
+
+      <div class="card-header">
+        <h1>Enter Verification Code</h1>
+        <p>We sent a 6-digit code to <strong id="displayEmail">your email</strong>. Enter it below to continue.</p>
+      </div>
+
+      <form id="verifyForm">
+        <div class="form-group" id="fieldOtp">
+          <label for="otp">6-Digit Code</label>
+          <input type="text" id="otp" maxlength="6" inputmode="numeric" pattern="[0-9]{6}" placeholder="● ● ● ● ● ●" class="otp-input" autocomplete="one-time-code" />
+          <div class="error-message" id="otpError">Enter a valid 6-digit code</div>
+        </div>
+
+        <button type="submit" class="btn-primary" id="btnVerify">Verify Code</button>
+      </form>
+
+      <div class="status-msg" id="statusMsg"></div>
+
+      <div class="resend-link">
+        Didn't receive the code? <a id="resendLink" onclick="handleResend()">Resend</a>
+        <span id="cooldownText"></span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:4000';
+    const params = new URLSearchParams(window.location.search);
+    const tempVerif = JSON.parse(localStorage.getItem('bm_temp_verification') || '{}');
+    const email = params.get("email") || tempVerif.email;
+    const role = params.get("role") || tempVerif.role || localStorage.getItem("userRole") || "buyer";
+
+    // Sync localStorage if we have data from params
+    if (email && role && (!tempVerif.email || tempVerif.email !== email)) {
+      localStorage.setItem('bm_temp_verification', JSON.stringify({ email, role }));
+    }
+
+    function toggleMenu() {
+      document.getElementById("navLinks").classList.toggle("open");
+      document.getElementById("hamburger").classList.toggle("active");
+    }
+
+    // Guard: redirect if no email
+    if (!email) {
+      window.location.href = "forgot-password.html";
+    } else {
+      document.getElementById("displayEmail").textContent = email;
+    }
+
+    // OTP input: only allow digits
+    document.getElementById("otp").addEventListener("input", function() {
+      this.value = this.value.replace(/[^0-9]/g, "");
+    });
+
+    // Verify form
+    document.getElementById("verifyForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const otpField = document.getElementById("fieldOtp");
+      const otpVal = document.getElementById("otp").value.trim();
+      const btn = document.getElementById("btnVerify");
+      const statusMsg = document.getElementById("statusMsg");
+
+      otpField.classList.remove("error");
+      statusMsg.textContent = "";
+      statusMsg.className = "status-msg";
+
+      if (!otpVal || otpVal.length !== 6) {
+        otpField.classList.add("error");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "Verifying...";
+
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/verify-reset-otp`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, role, otp: otpVal }),
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          // OTP is correct → save to localStorage and go to reset password page
+          const currentVerif = JSON.parse(localStorage.getItem('bm_temp_verification') || '{}');
+          localStorage.setItem('bm_temp_verification', JSON.stringify({ ...currentVerif, email, role, otp: otpVal }));
+          window.location.href = `reset-password.html?email=${encodeURIComponent(email)}&role=${encodeURIComponent(role)}&otp=${encodeURIComponent(otpVal)}`;
+        } else {
+          statusMsg.textContent = data.message || "Invalid or expired code.";
+          statusMsg.className = "status-msg error";
+          btn.disabled = false;
+          btn.textContent = "Verify Code";
+        }
+      } catch (err) {
+        statusMsg.textContent = "Network error. Please try again.";
+        statusMsg.className = "status-msg error";
+        btn.disabled = false;
+        btn.textContent = "Verify Code";
+      }
+    });
+
+    // Resend OTP
+    let cooldown = 0;
+    let cooldownTimer = null;
+
+    async function handleResend() {
+      if (cooldown > 0) return;
+
+      const resendLink = document.getElementById("resendLink");
+      const cooldownText = document.getElementById("cooldownText");
+      const statusMsg = document.getElementById("statusMsg");
+
+      resendLink.classList.add("disabled");
+      resendLink.textContent = "Sending...";
+
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/forgot-password`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, role }),
+        });
+        const data = await res.json();
+
+        statusMsg.textContent = "A new code has been sent to your email.";
+        statusMsg.className = "status-msg success";
+
+        // Start 60s cooldown
+        cooldown = 60;
+        resendLink.textContent = "Resend";
+        cooldownTimer = setInterval(function() {
+          cooldown--;
+          cooldownText.textContent = ` (${cooldown}s)`;
+          if (cooldown <= 0) {
+            clearInterval(cooldownTimer);
+            cooldownText.textContent = "";
+            resendLink.classList.remove("disabled");
+          }
+        }, 1000);
+      } catch (err) {
+        statusMsg.textContent = "Failed to resend. Try again.";
+        statusMsg.className = "status-msg error";
+        resendLink.classList.remove("disabled");
+        resendLink.textContent = "Resend";
+      }
+    }
+  </script>
+</body>
+</html>
