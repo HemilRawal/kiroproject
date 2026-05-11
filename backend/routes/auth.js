@@ -2,13 +2,13 @@ const express = require('express');
 const router = express.Router();
 const { register, login, verifyEmail, resendOTP, getMe, forgotPassword, resetPassword, verifyResetOTP } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
-const { validateRegister, validateLogin, validateVerifyOTP, validateResendOTP } = require('../middleware/validate');
+const { validateRegister, validateLogin, validateVerifyOTP, validateResendOTP, validateRecaptcha } = require('../middleware/validate');
 
 // POST /api/auth/register
-router.post('/register', validateRegister, register);
+router.post('/register', validateRecaptcha, validateRegister, register);
 
 // POST /api/auth/login
-router.post('/login', validateLogin, login);
+router.post('/login', validateRecaptcha, validateLogin, login);
 
 // POST /api/auth/verify-email
 router.post('/verify-email', validateVerifyOTP, verifyEmail);

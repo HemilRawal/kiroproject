@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet" />
+  <script src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoad&render=explicit" async defer></script>
   <style>
     @font-face {
       font-family: "Melete";
@@ -1302,6 +1303,9 @@
             <div class="error-message">Password is required</div>
           </div>
 
+          <div id="login-recaptcha" style="margin-top:20px;display:flex;justify-content:center;"></div>
+          <div id="login-recaptcha-error" style="display:none;font-size:11px;color:#ef4444;text-align:center;margin-top:6px;">Please complete the reCAPTCHA.</div>
+
           <button type="submit" class="btn-login">Login</button>
         </form>
 
@@ -1400,6 +1404,9 @@
             </div>
             <div class="error-message">Passwords do not match</div>
           </div>
+
+          <div id="register-recaptcha" style="margin-top:20px;display:flex;justify-content:center;"></div>
+          <div id="register-recaptcha-error" style="display:none;font-size:11px;color:#ef4444;text-align:center;margin-top:6px;">Please complete the reCAPTCHA.</div>
 
           <button type="submit" class="btn-login">Register</button>
         </form>
@@ -1525,6 +1532,22 @@
     // Use relative paths if on localhost to avoid CORS/origin issues
     const API_BASE = 'http://localhost:4000';
 
+    // ── reCAPTCHA ──
+    const RECAPTCHA_SITE_KEY = '6LfXmeQsAAAAAOROXA__hGaaj6yZ2E7RNuVio4eK';
+    let loginCaptchaId   = null;
+    let registerCaptchaId = null;
+
+    function onRecaptchaLoad() {
+      loginCaptchaId = grecaptcha.render('login-recaptcha', {
+        sitekey: RECAPTCHA_SITE_KEY,
+        theme: 'light',
+      });
+      registerCaptchaId = grecaptcha.render('register-recaptcha', {
+        sitekey: RECAPTCHA_SITE_KEY,
+        theme: 'light',
+      });
+    }
+
     // Fetch with timeout — handles Render cold-start gracefully
     async function fetchWithTimeout(url, options = {}, timeoutMs = 20000) {
       const controller = new AbortController();
@@ -1570,6 +1593,15 @@
 
       if (!valid) return;
 
+      // reCAPTCHA check
+      const loginCaptchaToken = loginCaptchaId !== null ? grecaptcha.getResponse(loginCaptchaId) : '';
+      const loginCaptchaErr = document.getElementById('login-recaptcha-error');
+      if (!loginCaptchaToken) {
+        if (loginCaptchaErr) loginCaptchaErr.style.display = 'block';
+        return;
+      }
+      if (loginCaptchaErr) loginCaptchaErr.style.display = 'none';
+
       const btn = event.target.querySelector('button[type="submit"]');
       btn.disabled = true;
       btn.textContent = 'Connecting…';
@@ -1589,7 +1621,7 @@
         const res = await fetchWithTimeout(`${API_BASE}/api/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: emailVal, password: passwordVal, role: loginRole }),
+          body: JSON.stringify({ email: emailVal, password: passwordVal, role: loginRole, recaptchaToken: loginCaptchaToken }),
         });
         const data = await res.json();
 
@@ -1660,6 +1692,7 @@
         const passwordField = document.getElementById("fieldPassword");
         passwordField.classList.add("error");
         passwordField.querySelector('.error-message').textContent = err.message || 'Network error. Please try again.';
+        if (loginCaptchaId !== null) grecaptcha.reset(loginCaptchaId);
       } finally {
         btn.disabled = false;
         btn.textContent = 'Login';
@@ -1722,6 +1755,15 @@
         return;
       }
 
+      // reCAPTCHA check
+      const registerCaptchaToken = registerCaptchaId !== null ? grecaptcha.getResponse(registerCaptchaId) : '';
+      const registerCaptchaErr = document.getElementById('register-recaptcha-error');
+      if (!registerCaptchaToken) {
+        if (registerCaptchaErr) registerCaptchaErr.style.display = 'block';
+        return;
+      }
+      if (registerCaptchaErr) registerCaptchaErr.style.display = 'none';
+
       // Determine role from the toggle UI
       const roleToggle = document.getElementById("registerRoleToggle");
       const selectedRole = roleToggle ? roleToggle.getAttribute('data-role') : 'buyer';
@@ -1750,6 +1792,7 @@
             phone: rPhoneVal,
             role: selectedRole,
             company_name: rBizVal,
+            recaptchaToken: registerCaptchaToken,
           }),
         });
         const data = await res.json();
@@ -1777,6 +1820,7 @@
 
       } catch (err) {
         alert('Network error. Please check your connection and try again.');
+        if (registerCaptchaId !== null) grecaptcha.reset(registerCaptchaId);
       } finally {
         btn.disabled = false;
         btn.textContent = 'Register';

@@ -5,11 +5,55 @@
 // ─────────────────────────────────────────────────────────────
 
 const validator = require('validator');
+const https     = require('https');
 
 // Sanitize a string — trim whitespace, remove HTML tags
 const sanitize = (str) => {
   if (typeof str !== 'string') return str;
   return validator.escape(validator.trim(str));
+};
+
+// Verify reCAPTCHA token with Google
+const verifyRecaptcha = (token) => {
+  return new Promise((resolve) => {
+    if (!token) return resolve(false);
+    const secret = process.env.RECAPTCHA_SECRET_KEY;
+    if (!secret) return resolve(true); // skip if not configured (local dev)
+    const postData = `secret=${secret}&response=${token}`;
+    const req = https.request({
+      hostname: 'www.google.com',
+      path: '/recaptcha/api/siteverify',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Length': Buffer.byteLength(postData),
+      },
+    }, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try {
+          const parsed = JSON.parse(data);
+          resolve(parsed.success === true);
+        } catch {
+          resolve(false);
+        }
+      });
+    });
+    req.on('error', () => resolve(false));
+    req.write(postData);
+    req.end();
+  });
+};
+
+// reCAPTCHA middleware
+const validateRecaptcha = async (req, res, next) => {
+  const token = req.body.recaptchaToken;
+  const valid = await verifyRecaptcha(token);
+  if (!valid) {
+    return res.status(400).json({ success: false, message: 'reCAPTCHA verification failed. Please try again.' });
+  }
+  next();
 };
 
 // Validate registration input
@@ -120,4 +164,4 @@ const validateResendOTP = (req, res, next) => {
   next();
 };
 
-module.exports = { validateRegister, validateLogin, validateVerifyOTP, validateResendOTP, sanitize };
+module.exports = { validateRegister, validateLogin, validateVerifyOTP, validateResendOTP, validateRecaptcha, sanitize };
