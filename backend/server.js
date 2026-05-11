@@ -96,6 +96,7 @@ app.use('/api/manufacturers', require('./routes/manufacturers'));
 app.use('/api/contact', require('./routes/contact'));
 app.use('/api/onboarding', require('./routes/onboarding'));
 app.use('/api/payments', require('./routes/payments'));
+app.use('/api/early-access', require('./routes/earlyAccess'));
 
 // ── 7. 404 HANDLER ───────────────────────────────────────────
 app.use((req, res) => {

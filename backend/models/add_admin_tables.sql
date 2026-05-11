@@ -84,3 +84,22 @@ CREATE TABLE IF NOT EXISTS manufacturer_pending_payments (
 );
 
 CREATE INDEX IF NOT EXISTS idx_pending_payments_email ON manufacturer_pending_payments(manufacturer_email);
+
+-- ─────────────────────────────────────────────────────────────
+-- EARLY ACCESS REGISTRATIONS
+-- ─────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS early_access_registrations (
+  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  role            TEXT NOT NULL CHECK (role IN ('buyer', 'manufacturer')),
+  full_name       TEXT NOT NULL,
+  company_name    TEXT NOT NULL,
+  work_email      TEXT NOT NULL,
+  mobile          TEXT NOT NULL,
+  city            TEXT,
+  industry_sector TEXT,
+  queries         TEXT,
+  created_at      TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_early_access_email ON early_access_registrations(work_email);
+CREATE INDEX IF NOT EXISTS idx_early_access_role  ON early_access_registrations(role);

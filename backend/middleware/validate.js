@@ -46,8 +46,11 @@ const verifyRecaptcha = (token) => {
   });
 };
 
-// reCAPTCHA middleware
+// reCAPTCHA middleware — skipped for admin role
 const validateRecaptcha = async (req, res, next) => {
+  // Admin login bypasses reCAPTCHA
+  if (req.body.role === 'admin') return next();
+
   const token = req.body.recaptchaToken;
   const valid = await verifyRecaptcha(token);
   if (!valid) {
