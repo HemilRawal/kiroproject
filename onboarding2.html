@@ -3480,7 +3480,42 @@
 
         // Restore last phase (or jump to phase 5 if submitted previously)
         const savedPhase = localStorage.getItem("bharat_modules_onboarding_phase");
-        
+
+        if (savedPhase && parseInt(savedPhase) === 5) {
+          // Before showing the pending screen, verify the application still exists in the DB
+          // If it was deleted, reset to phase 1 so the user can re-apply
+          const token = localStorage.getItem('bm_token');
+          if (token) {
+            fetch('https://capable-delight-production-cd5e.up.railway.app/api/onboarding/status', {
+              headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(r => r.json())
+            .then(data => {
+              if (data.application && data.application.status) {
+                // Application exists — show phase 5 as normal
+                window.isRestoringPhase = true;
+                goToPhase(5);
+                window.isRestoringPhase = false;
+              } else {
+                // No application found — reset everything so user can re-apply
+                localStorage.removeItem('bharat_modules_onboarding_phase');
+                localStorage.removeItem('bm_nda_clauses_acked');
+                localStorage.removeItem('bm_nda_signature');
+                goToPhase(1);
+              }
+            })
+            .catch(() => {
+              // On network error, still show phase 5 to avoid losing progress
+              window.isRestoringPhase = true;
+              goToPhase(5);
+              window.isRestoringPhase = false;
+            });
+          } else {
+            window.location.href = 'login-page.html';
+          }
+          return;
+        }
+
         if (savedPhase && parseInt(savedPhase) !== 1) {
           window.isRestoringPhase = true;
           goToPhase(parseInt(savedPhase));
@@ -3505,6 +3540,15 @@
           });
           const data = await res.json();
           const status = data.application?.status;
+
+          // No application found — reset and send back to onboarding
+          if (!data.application || res.status === 404) {
+            localStorage.removeItem('bharat_modules_onboarding_phase');
+            localStorage.removeItem('bm_nda_clauses_acked');
+            localStorage.removeItem('bm_nda_signature');
+            window.location.href = 'onboarding2.html';
+            return;
+          }
 
           // Hide all status divs
           ['statusPending','statusApproved','statusRejected'].forEach(id => {
