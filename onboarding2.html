@@ -2670,6 +2670,10 @@
                 Back to Home
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
               </a>
+              <button onclick="['bm_token','bm_user','userRole','bharat_modules_registration','pendingVerification'].forEach(k=>localStorage.removeItem(k)); window.location.href='index.html';" class="btn-secondary" style="display:inline-flex;">
+                Sign Out
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:6px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              </button>
             </div>
           </div>
 
@@ -2686,11 +2690,15 @@
               You're Verified!
             </h2>
             <p>Your manufacturer account has been approved. You can now access your dashboard.</p>
-            <div style="margin-top:20px;">
+            <div style="margin-top:20px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
               <a href="manufacturer_portal.html" class="btn-primary" style="display:inline-flex;">
                 Go to Dashboard
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
               </a>
+              <button onclick="['bm_token','bm_user','userRole','bharat_modules_registration','pendingVerification'].forEach(k=>localStorage.removeItem(k)); window.location.href='index.html';" class="btn-secondary" style="display:inline-flex;">
+                Sign Out
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:6px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              </button>
             </div>
           </div>
 
@@ -2707,10 +2715,14 @@
             </h2>
             <p>Your application was not approved at this time. Please check your email for details and reasons.</p>
             <p id="rejectionNotes" style="margin-top:12px;padding:12px 16px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;font-size:13px;color:#991b1b;display:none;"></p>
-            <div style="margin-top:20px;">
+            <div style="margin-top:20px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
               <button onclick="resubmitApplication()" class="btn-primary" style="display:inline-flex;">
                 Resubmit Application
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+              </button>
+              <button onclick="['bm_token','bm_user','userRole','bharat_modules_registration','pendingVerification'].forEach(k=>localStorage.removeItem(k)); window.location.href='index.html';" class="btn-secondary" style="display:inline-flex;">
+                Sign Out
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:6px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
               </button>
             </div>
           </div>
