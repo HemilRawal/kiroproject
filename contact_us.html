@@ -890,7 +890,7 @@ body {
       <div class="card-tag">Procurement Channel</div>
       <h3 class="card-headline">Procure Hardware</h3>
       <div class="card-body">For defense contractors, labs, and enterprise buyers looking to source verified IDDM components or submit bulk RFQs.</div>
-      <a href="customer_dashboard_3.html" class="card-cta">
+      <a href="javascript:void(0)" onclick="handleBuyerClick()" class="card-cta" id="buyer-cta">
         Go to Buyer Portal
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
@@ -908,7 +908,7 @@ body {
       <div class="card-tag">Vendor Channel</div>
       <h3 class="card-headline">List Your Inventory</h3>
       <div class="card-body">For Indian OEMs and factories looking to complete their verifications and list their components on our closed network.</div>
-      <a href="javascript:void(0)" onclick="handleVendorClick()" class="card-cta">
+      <a href="javascript:void(0)" onclick="handleVendorClick()" class="card-cta" id="vendor-cta">
         Start Vendor Onboarding
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
@@ -1371,11 +1371,91 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   <p>Our registered headquarters is located in Basavanagudi, Bengaluru, Karnataka, India. Visits to our office require a prior appointment. You can also reach us by phone or WhatsApp at our direct line, available Monday through Friday between 0900 and 1800 IST. For procurement assistance, vendor verification status updates, technical support, or institutional and strategic partnership discussions, submit your enquiry using our contact form and our team will respond within one business day. Bharat Modules is committed to supporting the Make in India initiative through transparent, compliant, and traceable industrial supply chains.</p>
 </div>
 <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const vendorCta = document.getElementById('vendor-cta');
+    const buyerCta = document.getElementById('buyer-cta');
+    const isLoggedIn = !!localStorage.getItem('bm_token');
+    
+    let isManufacturer = false;
+    let isBuyer = false;
+    let isApprovedVendor = false;
+    
+    if (isLoggedIn) {
+      try {
+        const user = JSON.parse(localStorage.getItem('bm_user'));
+        if (user) {
+          if (user.role === 'manufacturer') {
+            isManufacturer = true;
+            if (user.application_status === 'approved') {
+              isApprovedVendor = true;
+            }
+          }
+          if (user.role === 'buyer' || user.role === 'customer') {
+            isBuyer = true;
+          }
+        }
+      } catch(e) {}
+    }
+
+    if (vendorCta) {
+      if (!isLoggedIn || !isManufacturer) {
+        vendorCta.innerHTML = 'Register and Login <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+      } else {
+        if (isApprovedVendor) {
+          vendorCta.innerHTML = 'Go to Inventory Dashboard <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+        } else {
+          vendorCta.innerHTML = 'Start Vendor Onboarding <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+        }
+      }
+    }
+
+    if (buyerCta) {
+      if (!isLoggedIn || !isBuyer) {
+        buyerCta.innerHTML = 'Register and Login <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+      } else {
+        buyerCta.innerHTML = 'Go to Buyer Portal <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+      }
+    }
+  });
+
+  function getRole() {
+    const storedRole = localStorage.getItem("userRole");
+    if (storedRole) return storedRole;
+    try {
+      const user = JSON.parse(localStorage.getItem("bm_user"));
+      return user ? user.role : null;
+    } catch(e) {
+      return null;
+    }
+  }
+
   function handleVendorClick() {
-    if (localStorage.getItem("userRole") === "manufacturer") {
-      window.location.href = "oem_register_landingpage.html";
+    const userRole = getRole();
+    if (userRole === "manufacturer") {
+      let isApproved = false;
+      try {
+        const user = JSON.parse(localStorage.getItem("bm_user"));
+        if (user && user.application_status === "approved") {
+          isApproved = true;
+        }
+      } catch(e) {}
+
+      if (isApproved) {
+        window.location.href = "manufacturer_portal.html";
+      } else {
+        window.location.href = "oem_register_landingpage.html";
+      }
     } else {
       window.location.href = "login-page.html?role=manufacturer";
+    }
+  }
+
+  function handleBuyerClick() {
+    const userRole = getRole();
+    if (userRole === "buyer" || userRole === "customer") {
+      window.location.href = "customer_dashboard_3.html";
+    } else {
+      window.location.href = "login-page.html?role=buyer";
     }
   }
 </script>
