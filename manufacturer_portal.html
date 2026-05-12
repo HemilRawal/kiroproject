@@ -2,6 +2,17 @@
 <html lang="en">
 
 <head>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-E5TQHQ5KCE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-E5TQHQ5KCE');
+</script>
+
   <link rel="stylesheet" href="responsive.css" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -1551,7 +1562,7 @@
     }
 
     .modal-hdr {
-      padding: 24px 28px 18px;
+      padding: 16px 20px 12px;
       border-bottom: var(--border);
       display: flex;
       align-items: center;
@@ -1559,20 +1570,20 @@
     }
 
     .modal-title {
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 700;
       color: var(--black);
     }
 
     .modal-body {
-      padding: 24px 28px;
+      padding: 16px 20px;
       overflow-y: auto;
-      max-height: calc(90vh - 140px);
+      max-height: calc(90vh - 120px);
       flex: 1;
     }
 
     .modal-ftr {
-      padding: 16px 28px;
+      padding: 12px 20px;
       border-top: var(--border);
       display: flex;
       gap: 10px;
@@ -1580,7 +1591,7 @@
     }
 
     .form-row-modal {
-      margin-bottom: 18px;
+      margin-bottom: 12px;
     }
 
     .form-label {
@@ -2855,6 +2866,21 @@
           #addModal .form-label {
             color: #000000;
             font-weight: 500;
+            margin-bottom: 4px !important;
+            font-size: 10px !important;
+          }
+
+          #addModal .form-input {
+            padding: 8px 12px !important;
+            font-size: 13px !important;
+          }
+
+          #addModal textarea.form-input {
+            min-height: 40px !important;
+          }
+
+          #addModal .form-row-modal {
+            margin-bottom: 10px !important;
           }
 
           #addModal .form-input::placeholder {
@@ -2906,18 +2932,18 @@
             placeholder="" />
         </div>
         <div class="form-row-modal">
-          <label class="form-label">Description *</label><textarea class="form-input" id="modDescription" rows="3"
+          <label class="form-label">Description *</label><textarea class="form-input" id="modDescription" rows="1"
             placeholder=""></textarea>
         </div>
         <div class="form-row-modal">
-          <label class="form-label">Technical Specs *</label><textarea class="form-input" id="modTechSpecs" rows="3"
+          <label class="form-label">Technical Specs *</label><textarea class="form-input" id="modTechSpecs" rows="1"
             placeholder=""></textarea>
         </div>
         <div style="
               display: grid;
               grid-template-columns: 1fr 1fr;
-              gap: 14px;
-              margin-bottom: 14px;
+              gap: 10px;
+              margin-bottom: 10px;
             ">
           <div class="form-row-modal" style="margin-bottom: 0">
             <label class="form-label">MOQ (units) *</label><input class="form-input" id="modMOQ" type="text"
@@ -2928,30 +2954,26 @@
               placeholder="" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
           </div>
         </div>
-        <div class="form-row-modal" style="margin-bottom: 18px">
+        <div class="form-row-modal" style="margin-bottom: 10px">
           <label class="form-label">EX-WORKS FLOOR PRICE (₹) *</label>
           <input class="form-input" id="modFloorPrice" type="number" placeholder=""
             oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
           <div style="
-                font-size: 11px;
+                font-size: 10px;
                 font-style: italic;
                 color: var(--gray-500);
-                margin-top: 6px;
+                margin-top: 2px;
                 display: flex;
                 align-items: center;
                 gap: 4px;
               ">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            </svg>
             Hidden from public catalog. Used strictly for internal RFQ routing
             and margin protection.
           </div>
         </div>
 
         <!-- PROMISED DOCUMENTS BLOCK -->
-        <div class="form-row-modal" style="margin-bottom: 24px">
+        <div class="form-row-modal" style="margin-bottom: 12px">
           <label class="form-label">DOCUMENTS PROVIDED UPON DISPATCH *</label>
           <div class="inp-hint" style="margin-bottom: 8px; margin-top: -4px">
             Type a document name and press Enter.
@@ -2988,7 +3010,7 @@
         </div>
 
         <!-- UNIFIED DOCUMENTS & IMAGES UPLOAD -->
-        <div class="form-row-modal" style="margin-bottom: 0; margin-top: 18px">
+        <div class="form-row-modal" style="margin-bottom: 0; margin-top: 6px">
           <label class="form-label" style="
                 display: flex;
                 justify-content: space-between;
@@ -2997,22 +3019,12 @@
             <span>UPLOAD DOCUMENTS & IMAGES *</span>
           </label>
           <div class="inp-hint" id="unifiedUploadHint" style="
-                margin-bottom: 12px;
-                margin-top: 4px;
+                margin-bottom: 8px;
                 font-weight: 500;
                 color: #854d0e;
-                background: #fef9c3;
-                padding: 6px 12px;
-                border-radius: 6px;
-                display: inline-block;
+                font-size: 10px;
               ">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
-              style="vertical-align: -2px; margin-right: 4px">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Indigenous Content Document is mandatory to upload first. You can
-            only upload other documents once it is provided.
+            * Indigenous Content Document is mandatory to upload first.
           </div>
 
           <div style="display: flex; align-items: stretch; gap: 8px">
@@ -3031,7 +3043,8 @@
                   display: flex;
                   align-items: center;
                   gap: 6px;
-                  padding: 0 24px;
+                  padding: 0 16px;
+                  height: 36px;
                   border-radius: 6px;
                   background: var(--white);
                   border-color: var(--gray-300);

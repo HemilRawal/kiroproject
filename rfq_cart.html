@@ -1,6 +1,17 @@
 <!doctype html>
 <html lang="en">
   <head>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-E5TQHQ5KCE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-E5TQHQ5KCE');
+</script>
+
   <link rel="stylesheet" href="responsive.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -1051,7 +1062,7 @@
           <li><a href="catalogue.html">Products</a></li>
           <li><a href="contact_us.html">Contact Us</a></li>
           <li>
-            <button class="nav-btn-login" style="border: none; cursor: pointer" onclick="window.location.href='login-page.html'">
+            <button class="nav-btn-login" id="navLoginBtn" style="border: none; cursor: pointer" onclick="window.location.href='login-page.html'">
               Register / Login
             </button>
           </li>
@@ -1602,5 +1613,9 @@
         industrial network.
       </p>
     </div>
+    <script src="bm-auth.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", updateNavbarAuth);
+    </script>
   </body>
 </html>
