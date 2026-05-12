@@ -2323,7 +2323,7 @@
               id="signer-name"
               placeholder="Your Name"
               value=""
-              oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
+              oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, ''); saveSignerInfo();"
             />
           </div>
 
@@ -2342,6 +2342,7 @@
                     .getElementById('fg-signer-role')
                     .classList.remove('has-error');
                 }
+                saveSignerInfo();
               "
             />
             <div class="field-error">Signer role is required.</div>
@@ -3050,6 +3051,29 @@
 
       const CLAUSE_IDS = ["chk-clause1","chk-clause2","chk-clause3","chk-clause4","chk-clause5"];
       const CLAUSE_STORAGE_KEY = "bm_nda_clauses_acked";
+      const SIGNER_STORAGE_KEY = "bm_nda_signer_info";
+
+      function saveSignerInfo() {
+        try {
+          const name = document.getElementById("signer-name")?.value || "";
+          const role = document.getElementById("signer-role")?.value || "";
+          localStorage.setItem(SIGNER_STORAGE_KEY, JSON.stringify({ name, role }));
+        } catch(e) {}
+      }
+
+      function restoreSignerInfo() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(SIGNER_STORAGE_KEY) || "{}");
+          if (saved.name) {
+            const nameEl = document.getElementById("signer-name");
+            if (nameEl) nameEl.value = saved.name;
+          }
+          if (saved.role) {
+            const roleEl = document.getElementById("signer-role");
+            if (roleEl) roleEl.value = saved.role;
+          }
+        } catch(e) {}
+      }
 
       function saveClauseState() {
         const state = {};
@@ -3736,6 +3760,7 @@
       // â”€â”€ Check for messages â”€â”€
       document.addEventListener("DOMContentLoaded", () => {
         restoreClauseState();
+        restoreSignerInfo();
 
         const params = new URLSearchParams(window.location.search);
         const msg = params.get('msg');
