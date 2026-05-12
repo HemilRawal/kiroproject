@@ -2211,7 +2211,7 @@
           <!-- Clause 1 -->
           <div class="clause-block" id="clause1">
             <div class="clause-header" onclick="toggleClause('clause1')">
-              <input type="checkbox" id="chk-clause1" onclick="event.stopPropagation(); updateSigGate();" aria-label="Acknowledge clause 1" />
+              <input type="checkbox" id="chk-clause1" onclick="event.stopPropagation(); updateSigGate(); saveClauseState();" aria-label="Acknowledge clause 1" />
               <div class="clause-header-text">
                 <h3 class="clause-header-text-title" style="font-size:14px;font-weight:700;color:var(--black);margin:0;display:inline;">1. Definition of Confidential Information</h3>
                 <span>Click to expand Â· Read and confirm your understanding.</span>
@@ -2232,7 +2232,7 @@
           <!-- Clause 2 -->
           <div class="clause-block" id="clause2">
             <div class="clause-header" onclick="toggleClause('clause2')">
-              <input type="checkbox" id="chk-clause2" onclick="event.stopPropagation(); updateSigGate();" aria-label="Acknowledge clause 2" />
+              <input type="checkbox" id="chk-clause2" onclick="event.stopPropagation(); updateSigGate(); saveClauseState();" aria-label="Acknowledge clause 2" />
               <div class="clause-header-text">
                 <h3 class="clause-header-text-title" style="font-size:14px;font-weight:700;color:var(--black);margin:0;display:inline;">2. Non-Circumvention &amp; Redirect Policy</h3>
                 <span>Click to expand Â· Understand platform integrity obligations.</span>
@@ -2257,7 +2257,7 @@
           <!-- Clause 3 -->
           <div class="clause-block" id="clause3">
             <div class="clause-header" onclick="toggleClause('clause3')">
-              <input type="checkbox" id="chk-clause3" onclick="event.stopPropagation(); updateSigGate();" aria-label="Acknowledge clause 3" />
+              <input type="checkbox" id="chk-clause3" onclick="event.stopPropagation(); updateSigGate(); saveClauseState();" aria-label="Acknowledge clause 3" />
               <div class="clause-header-text">
                 <h3 class="clause-header-text-title" style="font-size:14px;font-weight:700;color:var(--black);margin:0;display:inline;">3. Use of Information &amp; Data Protection</h3>
                 <span>Click to expand Â· Confirm your data obligations.</span>
@@ -2276,7 +2276,7 @@
           <!-- Clause 4 -->
           <div class="clause-block" id="clause4">
             <div class="clause-header" onclick="toggleClause('clause4')">
-              <input type="checkbox" id="chk-clause4" onclick="event.stopPropagation(); updateSigGate();" aria-label="Acknowledge clause 4" />
+              <input type="checkbox" id="chk-clause4" onclick="event.stopPropagation(); updateSigGate(); saveClauseState();" aria-label="Acknowledge clause 4" />
               <div class="clause-header-text">
                 <h3 class="clause-header-text-title" style="font-size:14px;font-weight:700;color:var(--black);margin:0;display:inline;">4. Term &amp; Destruction of Data</h3>
                 <span>Click to expand Â· Acknowledge the duration of this agreement.</span>
@@ -2294,7 +2294,7 @@
           <!-- Clause 5 -->
           <div class="clause-block" id="clause5">
             <div class="clause-header" onclick="toggleClause('clause5')">
-              <input type="checkbox" id="chk-clause5" onclick="event.stopPropagation(); updateSigGate();" aria-label="Acknowledge clause 5" />
+              <input type="checkbox" id="chk-clause5" onclick="event.stopPropagation(); updateSigGate(); saveClauseState();" aria-label="Acknowledge clause 5" />
               <div class="clause-header-text">
                 <h3 class="clause-header-text-title" style="font-size:14px;font-weight:700;color:var(--black);margin:0;display:inline;">5. Governing Law &amp; Jurisdiction</h3>
                 <span>Click to expand Â· Acknowledge the legal framework of this agreement.</span>
@@ -3047,14 +3047,28 @@
         document.getElementById(id).classList.toggle("open");
       }
 
+      const CLAUSE_IDS = ["chk-clause1","chk-clause2","chk-clause3","chk-clause4","chk-clause5"];
+      const CLAUSE_STORAGE_KEY = "bm_nda_clauses_acked";
+
+      function saveClauseState() {
+        const state = {};
+        CLAUSE_IDS.forEach(id => { state[id] = document.getElementById(id).checked; });
+        localStorage.setItem(CLAUSE_STORAGE_KEY, JSON.stringify(state));
+      }
+
+      function restoreClauseState() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(CLAUSE_STORAGE_KEY) || "{}");
+          CLAUSE_IDS.forEach(id => {
+            const el = document.getElementById(id);
+            if (el && saved[id]) el.checked = true;
+          });
+        } catch(e) {}
+        updateSigGate();
+      }
+
       function allClausesChecked() {
-        return [
-          "chk-clause1",
-          "chk-clause2",
-          "chk-clause3",
-          "chk-clause4",
-          "chk-clause5",
-        ].every((id) => document.getElementById(id).checked);
+        return CLAUSE_IDS.every((id) => document.getElementById(id).checked);
       }
 
       /* FIX #3: Signature gate logic */
@@ -3201,6 +3215,7 @@
       }
 
       /* â”€â”€ DOWNLOAD NDA PDF â”€â”€ */
+      /* -- DOWNLOAD NDA PDF -- */
       function downloadNDA() {
         if (!allClausesChecked()) {
           alert("Please acknowledge all clauses before downloading.");
@@ -3219,46 +3234,106 @@
         }
 
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
+        const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+        const pageW = 210;
+        const margin = 20;
+        const contentW = pageW - margin * 2;
+        let y = 20;
 
+        function checkPageBreak(needed) {
+          if (y + needed > 270) { doc.addPage(); y = 20; }
+        }
+
+        // Title
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(18);
-        doc.text("Mutual Non-Disclosure Agreement (M-NDA)", 105, 20, {
-          align: "center",
-        });
-
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(11);
-        let y = 35;
-
-        const clauses = [
-          "1. Definition of Confidential Information\n'Confidential Information' means any data or information, oral or written, disclosed by either Party that is designated as confidential or that should reasonably be treated as confidential. This includes business strategies, pricing, product formulations, etc.",
-          "2. Obligations of the Receiving Party\nEach Party agrees to hold all Confidential Information in strict confidence, not disclose it to any third party without consent, and use it solely for business evaluation.",
-          "3. Exclusions & Permitted Disclosures\nObligations shall not apply to information that is publicly available, rightfully known prior to disclosure, independently developed, or required by law.",
-          "4. Term, Remedies & Governing Law\nThis M-NDA remains in effect for three (3) years from the date of signature. The non-breaching Party is entitled to seek equitable relief. Governed by Indian law.",
-        ];
-
-        clauses.forEach((text) => {
-          const lines = doc.splitTextToSize(text, 170);
-          doc.text(lines, 20, y);
-          y += lines.length * 5 + 6;
-        });
-
-        y += 10;
-        doc.setFont("helvetica", "bold");
-        doc.text("Agreement Acknowledged & Signed By:", 20, y);
+        doc.setFontSize(16);
+        doc.text("Mutual Non-Disclosure &", pageW / 2, y, { align: "center" });
         y += 8;
-        doc.setFont("helvetica", "normal");
-        doc.text(`Name: ${sName}`, 20, y);
-        y += 7;
-        doc.text(`Role: ${sRole}`, 20, y);
-        y += 7;
-        const today = new Date().toLocaleDateString();
-        doc.text(`Date: ${today}`, 20, y);
+        doc.text("Non-Circumvention Agreement (M-NDCA)", pageW / 2, y, { align: "center" });
+        y += 10;
 
-        y += 12;
-        doc.text("Signature:", 20, y);
-        y += 5;
+        // Intro
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        const intro = "This Agreement is entered into between Bharat Modules (the platform) and the OEM (the manufacturer), both are together referred as \"the parties\", to protect the proprietary interests and trade secrets shared during the course of business.";
+        const introLines = doc.splitTextToSize(intro, contentW);
+        checkPageBreak(introLines.length * 5 + 4);
+        doc.text(introLines, margin, y);
+        y += introLines.length * 5 + 6;
+
+        function addSection(title, bullets) {
+          checkPageBreak(10);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(11);
+          doc.text(title, margin, y);
+          y += 6;
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(10);
+          bullets.forEach(b => {
+            const lines = doc.splitTextToSize(b, contentW - 4);
+            checkPageBreak(lines.length * 5 + 3);
+            doc.text(lines, margin + 4, y);
+            y += lines.length * 5 + 3;
+          });
+          y += 3;
+        }
+
+        addSection("1. Definition of Confidential Information", [
+          "Confidential Information includes all non-public data, specifically but not limited to:",
+          "\u2022 Pricing Data: Unit prices, bulk discounts, and negotiated quotes.",
+          "\u2022 Operational IP: Proprietary documentation workflows, vendor onboarding checklists, and database logic.",
+          "\u2022 Customer Data: Identities, technical requirements, project deadlines, and procurement histories of buyers introduced via Bharat Modules.",
+          "\u2022 General: Any oral or written data designated as confidential or which should reasonably be treated as such.",
+        ]);
+
+        addSection("2. Non-Circumvention & Redirect Policy", [
+          "To protect the integrity of the platform, the Parties agree to the following:",
+          "\u2022 Disclosure: Customer names are revealed to the OEM only after the order is placed.",
+          "\u2022 Prior Relationship Rule:",
+          "  A. If an OEM has traded with a Bharat Modules introduced customer more than six (6) months prior to joining the platform, they must redirect all further trades with that customer through the platform.",
+          "  B. If an OEM has traded with a Bharat Modules introduced customer in the six (6) months prior to joining the platform, they can continue to trade with those customers.",
+          "\u2022 Verification: OEM must verify prior relationships by sharing relevant email history with Bharat Modules.",
+          "\u2022 Bypass Penalty: If the OEM trades directly with a customer introduced via Bharat Modules, the platform reserves the right to immediately terminate the OEM's access and hold all pending payments as liquidated damages.",
+          "\u2022 Post-Exit: The OEM is free to trade with any party without restriction only after formally exiting the platform.",
+        ]);
+
+        addSection("3. Use of Information & Data Protection", [
+          "\u2022 Bharat Modules Rights: Bharat Modules shall have access to all data provided by the OEM. This data will be used solely for business operations and will not be disclosed to third parties.",
+          "\u2022 OEM Obligations: All non-public data received from the platform must remain confidential.",
+          "\u2022 Logic Protection: The OEM shall not replicate, reverse-engineer, or share the Managed RFQ or Trust Infrastructure logic used by the platform with any other marketplace or entity.",
+        ]);
+
+        addSection("4. Term & Destruction of Data", [
+          "\u2022 Term: This Agreement is effective from the date of signing and shall remain in effect for a Lifetime term.",
+          "\u2022 Destruction: Upon written request by Bharat Modules, the OEM must immediately destroy all confidential information and provide a proof of destruction.",
+        ]);
+
+        addSection("5. Governing Law & Jurisdiction", [
+          "This Agreement shall be governed by and construed in accordance with the Laws of the Republic of India. Disputes shall be subject to the exclusive jurisdiction of the courts in Bengaluru, Karnataka.",
+        ]);
+
+        // Signature block
+        checkPageBreak(60);
+        y += 4;
+        doc.setLineWidth(0.3);
+        doc.line(margin, y, pageW - margin, y);
+        y += 8;
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(11);
+        doc.text("Agreement Acknowledged & Signed By:", margin, y);
+        y += 8;
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.text("Name:  " + sName, margin, y); y += 6;
+        doc.text("Role:  " + sRole, margin, y); y += 6;
+        const today = new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" });
+        doc.text("Date:  " + today, margin, y); y += 10;
+
+        doc.setFont("helvetica", "bold");
+        doc.text("Signature:", margin, y);
+        y += 4;
 
         if (currentSigMethod === "draw" && sigHasData) {
           const tempCanvas = document.createElement("canvas");
@@ -3268,15 +3343,30 @@
           tCtx.fillStyle = "#ffffff";
           tCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
           tCtx.drawImage(canvas, 0, 0);
-
           const imgData = tempCanvas.toDataURL("image/jpeg", 1.0);
-          doc.addImage(imgData, "JPEG", 20, y, 70, 25);
-          doc.rect(20, y, 70, 25);
+          checkPageBreak(30);
+          doc.addImage(imgData, "JPEG", margin, y, 70, 25);
+          doc.rect(margin, y, 70, 25);
+          y += 30;
         } else {
-          doc.text("(Signed/Stamped Upload Provided)", 20, y + 10);
+          doc.setFont("helvetica", "normal");
+          doc.text("(Signed/Stamped Upload Provided)", margin, y + 6);
+          y += 14;
         }
 
-        doc.save("Bharat_Modules_M-NDA.pdf");
+        // Footer on every page
+        const pageCount = doc.internal.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+          doc.setPage(i);
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(8);
+          doc.setTextColor(150);
+          doc.text("Bharat Modules  --  Confidential  --  bharatmodules.com", pageW / 2, 290, { align: "center" });
+          doc.text("Page " + i + " of " + pageCount, pageW - margin, 290, { align: "right" });
+          doc.setTextColor(0);
+        }
+
+        doc.save("Bharat_Modules_M-NDCA.pdf");
       }
 
       /* â”€â”€ PHASE 4 VALIDATION â”€â”€ */
@@ -3575,6 +3665,8 @@
 
       // â”€â”€ Check for messages â”€â”€
       document.addEventListener("DOMContentLoaded", () => {
+        restoreClauseState();
+
         const params = new URLSearchParams(window.location.search);
         const msg = params.get('msg');
         if (msg === 'approval_pending') {
