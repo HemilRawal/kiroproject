@@ -2809,6 +2809,7 @@
           document.getElementById("sig-draw-wrap").style.display = "block";
           document.getElementById("sig-upload-wrap").style.display = "none";
           resizeCanvas();
+          restoreSignature();
         } else {
           document.getElementById("sig-draw-wrap").style.display = "none";
           document.getElementById("sig-upload-wrap").style.display = "block";
@@ -2855,7 +2856,7 @@
         localStorage.setItem("bharat_modules_onboarding_phase", n);
 
         if (n === 3 && currentSigMethod === "draw") {
-          setTimeout(resizeCanvas, 50); // Important: Resize after display block is active
+          setTimeout(() => { resizeCanvas(); restoreSignature(); }, 50); // Important: Resize after display block is active
         }
       }
 
@@ -3127,6 +3128,29 @@
       const canvas = document.getElementById("sigCanvas");
       const ctx = canvas.getContext("2d");
 
+      const SIG_STORAGE_KEY = "bm_nda_signature";
+
+      function saveSignature() {
+        try {
+          const dataUrl = canvas.toDataURL("image/png");
+          localStorage.setItem(SIG_STORAGE_KEY, dataUrl);
+        } catch(e) {}
+      }
+
+      function restoreSignature() {
+        try {
+          const saved = localStorage.getItem(SIG_STORAGE_KEY);
+          if (!saved) return;
+          const img = new Image();
+          img.onload = function() {
+            ctx.drawImage(img, 0, 0, canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1));
+            sigHasData = true;
+            document.getElementById("sigPlaceholder").style.opacity = "0";
+          };
+          img.src = saved;
+        } catch(e) {}
+      }
+
       function resizeCanvas() {
         if (!canvas.parentElement) return;
         const rect = canvas.parentElement.getBoundingClientRect();
@@ -3168,10 +3192,12 @@
       canvas.addEventListener("mouseup", () => {
         sigDrawing = false;
         ctx.beginPath();
+        if (sigHasData) saveSignature();
       });
       canvas.addEventListener("mouseleave", () => {
         sigDrawing = false;
         ctx.beginPath();
+        if (sigHasData) saveSignature();
       });
 
       canvas.addEventListener(
@@ -3202,11 +3228,13 @@
       canvas.addEventListener("touchend", () => {
         sigDrawing = false;
         ctx.beginPath();
+        if (sigHasData) saveSignature();
       });
 
       function clearSig() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         sigHasData = false;
+        localStorage.removeItem(SIG_STORAGE_KEY);
         if (allClausesChecked()) {
           document.getElementById("sigPlaceholder").style.opacity = "1";
           document.getElementById("sigPlaceholderText").textContent =
@@ -3428,7 +3456,7 @@
         // Defer resizeCanvas — on first load Phase 3 is hidden so canvas has 0 width.
         // The real resize happens in goToPhase(3) via setTimeout(resizeCanvas, 50).
         // We still call it here for the edge-case where phase 3 is already active.
-        setTimeout(resizeCanvas, 100);
+        setTimeout(() => { resizeCanvas(); restoreSignature(); }, 100);
         updateSigGate();
         applyVerifiedUI();
 
