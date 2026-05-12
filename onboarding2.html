@@ -3418,7 +3418,17 @@
           doc.setTextColor(0);
         }
 
-        doc.save("Bharat_Modules_M-NDCA.pdf");
+        // Mobile-safe download: iOS/Android block programmatic clicks from async context.
+        // Use blob URL + window.open for mobile, doc.save() for desktop.
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (isMobile) {
+          const pdfBlob = doc.output('blob');
+          const blobUrl = URL.createObjectURL(pdfBlob);
+          window.open(blobUrl, '_blank');
+          setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+        } else {
+          doc.save("Bharat_Modules_M-NDCA.pdf");
+        }
       }
 
       /* â”€â”€ PHASE 4 VALIDATION â”€â”€ */
