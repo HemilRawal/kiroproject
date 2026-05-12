@@ -3497,10 +3497,9 @@
                 goToPhase(5);
                 window.isRestoringPhase = false;
               } else {
-                // No application found — reset everything so user can re-apply
+                // No application found — reset phase so user can re-apply
+                // Keep NDA clauses and signature so they don't have to re-acknowledge
                 localStorage.removeItem('bharat_modules_onboarding_phase');
-                localStorage.removeItem('bm_nda_clauses_acked');
-                localStorage.removeItem('bm_nda_signature');
                 goToPhase(1);
               }
             })
@@ -3542,10 +3541,9 @@
           const status = data.application?.status;
 
           // No application found — reset and send back to onboarding
+          // Keep NDA clauses and signature so they don't have to re-acknowledge
           if (!data.application || res.status === 404) {
             localStorage.removeItem('bharat_modules_onboarding_phase');
-            localStorage.removeItem('bm_nda_clauses_acked');
-            localStorage.removeItem('bm_nda_signature');
             window.location.href = 'onboarding2.html';
             return;
           }
