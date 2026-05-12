@@ -2298,7 +2298,7 @@
   </div>
 
   <!-- ── HERO ── -->
-  <div class="dash-hero">
+  <div class="dash-hero" style="display: none;">
     <div class="dash-hero-inner">
       <h1 class="dash-title">MANUFACTURER DASHBOARD</h1>
       <p class="dash-welcome">Welcome back, <strong id="dashWelcomeName">—</strong></p>
@@ -2306,7 +2306,7 @@
   </div>
 
   <!-- ── LAYOUT ── -->
-  <div class="dash-layout">
+  <div class="dash-layout" style="display: none;">
     <!-- SIDEBAR -->
     <aside class="dash-sidebar">
       <div class="sidebar-header">
@@ -2855,7 +2855,7 @@
           </svg>
         </button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" data-lenis-prevent>
         <style>
           #addModal .modal-title {
             color: #000000 !important;
@@ -3273,6 +3273,8 @@
         const { status, notes, ts } = JSON.parse(cached);
         if (Date.now() - ts < 60000) {
           if (status === 'approved') {
+            document.querySelector('.dash-hero').style.display = 'flex';
+            document.querySelector('.dash-layout').style.display = 'grid';
             await Promise.all([loadManufacturerProfile(), loadIncomingRFQs(), loadDashboardStats()]);
           } else {
             showVerificationScreen(status, notes);
@@ -3293,6 +3295,8 @@
         sessionStorage.setItem('bm_approval_status', JSON.stringify({ status, notes, ts: Date.now() }));
 
         if (status === 'approved') {
+          document.querySelector('.dash-hero').style.display = 'flex';
+          document.querySelector('.dash-layout').style.display = 'grid';
           await Promise.all([loadManufacturerProfile(), loadIncomingRFQs(), loadDashboardStats()]);
         } else if (status === 'rejected') {
           showVerificationScreen('rejected', notes);
@@ -3301,6 +3305,8 @@
         }
       } catch (err) {
         console.error('Status check failed:', err);
+        document.querySelector('.dash-hero').style.display = 'flex';
+        document.querySelector('.dash-layout').style.display = 'grid';
         await Promise.all([loadManufacturerProfile(), loadIncomingRFQs(), loadDashboardStats()]);
       }
     }

@@ -1847,6 +1847,7 @@
                 id="obName"
                 placeholder="Your Name"
                 value=""
+                oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
               />
             </div>
 
@@ -1887,136 +1888,15 @@
 
             <div class="form-group" id="fg-component-category">
               <label>Component Category <span class="req">*</span></label>
-              <div class="custom-dropdown" id="catDropdown">
-                <div
-                  class="dropdown-header"
-                  onclick="toggleCatDropdown()"
-                >
-                  <span
-                    id="catSelectedText"
-                    style="
-                      color: var(--gray-400);
-                      font-weight: 400;
-                      font-family: &quot;DM Sans&quot;, sans-serif;
-                      font-size: 15px;
-                    "
-                    >Select Categories...</span
-                  >
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    style="transition: transform 0.2s"
-                  >
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                  </svg>
-                </div>
-                <div class="dropdown-list" data-lenis-prevent>
-                  <label class="dropdown-item">
-                    <div class="chk-wrap">
-                      <input
-                        type="checkbox"
-                        value="Propulsion Systems"
-                        onchange="updateCatSelection()"
-                      />
-                    </div>
-                    <div class="dropdown-item-text">
-                      <strong>Propulsion Systems</strong>
-                      <span
-                        >BLDC Motors, Electronic Speed Controllers (ESCs),
-                        Propellers, Engine Mounts.</span
-                      >
-                    </div>
-                  </label>
-                  <label class="dropdown-item">
-                    <div class="chk-wrap">
-                      <input
-                        type="checkbox"
-                        value="Power & Energy"
-                        onchange="updateCatSelection()"
-                      />
-                    </div>
-                    <div class="dropdown-item-text">
-                      <strong>Power & Energy</strong>
-                      <span
-                        >Lithium-Ion/LiPo Batteries, Battery Management Systems
-                        (BMS), Power Distribution Boards (PDBs), Chargers.</span
-                      >
-                    </div>
-                  </label>
-                  <label class="dropdown-item">
-                    <div class="chk-wrap">
-                      <input
-                        type="checkbox"
-                        value="Avionics & Navigation"
-                        onchange="updateCatSelection()"
-                      />
-                    </div>
-                    <div class="dropdown-item-text">
-                      <strong>Avionics & Navigation</strong>
-                      <span
-                        >Flight Controllers (FCs), GPS/GNSS Modules, IMUs, Radar
-                        Altimeters, Pitot Tubes.</span
-                      >
-                    </div>
-                  </label>
-                  <label class="dropdown-item">
-                    <div class="chk-wrap">
-                      <input
-                        type="checkbox"
-                        value="Command & Communication"
-                        onchange="updateCatSelection()"
-                      />
-                    </div>
-                    <div class="dropdown-item-text">
-                      <strong>Command & Communication</strong>
-                      <span
-                        >Radio Transmitters/Receivers, Video Transmitters (VTX),
-                        Telemetry Radios, Antennas.</span
-                      >
-                    </div>
-                  </label>
-                  <label class="dropdown-item">
-                    <div class="chk-wrap">
-                      <input
-                        type="checkbox"
-                        value="Airframes & Structures"
-                        onchange="updateCatSelection()"
-                      />
-                    </div>
-                    <div class="dropdown-item-text">
-                      <strong>Airframes & Structures</strong>
-                      <span
-                        >Carbon Fiber Frames, CNC Machined Aluminum Arms,
-                        Landing Gear, Fasteners, Enclosures.</span
-                      >
-                    </div>
-                  </label>
-                  <label class="dropdown-item">
-                    <div class="chk-wrap">
-                      <input
-                        type="checkbox"
-                        value="Payloads & Actuators"
-                        onchange="updateCatSelection()"
-                      />
-                    </div>
-                    <div class="dropdown-item-text">
-                      <strong>Payloads & Actuators</strong>
-                      <span
-                        >EO/IR Cameras, LiDAR sensors, Gimbal Mechanisms,
-                        Payload Dropping Hooks, Servos.</span
-                      >
-                    </div>
-                  </label>
-                </div>
-              </div>
-              <div class="field-error">
-                Please select at least one component category.
+              <input
+                type="text"
+                class="form-input"
+                id="obCategory"
+                placeholder="Enter Component Category"
+                value=""
+              />
+              <div class="field-error" id="fe-category">
+                Please enter your component category.
               </div>
             </div>
 
@@ -2082,11 +1962,11 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
               <div class="form-group">
                 <label>City <span class="req">*</span></label>
-                <input type="text" class="form-input" id="obCity" placeholder="City" />
+                <input type="text" class="form-input" id="obCity" placeholder="City" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" />
               </div>
               <div class="form-group">
                 <label>State <span class="req">*</span></label>
-                <input type="text" class="form-input" id="obState" placeholder="State" />
+                <input type="text" class="form-input" id="obState" placeholder="State" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" />
               </div>
             </div>
             <div class="form-group">
@@ -2443,6 +2323,7 @@
               id="signer-name"
               placeholder="Your Name"
               value=""
+              oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
             />
           </div>
 
@@ -3089,55 +2970,16 @@
         }
       }
 
-      function updateCatSelection() {
-        const inputs = document.querySelectorAll(
-          '.dropdown-item input[type="checkbox"]:checked',
-        );
-        const textEl = document.getElementById("catSelectedText");
-        const fgCat = document.getElementById("fg-component-category");
 
-        if (inputs.length === 0) {
-          textEl.textContent = "Select Categories...";
-          textEl.style.color = "var(--gray-400)";
-        } else if (inputs.length === 1) {
-          textEl.textContent = inputs[0].value;
-          textEl.style.color = "var(--black)";
-          fgCat.classList.remove("has-error");
-        } else {
-          textEl.textContent = inputs.length + " Categories Selected";
-          textEl.style.color = "var(--black)";
-          fgCat.classList.remove("has-error");
-        }
-      }
-
-      function toggleCatDropdown() {
-        const d = document.getElementById('catDropdown');
-        if (d) d.classList.toggle('open');
-      }
-
-
-      // Close dropdown when clicking outside
-      document.addEventListener("click", function (e) {
-        const dropdown = document.getElementById("catDropdown");
-        if (
-          dropdown &&
-          dropdown.classList.contains("open") &&
-          !dropdown.contains(e.target)
-        ) {
-          dropdown.classList.remove("open");
-        }
-      });
 
       function validatePhase1() {
         let passed = true;
 
         // Verification no longer required
 
-        const inputs = document.querySelectorAll(
-          '.dropdown-item input[type="checkbox"]:checked',
-        );
+        const catInput = document.getElementById("obCategory");
         const fgCat = document.getElementById("fg-component-category");
-        if (inputs.length === 0) {
+        if (!catInput.value.trim()) {
           fgCat.classList.add("has-error");
           passed = false;
         } else {
@@ -3608,9 +3450,8 @@
             const pincode    = getValue('obPincode');
             const signerName = getValue('signer-name');
             const signerRole = getValue('signer-role');
-            const categories = Array.from(
-              document.querySelectorAll('.dropdown-item input[type="checkbox"]:checked')
-            ).map(i => i.value);
+            const catVal = getValue('obCategory');
+            const categories = catVal ? [catVal] : [];
 
             // â”€â”€ Try to upload PDFs (non-blocking â€” won't stop submission if it fails) â”€â”€
             const docUrls = {};
