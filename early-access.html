@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
 
@@ -35,7 +35,7 @@
       overflow-x: hidden;
     }
 
-    /* â”€â”€ STARFIELD â”€â”€ */
+    /* ── STARFIELD ── */
     canvas#stars {
       position: fixed;
       inset: 0;
@@ -43,7 +43,7 @@
       pointer-events: none;
     }
 
-    /* â”€â”€ BACK BUTTON â”€â”€ */
+    /* ── BACK BUTTON ── */
     .back-btn {
       position: fixed;
       top: 28px;
@@ -69,7 +69,7 @@
     }
     .back-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
 
-    /* â”€â”€ PAGE WRAPPER â”€â”€ */
+    /* ── PAGE WRAPPER ── */
     .page {
       position: relative;
       z-index: 1;
@@ -80,7 +80,7 @@
       padding: 80px 24px 80px;
     }
 
-    /* â”€â”€ HERO HEADER â”€â”€ */
+    /* ── HERO HEADER ── */
     .hero-header {
       text-align: center;
       margin-bottom: 48px;
@@ -151,7 +151,7 @@
       line-height: 1.65;
     }
 
-    /* â”€â”€ ROLE SELECTOR â”€â”€ */
+    /* ── ROLE SELECTOR ── */
     .role-section {
       width: 100%;
       max-width: 640px;
@@ -222,7 +222,7 @@
       background: #fff;
     }
 
-    /* â”€â”€ FORM CARD â”€â”€ */
+    /* ── FORM CARD ── */
     .form-card {
       width: 100%;
       max-width: 640px;
@@ -318,7 +318,7 @@
     .form-group.has-error .field-error { display: block; }
     .form-group.has-error .form-input  { border-color: #ef4444; }
 
-    /* â”€â”€ SUBMIT BUTTON â”€â”€ */
+    /* ── SUBMIT BUTTON ── */
     .submit-btn {
       width: 100%;
       max-width: 640px;
@@ -343,7 +343,7 @@
     .submit-btn:active { transform: translateY(0); }
     .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-    /* â”€â”€ SUCCESS STATE â”€â”€ */
+    /* ── SUCCESS STATE ── */
     .success-screen {
       display: none;
       text-align: center;
@@ -376,7 +376,7 @@
       line-height: 1.65;
     }
 
-    /* â”€â”€ RESPONSIVE â”€â”€ */
+    /* ── RESPONSIVE ── */
     @media (max-width: 600px) {
       .form-row { grid-template-columns: 1fr; }
       .role-grid { grid-template-columns: 1fr; }
@@ -471,13 +471,13 @@
         </div>
         <div class="form-group">
           <label>Industry Sector</label>
-          <input class="form-input" type="text" id="industrySector" placeholder="Aerospace, Defence, EVâ€¦" />
+          <input class="form-input" type="text" id="industrySector" placeholder="Aerospace, Defence, EV…" />
         </div>
       </div>
       <div class="form-row full">
         <div class="form-group">
           <label>Any Queries?</label>
-          <textarea class="form-input" id="queries" placeholder="Tell us about your sourcing needs or any questionsâ€¦"></textarea>
+          <textarea class="form-input" id="queries" placeholder="Tell us about your sourcing needs or any questions…"></textarea>
         </div>
       </div>
     </div>
@@ -497,7 +497,7 @@
     </div>
     <div class="success-title">You're on the list!</div>
     <p class="success-sub">We've received your request. Our team will reach out to you shortly with next steps and early access details.</p>
-    <a href="index.html" style="display:inline-block;margin-top:32px;color:#e85c0d;font-size:13px;font-weight:600;letter-spacing:0.06em;text-decoration:none;text-transform:uppercase;">â† Back to Home</a>
+    <a href="index.html" style="display:inline-block;margin-top:32px;color:#e85c0d;font-size:13px;font-weight:600;letter-spacing:0.06em;text-decoration:none;text-transform:uppercase;">← Back to Home</a>
   </div>
 
 </div>
@@ -506,7 +506,7 @@
   const API_BASE = 'http://localhost:4000';
   let selectedRole = 'buyer';
 
-  // â”€â”€ Starfield â”€â”€
+  // ── Starfield ──
   const canvas = document.getElementById('stars');
   const ctx    = canvas.getContext('2d');
   const stars  = [];
@@ -546,20 +546,20 @@
   }
   drawStars();
 
-  // â”€â”€ Role selection â”€â”€
+  // ── Role selection ──
   function selectRole(role) {
     selectedRole = role;
     document.getElementById('roleBuyer').classList.toggle('selected', role === 'buyer');
     document.getElementById('roleManufacturer').classList.toggle('selected', role === 'manufacturer');
   }
 
-  // â”€â”€ Validation helpers â”€â”€
+  // ── Validation helpers ──
   function setError(groupId, show) {
     const el = document.getElementById(groupId);
     if (el) el.classList.toggle('has-error', show);
   }
 
-  // â”€â”€ Submit â”€â”€
+  // ── Submit ──
   async function submitForm() {
     const fullName    = document.getElementById('fullName').value.trim();
     const companyName = document.getElementById('companyName').value.trim();
@@ -581,7 +581,7 @@
 
     const btn = document.getElementById('submitBtn');
     btn.disabled = true;
-    btn.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Submittingâ€¦';
+    btn.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Submitting…';
 
     try {
       const res = await fetch(`${API_BASE}/api/early-access`, {
