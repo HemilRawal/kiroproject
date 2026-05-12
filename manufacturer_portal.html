@@ -2338,7 +2338,7 @@
             <line x1="16" y1="17" x2="8" y2="17" />
           </svg>
           RFQ
-          <span class="sidebar-badge">7</span>
+          <span class="sidebar-badge" id="rfqSidebarBadge" style="display:none;"></span>
         </div>
         <div class="sidebar-item" onclick="showView('inventory')">
           <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -3445,6 +3445,15 @@
         const statSub = document.getElementById('statPendingQuotesSub');
         if (statEl) statEl.textContent = pending;
         if (statSub) statSub.textContent = rfqs.length + ' total RFQs received';
+        const badgeEl = document.getElementById('rfqSidebarBadge');
+        if (badgeEl) {
+          if (pending > 0) {
+            badgeEl.textContent = pending;
+            badgeEl.style.display = 'inline-flex';
+          } else {
+            badgeEl.style.display = 'none';
+          }
+        }
 
         if (!rfqs.length) return;
 
