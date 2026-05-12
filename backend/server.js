@@ -9,6 +9,11 @@
 //   4. express.json with size limit — prevents large payload attacks
 // ─────────────────────────────────────────────────────────────
 
+// ── FIX: Node.js v24 defaults to IPv6 DNS resolution which can
+// time out on some networks. Force IPv4 to ensure Supabase connectivity.
+const dns = require('dns');
+dns.setDefaultResultOrder('ipv4first');
+
 require('dotenv').config();
 
 const express = require('express');

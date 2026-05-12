@@ -2243,14 +2243,20 @@
           onmouseover="this.style.color='#FF6B00'" onmouseout="this.style.color='#ccc'"
           onclick="window.location.href='manufacturer_portal.html'">Dashboard</button></li>
     </ul>
-    <div class="nav-user-chip" id="navProfileChip" onclick="toggleProfileDropdown()"
-      style="cursor:pointer;position:relative;">
-      <div class="nav-avatar" id="navAvatar">PN</div>
-      <span class="nav-user-name" id="navUserName">Loading…</span>
-      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
-        style="margin-left:4px;color:#666;">
-        <path d="M6 9l6 6 6-6" />
-      </svg>
+    <div style="display:flex;align-items:center;gap:6px;">
+      <div class="nav-user-chip" id="navProfileChip" onclick="toggleProfileDropdown()"
+        style="cursor:pointer;position:relative;">
+        <div class="nav-avatar" id="navAvatar">PN</div>
+        <span class="nav-user-name" id="navUserName">Loading…</span>
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+          style="margin-left:4px;color:#666;">
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </div>
+      <!-- Mobile hamburger -->
+      <button class="mobile-hamburger" id="mobileHamburger" onclick="toggleMobileNav()" aria-label="Menu" style="display:none;">
+        <span></span><span></span><span></span>
+      </button>
     </div>
     <!-- Profile dropdown -->
     <div id="profileDropdown"
@@ -2271,6 +2277,14 @@
       </button>
     </div>
   </nav>
+
+  <!-- ── MOBILE NAV DRAWER ── -->
+  <div class="mobile-nav-drawer" id="mobileNavDrawer">
+    <a href="index.html">Home</a>
+    <a href="catalogue.html">Products</a>
+    <a href="contact_us.html">Contact Us</a>
+    <a href="#" onclick="event.preventDefault();toggleMobileNav();handleLogout()" style="color:#ef4444;">Sign Out</a>
+  </div>
 
   <!-- ── HERO ── -->
   <div class="dash-hero">
@@ -3744,7 +3758,8 @@
       if (hero) hero.style.display = isDash ? "flex" : "none";
       if (sla) sla.style.display = isDash ? "flex" : "none";
       if (stats) stats.style.display = isDash ? "grid" : "none";
-      if (layout) layout.style.paddingTop = isDash ? "32px" : "110px";
+      const isMobile = window.innerWidth <= 1024;
+      if (layout) layout.style.paddingTop = isDash ? (isMobile ? "16px" : "32px") : (isMobile ? "16px" : "110px");
 
       if (id === "inventory") loadInventoryFromDB();
       if (id === "compliance") loadComplianceVault();
@@ -5046,6 +5061,70 @@
       documentTags.splice(idx, 1);
       renderTags();
     }
+  </script>
+
+  <!-- ── MOBILE BOTTOM NAV ── -->
+  <div class="mobile-bottom-nav" id="mobileBottomNav">
+    <button class="active" data-view="dashboard" onclick="showView('dashboard')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      <span>Home</span>
+    </button>
+    <button data-view="rfq" onclick="showView('rfq')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span>RFQ</span>
+    </button>
+    <button data-view="inventory" onclick="showView('inventory')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+      <span>Inventory</span>
+    </button>
+    <button data-view="compliance" onclick="showView('compliance')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span>Docs</span>
+    </button>
+    <button data-view="profile" onclick="showView('profile')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Profile</span>
+    </button>
+  </div>
+
+  <script>
+    // ── Mobile Navigation ──
+    function toggleMobileNav() {
+      const btn = document.getElementById('mobileHamburger');
+      const drawer = document.getElementById('mobileNavDrawer');
+      if (!btn || !drawer) return;
+      btn.classList.toggle('active');
+      drawer.classList.toggle('open');
+      // Close profile dropdown when opening nav
+      const pd = document.getElementById('profileDropdown');
+      if (pd) pd.style.display = 'none';
+    }
+
+    // Close mobile nav when clicking outside
+    document.addEventListener('click', (e) => {
+      const drawer = document.getElementById('mobileNavDrawer');
+      const btn = document.getElementById('mobileHamburger');
+      if (drawer && drawer.classList.contains('open') && !drawer.contains(e.target) && !btn.contains(e.target)) {
+        drawer.classList.remove('open');
+        btn.classList.remove('active');
+      }
+    });
+
+    // Sync mobile bottom nav active state
+    function syncMobileBottomNav(viewId) {
+      const bottomNav = document.getElementById('mobileBottomNav');
+      if (!bottomNav) return;
+      bottomNav.querySelectorAll('button').forEach(b => {
+        b.classList.toggle('active', b.dataset.view === viewId);
+      });
+    }
+
+    // Patch showView to sync bottom nav
+    const _origShowView = showView;
+    showView = function(id) {
+      _origShowView(id);
+      syncMobileBottomNav(id);
+    };
   </script>
   </body>
 
