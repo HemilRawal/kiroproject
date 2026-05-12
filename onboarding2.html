@@ -3540,7 +3540,7 @@
         document.getElementById('phase5')?.classList.add('active');
 
         try {
-          const res = await fetch('http://localhost:4000/api/onboarding/status', {
+          const res = await fetch('https://capable-delight-production-cd5e.up.railway.app/api/onboarding/status', {
             headers: { 'Authorization': `Bearer ${token}` },
           });
           const data = await res.json();
@@ -3639,7 +3639,7 @@
             }
 
             // â”€â”€ Submit to backend â”€â”€
-            const res = await fetch('http://localhost:4000/api/onboarding/submit', {
+            const res = await fetch('https://capable-delight-production-cd5e.up.railway.app/api/onboarding/submit', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -3792,4 +3792,5 @@
     </div>
   </body>
 </html>
+
 

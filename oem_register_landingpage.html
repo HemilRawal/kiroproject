@@ -2818,7 +2818,7 @@
       if (btn) { btn.disabled = true; btn.textContent = 'Creating account…'; }
 
       // Call register API with role = manufacturer
-      fetch('http://localhost:4000/api/auth/register', {
+      fetch('https://capable-delight-production-cd5e.up.railway.app/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -2871,7 +2871,7 @@
         window.location.href = 'login-page.html?role=manufacturer';
         return;
       }
-      fetch('http://localhost:4000/api/onboarding/status', {
+      fetch('https://capable-delight-production-cd5e.up.railway.app/api/onboarding/status', {
         headers: { 'Authorization': `Bearer ${token}` },
       })
       .then(r => r.json())
@@ -3001,4 +3001,5 @@
 </body>
 
 </html>
+
 
