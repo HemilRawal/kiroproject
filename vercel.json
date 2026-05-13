@@ -1,0 +1,20 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/login", "destination": "/login-page.html" },
+    { "source": "/catalogue", "destination": "/catalogue.html" },
+    { "source": "/contact", "destination": "/contact_us.html" },
+    { "source": "/dashboard", "destination": "/customer_dashboard_3.html" },
+    { "source": "/early-access", "destination": "/early-access.html" },
+    { "source": "/forgot-password", "destination": "/forgot-password.html" },
+    { "source": "/manufacturer", "destination": "/manufacturer_portal.html" },
+    { "source": "/register", "destination": "/oem_register_landingpage.html" },
+    { "source": "/onboarding", "destination": "/onboarding2.html" },
+    { "source": "/reset-password", "destination": "/reset-password.html" },
+    { "source": "/cart", "destination": "/rfq_cart.html" },
+    { "source": "/verify", "destination": "/verify-otp.html" },
+    { "source": "/admin", "destination": "/admin_portal.html" }
+  ],
+  "cleanUrls": true,
+  "trailingSlash": false
+}
