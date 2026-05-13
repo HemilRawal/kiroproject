@@ -2213,6 +2213,7 @@
         margin: 0 !important;
         padding: 0 !important;
         min-height: 100vh !important;
+        background-color: var(--off-white) !important;
       }
 
       nav.topnav {
@@ -2274,6 +2275,7 @@
         justify-content: center !important;
         overflow: visible !important;
         margin: 0 !important;
+        background: var(--orange) !important;
       }
 
       .nav-user-name {
@@ -2313,8 +2315,9 @@
       /* ── DASHBOARD RESPONSIVE ── */
       .dash-hero {
         padding-top: 110px !important;
-        padding-bottom: 24px;
+        padding-bottom: 24px !important;
         width: 100% !important;
+        background: var(--white) !important;
       }
 
       .dash-hero-inner {
@@ -2329,7 +2332,7 @@
 
       .dash-layout {
         display: block !important;
-        padding: 110px 16px 100px !important;
+        padding: 110px 16px 120px !important;
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
@@ -2375,12 +2378,12 @@
       }
 
       .section-head {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
         width: 100% !important;
-        margin-top: 24px !important;
-        padding-top: 8px !important;
+        margin-top: 32px !important;
+        padding-top: 0 !important;
       }
 
       .data-table-wrap {
@@ -2443,31 +2446,31 @@
       }
 
       .modal-box {
-        margin: 110px auto 40px !important;
-        max-height: calc(100vh - 160px) !important;
-        width: 90% !important;
-        max-width: 90% !important;
+        margin: 90px auto 100px !important;
+        max-height: calc(100vh - 200px) !important;
+        width: 92% !important;
+        max-width: 92% !important;
         overflow-y: auto !important;
+        border-radius: 16px !important;
       }
 
       .mobile-bottom-nav {
         display: flex !important;
-        position: fixed;
+        position: fixed !important;
         bottom: 0 !important;
-        left: 0;
-        right: 0;
+        left: 0 !important;
+        right: 0 !important;
         height: 72px !important;
         min-height: 72px !important;
         max-height: 72px !important;
-        margin-bottom: 0 !important;
-        background: rgba(10, 10, 10, 0.98);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border-top: 1px solid rgba(255, 255, 255, 0.08);
-        z-index: 500;
-        padding: 0 12px;
-        justify-content: space-around;
-        align-items: center;
+        background: rgba(10, 10, 10, 0.98) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+        z-index: 1500 !important;
+        padding: 0 12px !important;
+        justify-content: space-around !important;
+        align-items: center !important;
         box-sizing: border-box !important;
       }
 
@@ -2816,7 +2819,7 @@
         <div class="section-head">
           <div>
             <h2>RFQ Queue</h2>
-            <p>7 open requests · Sorted by SLA urgency</p>
+            <p>7 open requests &middot; Sorted by SLA urgency</p>
           </div>
           <div class="section-head-right">
 
@@ -2862,7 +2865,7 @@
           <div>
             <h2>Inventory</h2>
             <p id="inventoryPageSub">
-              4 live catalog items · 2 pending audit
+              4 live catalog items &middot; 2 pending audit
             </p>
           </div>
           <button class="btn btn-primary" onclick="openAddModal()">
@@ -2971,7 +2974,7 @@
                     font-size: 18px;
                     color: var(--gray-400);
                   ">
-                ••••••••••••
+                &bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;
               </div>
             </div>
             <div style="
@@ -3253,7 +3256,7 @@
           </div>
         </div>
         <div class="form-row-modal" style="margin-bottom: 10px">
-          <label class="form-label">EX-WORKS FLOOR PRICE (₹) *</label>
+          <label class="form-label">EX-WORKS FLOOR PRICE (&#8377;) *</label>
           <input class="form-input" id="modFloorPrice" type="number" placeholder=""
             oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
           <div style="
@@ -3940,7 +3943,7 @@
         }
 
         const sub = document.getElementById('complianceSubtitle');
-        if (sub) sub.textContent = `${uploaded} of ${docDefs.length} documents uploaded · Application ${app.status}`;
+        if (sub) sub.textContent = `${uploaded} of ${docDefs.length} documents uploaded &middot; Application ${app.status}`;
 
       } catch (err) {
         console.error('Failed to load compliance vault:', err);
@@ -4126,7 +4129,7 @@
                   <div style="font-size:11px;color:var(--slate-400);margin-top:2px;">Added on ${new Date(entry.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
                 </div>
               </div>
-              <div style="font-size:28px;font-weight:700;color:#c62828;white-space:nowrap;">₹${Number(entry.amount).toLocaleString('en-IN')}</div>
+              <div style="font-size:28px;font-weight:700;color:#c62828;white-space:nowrap;">&#8377;${Number(entry.amount).toLocaleString('en-IN')}</div>
             </div>`).join('');
 
       } catch (err) {
@@ -4147,10 +4150,10 @@
       8042: {
         component: "Turbine Blade Actuator",
         qty: 250,
-        deadline: "16 Apr 2026 · 09:14",
+        deadline: "16 Apr 2026 &middot; 09:14",
         sector: "Aero",
         specs:
-          "Titanium alloy, 250mm stroke, ±0.01mm tolerance, MIL-STD-810G",
+          "Titanium alloy, 250mm stroke, &plusmn;0.01mm tolerance, MIL-STD-810G",
         urgency: "CRITICAL",
         notes:
           "Expedited manufacturing required. Full documentation on delivery.",
@@ -4159,9 +4162,9 @@
       8041: {
         component: "Servo Actuator Mk-IV",
         qty: 80,
-        deadline: "16 Apr 2026 · 11:05",
+        deadline: "16 Apr 2026 &middot; 11:05",
         sector: "Defense",
-        specs: "24V DC, 40Nm torque, IP67, -40°C to +85°C",
+        specs: "24V DC, 40Nm torque, IP67, -40&deg;C to +85&deg;C",
         urgency: "HIGH",
         notes: "Quote to include NRE charges if tooling required.",
         prohibited: "",
@@ -4169,9 +4172,9 @@
       8039: {
         component: "IMU Sensor Module",
         qty: 500,
-        deadline: "17 Apr 2026 · 07:52",
+        deadline: "17 Apr 2026 &middot; 07:52",
         sector: "Space",
-        specs: "9-axis, ±2000°/s, SPI/I2C, 1mg resolution, MTBF >50,000h",
+        specs: "9-axis, &plusmn;2000&deg;/s, SPI/I2C, 1mg resolution, MTBF >50,000h",
         urgency: "MEDIUM",
         notes: "Volume discount expected for 500+ units.",
         prohibited: "",
@@ -4179,9 +4182,9 @@
       8038: {
         component: "Thermal Camera Core",
         qty: 30,
-        deadline: "17 Apr 2026 · 16:00",
+        deadline: "17 Apr 2026 &middot; 16:00",
         sector: "Defense",
-        specs: "640×512 LWIR, 12μm pitch, NETD <30mK, SWaP optimized",
+        specs: "640&times;512 LWIR, 12μm pitch, NETD <30mK, SWaP optimized",
         urgency: "MEDIUM",
         notes: "Export control classification required with quote.",
         prohibited: "",
@@ -4191,7 +4194,7 @@
         qty: 12,
         deadline: "16 Apr 2026",
         sector: "Aero",
-        specs: "Ka-band, 76.5GHz, 16-element phased array, ±45° scanning",
+        specs: "Ka-band, 76.5GHz, 16-element phased array, &plusmn;45&deg; scanning",
         urgency: "—",
         notes: "Expedited manufacturing required.",
         prohibited: "",
@@ -4201,7 +4204,7 @@
         qty: 6,
         deadline: "—",
         sector: "Defense",
-        specs: "3-axis stabilization, ±0.005° accuracy, EO+IR dual payload",
+        specs: "3-axis stabilization, &plusmn;0.005&deg; accuracy, EO+IR dual payload",
         urgency: "ACCEPTED",
         notes: "PO accepted. Fulfillment in progress.",
         prohibited: "",
@@ -4240,7 +4243,7 @@
               <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24" style="color:var(--gray-200);"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
             </div>
             <div style="font-size:14px;font-weight:700;color:var(--black);margin-bottom:2px;">${d.component}</div>
-            <div style="font-size:11px;color:var(--gray-400);margin-bottom:10px;">SKU: PRD-${id} · ${d.sector} Grade</div>
+            <div style="font-size:11px;color:var(--gray-400);margin-bottom:10px;">SKU: PRD-${id} &middot; ${d.sector} Grade</div>
             <div style="display:flex;gap:6px;flex-wrap:wrap;">
               <span class="product-tag" style="font-size:10px;padding:3px 8px;">FASTENER</span>
               <span class="product-tag" style="font-size:10px;padding:3px 8px;">${d.sector.toUpperCase()}</span>
@@ -4295,13 +4298,13 @@
           <div>
             <div class="detail-row" style="padding:10px 16px;">
               <span class="detail-row-label" style="font-size:11px;">Total Batch Value (Ex-Works)</span>
-              <span class="detail-row-value" style="font-size:13px; font-weight:700;">₹ 4,20,000</span>
+              <span class="detail-row-value" style="font-size:13px; font-weight:700;">&#8377; 4,20,000</span>
             </div>
             <div class="detail-row" style="padding:10px 16px;">
               <span class="detail-row-label" style="font-size:11px;">Advance Cleared (30%)</span>
               <span class="detail-row-value" style="font-size:13px; color:var(--green); display:flex; align-items:center; gap:6px;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                ₹ 1,26,000
+                &#8377; 1,26,000
               </span>
             </div>
             <div class="detail-row" style="padding:10px 16px; border-bottom:none; align-items:flex-start;">
@@ -4309,7 +4312,7 @@
               <div style="text-align:right;">
                 <span class="detail-row-value" style="font-size:13px; color:var(--orange); display:flex; align-items:center; justify-content:flex-end; gap:6px;">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                  ₹ 2,94,000
+                  &#8377; 2,94,000
                 </span>
                 <div style="font-size:10px; color:var(--gray-400); margin-top:4px; line-height:1.3; max-width:200px;">To be released strictly post-delivery & 48-hour buyer inspection.</div>
               </div>
@@ -4324,7 +4327,7 @@
       <div class="detail-card">
         <div class="detail-card-header" style="padding:12px 16px 10px;">
           <h3 style="font-size:11px;">UPLOAD DOCUMENTS</h3>
-          <span style="font-size:11px;color:var(--gray-400)">PDF, JPG, PNG · Max 10MB each</span>
+          <span style="font-size:11px;color:var(--gray-400)">PDF, JPG, PNG &middot; Max 10MB each</span>
         </div>
         <div style="padding:12px 16px 8px;">
           <p style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-400);margin-bottom:8px;">Product Certifications</p>
@@ -4345,7 +4348,7 @@
               <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
             </svg>
             <h4 style="font-size:13px;margin-bottom:2px;">Drag & Drop files here</h4>
-            <p style="font-size:11px;">or click to browse · PDF, JPG, PNG supported</p>
+            <p style="font-size:11px;">or click to browse &middot; PDF, JPG, PNG supported</p>
             <input type="file" id="rfqFileUpload" multiple accept=".pdf,.jpg,.jpeg,.png" onchange="rfqHandleFileSelect(this.files)" style="display:none">
           </div>
           <div id="rfqUploadedFiles"></div>
@@ -4379,7 +4382,7 @@
             ? '<span style="display:inline-block; margin-left:14px; padding:4px 12px; font-size:10px; font-weight:700; color:#b45309; background:#fffbeb; border:1px solid #fde68a; border-radius:100px; vertical-align:middle; letter-spacing:0.04em;">STATUS: AWAITING ESCROW FUNDING</span>'
             : "");
         document.getElementById("slideSubtitle").textContent =
-          d.sector + " · Qty: " + d.qty + " units";
+          d.sector + " &middot; Qty: " + d.qty + " units";
         document.getElementById("rfqSlideout").style.background =
           "var(--off-white)";
         document.getElementById("rfqBody").innerHTML = `
@@ -4401,7 +4404,7 @@
               <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24" style="color:var(--gray-200);"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
             </div>
             <div style="font-size:14px;font-weight:700;color:var(--black);margin-bottom:2px;">${d.component}</div>
-            <div style="font-size:11px;color:var(--gray-400);margin-bottom:10px;">SKU: PRD-${id} · ${d.sector}</div>
+            <div style="font-size:11px;color:var(--gray-400);margin-bottom:10px;">SKU: PRD-${id} &middot; ${d.sector}</div>
             <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
               <span class="product-tag" style="font-size:10px;padding:3px 8px;">${d.sector.toUpperCase()}</span>
               <span class="product-tag" style="font-size:10px;padding:3px 8px;">BHARAT VERIFIED</span>
@@ -4437,7 +4440,7 @@
               </div>
               <div class="detail-row" style="padding:10px 16px;border-bottom:none;">
                 <span class="detail-row-label" style="font-size:11px;">SLA Deadline</span>
-                <span class="detail-row-value" style="font-size:13px;">${d.deadline.split(" · ")[0]}</span>
+                <span class="detail-row-value" style="font-size:13px;">${d.deadline.split(" &middot; ")[0]}</span>
               </div>
             </div>
           </div>
@@ -4456,7 +4459,7 @@
               <div id="quoteInputsBlock">
                 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;">
                 <div>
-                  <label class="inp-label" style="font-size:10px;">Unit Price (₹) *</label>
+                  <label class="inp-label" style="font-size:10px;">Unit Price (&#8377;) *</label>
                   <input class="num-input" type="number" id="qUnitPrice" placeholder="0" oninput="calcTotal(${d.qty}); this.value = this.value.replace(/[^0-9]/g, '')" style="width:100%;box-sizing:border-box;padding:7px 10px;font-size:13px;">
                   <div class="inp-hint" style="font-size:10px;">Ex-works, excl. GST</div>
                 </div>
@@ -4523,7 +4526,7 @@
               </div>
 
               </div>
-              <div class="quote-total" id="quoteTotalBlock" style="padding:10px 14px;display:flex;"><span class="qt-label" style="font-size:11px;">Total Quote Value</span><span class="qt-val" id="qtTotal" style="font-size:16px;">₹0</span></div>
+              <div class="quote-total" id="quoteTotalBlock" style="padding:10px 14px;display:flex;"><span class="qt-label" style="font-size:11px;">Total Quote Value</span><span class="qt-val" id="qtTotal" style="font-size:16px;">&#8377;0</span></div>
               <div class="quote-success" id="quoteSuccess" style="display:none;padding:24px 16px;">
                 <div class="success-ring" style="width:48px;height:48px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;background:#ecfcf5;border-radius:50%;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg></div>
                 <div style="font-size:18px;font-weight:700;color:var(--black);margin-bottom:8px;text-align:center;">Quote Successfully Routed.</div>
@@ -4546,11 +4549,11 @@
             <div>
               <div class="detail-row" style="padding:10px 16px;">
                 <span class="detail-row-label" style="font-size:11px;">SUBMITTED UNIT PRICE</span>
-                <span class="detail-row-value" style="font-size:13px;font-weight:600;">₹ 1,000 <span style="font-weight:400;color:var(--gray-500);">(Ex-works)</span></span>
+                <span class="detail-row-value" style="font-size:13px;font-weight:600;">&#8377; 1,000 <span style="font-weight:400;color:var(--gray-500);">(Ex-works)</span></span>
               </div>
               <div class="detail-row" style="padding:10px 16px;">
                 <span class="detail-row-label" style="font-size:11px;">TOTAL BATCH VALUE</span>
-                <span class="detail-row-value" style="font-size:13px;font-weight:700;">₹ 12,000</span>
+                <span class="detail-row-value" style="font-size:13px;font-weight:700;">&#8377; 12,000</span>
               </div>
               <div class="detail-row" style="padding:10px 16px;">
                 <span class="detail-row-label" style="font-size:11px;">COMMITTED LEAD TIME</span>
@@ -4698,7 +4701,7 @@
       const total = price * qty;
       const totalEl = document.getElementById("qtTotal");
       if (totalEl) {
-        totalEl.textContent = "₹" + total.toLocaleString("en-IN");
+        totalEl.textContent = "&#8377;" + total.toLocaleString("en-IN");
       }
     }
 
@@ -4778,7 +4781,7 @@
       const live = entries.filter(([, p]) => p.status === 'Live').length;
       const pending = entries.filter(([, p]) => p.status !== 'Live').length;
       const sub = document.getElementById('inventoryPageSub');
-      if (sub) sub.textContent = `${live} live · ${pending} pending audit`;
+      if (sub) sub.textContent = `${live} live &middot; ${pending} pending audit`;
 
       grid.innerHTML = entries.map(([id, p]) => `
           <div class="inv-card" onclick="openModuleDetails('${id}')">
@@ -4792,7 +4795,7 @@
             <div class="inv-meta">
               <div><div class="im-label">MOQ</div><div class="im-val">${p.moq || '—'} units</div></div>
               <div><div class="im-label">Lead Time</div><div class="im-val">${p.leadTime || '—'} days</div></div>
-              ${p.unitPrice ? `<div><div class="im-label">Unit Price</div><div class="im-val">₹${(p.unitPrice / 1000).toFixed(0)}K</div></div>` : ''}
+              ${p.unitPrice ? `<div><div class="im-label">Unit Price</div><div class="im-val">&#8377;${(p.unitPrice / 1000).toFixed(0)}K</div></div>` : ''}
             </div>
           </div>`).join('');
     }
@@ -4809,7 +4812,7 @@
       statusBadge.textContent = p.status || "Draft";
 
       document.getElementById("mdPrice").textContent = p.unitPrice
-        ? "₹" + p.unitPrice.toLocaleString("en-IN")
+        ? "&#8377;" + p.unitPrice.toLocaleString("en-IN")
         : "TBD";
       document.getElementById("mdMOQ").textContent =
         (p.moq || "N/A") + " units";
@@ -4981,7 +4984,7 @@
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--gray-400);"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
         ${f.displayName} ${f.isMII ? '<span style="background:var(--green-light); color:var(--green); font-size:10px; padding:2px 6px; border-radius:12px; margin-left:4px;">Mandatory</span>' : ""} <span style="font-size:11px;color:var(--gray-400);font-weight:400;">(${f.name}, ${f.size}MB)</span>
       </span>
-      ${f.isMII ? '<span style="color:var(--gray-400);font-size:12px;padding-right:4px;">Locked</span>' : `<button onclick="removeFile(${f.id})" style="background:none;border:none;cursor:pointer;color:var(--gray-400);font-size:18px;line-height:1;transition:all 0.2s;" onmouseover="this.style.color='var(--red)';this.style.transform='scale(1.2)';" onmouseout="this.style.color='var(--gray-400)';this.style.transform='scale(1)';">×</button>`}
+      ${f.isMII ? '<span style="color:var(--gray-400);font-size:12px;padding-right:4px;">Locked</span>' : `<button onclick="removeFile(${f.id})" style="background:none;border:none;cursor:pointer;color:var(--gray-400);font-size:18px;line-height:1;transition:all 0.2s;" onmouseover="this.style.color='var(--red)';this.style.transform='scale(1.2)';" onmouseout="this.style.color='var(--gray-400)';this.style.transform='scale(1)';">&times;</button>`}
     </div>
   `,
         )
@@ -5291,7 +5294,7 @@
         s = String(now.getSeconds()).padStart(2, "0");
       const el = document.getElementById("liveClock");
       if (el)
-        el.textContent = `${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]} · IST ${h}:${m}:${s}`;
+        el.textContent = `${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]} &middot; IST ${h}:${m}:${s}`;
     }
     updateClock();
     setInterval(updateClock, 1000);
@@ -5337,7 +5340,7 @@
       <svg width="16" height="16" fill="none" stroke="var(--green)" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
       <span style="font-size:13px;color:var(--black);flex:1">${f.name}</span>
       <span style="font-size:11px;color:var(--gray-400)">${f.size}MB</span>
-      <button onclick="rfqRemoveFile(${f.id})" style="background:none;border:none;cursor:pointer;color:var(--gray-400);font-size:16px;">×</button>
+      <button onclick="rfqRemoveFile(${f.id})" style="background:none;border:none;cursor:pointer;color:var(--gray-400);font-size:16px;">&times;</button>
     </div>
   `,
         )
@@ -5366,7 +5369,7 @@
         const div = document.createElement("div");
         div.style.cssText =
           "background: var(--white); border: 1px solid var(--gray-200); padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: space-between; color: var(--black);";
-        div.innerHTML = `<span style="display:flex;align-items:center;gap:8px;"><svg width="16" height="16" fill="none" stroke="var(--green)" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg> ${tag}</span> <button onclick="removeTag(${idx})" style="background:none;border:none;cursor:pointer;color:var(--gray-400);font-size:18px;line-height:1;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--gray-400)'">×</button>`;
+        div.innerHTML = `<span style="display:flex;align-items:center;gap:8px;"><svg width="16" height="16" fill="none" stroke="var(--green)" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg> ${tag}</span> <button onclick="removeTag(${idx})" style="background:none;border:none;cursor:pointer;color:var(--gray-400);font-size:18px;line-height:1;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--gray-400)'">&times;</button>`;
         container.appendChild(div);
       });
     }
