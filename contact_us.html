@@ -655,18 +655,22 @@
   .white-zone .form-disclaimer strong { color: #555; }
   .white-zone .section-label { color: var(--orange); }
   .nav-logo-img {
-        height: 50px; /* adjust based on navbar */
+        height: 50px;
         width: auto;
         cursor: pointer;
       }
   /* ── MOBILE NAV FIX (universal) ── */
 @media (max-width: 768px) {
   nav {
-    overflow: visible !important; /* fix: dropdown was clipped */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+    padding: 0 14px !important;
+    overflow: hidden !important;
     left: 12px;
     right: 12px;
     top: 10px;
-    padding: 0 16px;
     border-radius: 12px;
     height: 56px;
   }
@@ -680,23 +684,18 @@
 
   /* Logo takes ~70% left */
   .nav-logo {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .nav-logo-text,
-  .nav-logo-img {
-    max-width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 13px !important;
-    letter-spacing: 0.14em !important;
+    flex: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    min-width: 0 !important;
   }
 
   .nav-logo-img {
-    height: 36px !important;
-    width: auto;
+    width: 100% !important;
+    max-width: 190px !important;
+    height: auto !important;
+    object-fit: contain !important;
+    flex-shrink: 1 !important;
   }
 
   /* Hide desktop links on mobile */
@@ -750,16 +749,31 @@
   }
 
   .nav-btn-login {
-    margin: 12px auto !important;
-    display: block !important;
-    width: calc(100% - 48px) !important;
+    font-size: 11px !important;
+    padding: 8px 12px !important;
+    white-space: nowrap !important;
+    margin: 0 !important;
+    width: auto !important;
+    display: inline-flex !important;
+    flex-shrink: 0 !important;
   }
 
   .nav-search {
+    display: flex !important;
+    width: auto !important;
+    padding: 8px !important;
     justify-content: center;
-    width: 100%;
-    padding: 16px 24px;
-    display: block;
+    flex-shrink: 0 !important;
+  }
+
+  /* Target the div with buttons on mobile */
+  nav > div[style*="display:flex"] {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex-shrink: 0 !important;
+    min-width: fit-content !important;
+    justify-content: flex-end !important;
   }
 
   /* Hamburger always visible on mobile */
@@ -977,9 +991,9 @@ body {
 
     <!-- Column 2 -->
     <div>
-      <h3 class="data-col-title">Registered Headquarters</h3>
+      <h3 class="data-col-title">Location</h3>
       <div class="hq-address">
-        <strong>Bharat Modules Pvt. Ltd.</strong>
+        <strong>Bharat Modules</strong>
         P.O. Box No.: 1908, PG-5th Floor<br>
         Bull Temple Road, Basavanagudi<br>
         Bengaluru – 560019<br>
@@ -1067,7 +1081,7 @@ body {
 <!-- ─── FOOTER ─── -->
 <footer class="footer-strip">
   <span style="font-family:'Melete',sans-serif; letter-spacing:0.18em; color:rgba(255,255,255,0.3);">BHARAT MODULES</span>
-  <span>© 2026 Bharat Modules Pvt. Ltd. — All Rights Reserved.</span>
+  <span>© 2026 Bharat Modules — All Rights Reserved.</span>
   <span>Bengaluru, Karnataka, India</span>
 </footer>
 

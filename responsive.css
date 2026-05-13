@@ -153,13 +153,27 @@
 @media (max-width: 768px) {
 
   /* Nav — prevent ANY horizontal overflow */
-  nav.topnav {
-    left: 8px;
-    right: 8px;
-    top: 10px;
-    height: 54px;
-    padding: 0 10px !important;
+  nav.topnav, nav#nav, nav {
+    position: fixed !important;
+    left: 16px !important;
+    right: 16px !important;
+    top: 12px !important;
+    border-radius: 24px !important;
+    width: auto !important;
+    max-width: calc(100% - 32px) !important;
     overflow: visible !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0 18px !important;
+    box-sizing: border-box !important;
+    height: 56px !important;
+    background: rgba(10, 10, 10, 0.92) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+    z-index: 1000 !important;
   }
 
   /* Hide desktop nav links */
@@ -172,17 +186,8 @@
     overflow: hidden;
   }
   .nav-logo-img {
-    max-width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 13px !important;
-    letter-spacing: 0.14em !important;
-  }
-  .nav-logo-img {
     height: 36px !important;
-    width: auto !important;
-    object-fit: contain;
+    width: auto;
   }
 
   /* Compact user chip — avatar only */
@@ -242,14 +247,14 @@
   .mobile-nav-drawer {
     display: none;
     position: fixed;
-    top: 74px;
-    left: 8px;
-    right: 8px;
+    top: 76px;
+    left: 16px;
+    right: 16px;
     background: rgba(10, 10, 10, 0.97);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
+    border-radius: 20px;
     z-index: 199;
     opacity: 0;
     pointer-events: none;
@@ -294,10 +299,11 @@
 
   /* Profile dropdown repositioned for mobile */
   #profileDropdown {
-    right: 8px !important;
-    left: 8px !important;
-    top: 74px !important;
+    right: 16px !important;
+    left: 16px !important;
+    top: 76px !important;
     min-width: auto !important;
+    border-radius: 20px !important;
   }
 
   /* Layout */

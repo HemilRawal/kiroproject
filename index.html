@@ -1453,12 +1453,16 @@
           mask-image: linear-gradient(to bottom, black 20px, transparent 90px);
         }
         nav {
-          left: 12px;
-          right: 12px;
-          top: 10px;
-          padding: 0 16px;
-          border-radius: 12px;
+          left: 16px;
+          right: 16px;
+          top: 12px;
+          padding: 0 18px;
+          border-radius: 24px;
           height: 56px;
+          max-width: calc(100% - 32px);
+          width: auto;
+          box-sizing: border-box;
+          overflow: visible !important;
         }
         .hamburger {
           display: flex;
@@ -1477,15 +1481,16 @@
           display: flex;
           position: fixed;
           top: 76px;
-          left: 12px;
-          right: 12px;
+          left: 16px;
+          right: 16px;
           background: rgba(10, 10, 10, 0.97);
           backdrop-filter: blur(20px);
           flex-direction: column;
           gap: 0;
           padding: 0;
           border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 12px;
+          border-radius: 20px;
+          box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
           overflow: hidden;
           opacity: 0;
           pointer-events: none;
@@ -1596,20 +1601,23 @@
         }
       }
       .nav-logo-img {
-        height: 50px; /* adjust based on navbar */
+        height: 50px;
         width: auto;
         cursor: pointer;
       }
       /* ── MOBILE NAV FIX (universal) ── */
       @media (max-width: 768px) {
         nav {
-          overflow: visible !important; /* fix: dropdown was clipped */
-          left: 12px;
-          right: 12px;
-          top: 10px;
-          padding: 0 16px;
-          border-radius: 12px;
+          left: 16px;
+          right: 16px;
+          top: 12px;
+          padding: 0 18px;
+          border-radius: 24px;
           height: 56px;
+          max-width: calc(100% - 32px);
+          width: auto;
+          box-sizing: border-box;
+          overflow: visible !important;
         }
 
         .nav-default {
@@ -1617,6 +1625,10 @@
           align-items: center;
           justify-content: space-between;
           width: 100%;
+        }
+
+        .nav-search-bar {
+          border-radius: 24px;
         }
 
         /* Logo takes ~70% left */
@@ -1627,15 +1639,6 @@
 
         .nav-logo-text,
         .nav-logo-img {
-          max-width: 100%;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          font-size: 13px !important;
-          letter-spacing: 0.14em !important;
-        }
-
-        .nav-logo-img {
           height: 36px !important;
           width: auto;
         }
@@ -1645,8 +1648,8 @@
           display: none !important;
           position: fixed;
           top: 76px;
-          left: 12px;
-          right: 12px;
+          left: 16px;
+          right: 16px;
           background: rgba(10, 10, 10, 0.97);
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
@@ -1672,9 +1675,46 @@
         }
 
         .nav-links li {
-          border-bottom: 1px solid #1e1e1e;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
           width: 100%;
           text-align: center;
+        }
+
+        /* Authenticated state mobile alignment */
+        .nav-auth-container {
+          display: flex !important;
+          flex-direction: column !important;
+          width: 100% !important;
+          gap: 0 !important;
+          padding: 0 !important;
+          align-items: stretch !important;
+        }
+
+        .nav-auth-container a,
+        .nav-auth-container button {
+          width: 100% !important;
+          padding: 16px 24px !important;
+          box-sizing: border-box !important;
+          margin: 0 !important;
+          border: none !important;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+          border-radius: 0 !important;
+          background: transparent !important;
+          display: flex !important;
+          justify-content: center !important;
+          font-size: 15px !important;
+          color: #ccc !important;
+        }
+
+        .nav-auth-container a:last-child,
+        .nav-auth-container button:last-child {
+          border-bottom: none !important;
+        }
+
+        .nav-auth-container a:hover,
+        .nav-auth-container button:hover {
+          color: #fff !important;
+          background: rgba(255, 255, 255, 0.05) !important;
         }
 
         .nav-links li:last-child {

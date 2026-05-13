@@ -197,11 +197,21 @@ nav.search-mode .nav-default {
 @media (max-width: 768px) {
   nav,
   nav.topnav {
-    top: 10px;
-    left: 12px;
-    right: 12px;
-    padding: 0 16px;
-    height: 52px;
+    position: fixed !important;
+    left: 16px !important;
+    right: 16px !important;
+    top: 12px !important;
+    border-radius: 24px !important;
+    width: auto !important;
+    max-width: calc(100% - 32px) !important;
+    overflow: visible !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0 18px !important;
+    box-sizing: border-box !important;
+    height: 56px !important;
+    z-index: 1000 !important;
   }
 
   .nav-links,
@@ -259,15 +269,6 @@ nav.search-mode .nav-default {
 
   .nav-search {
     display: none;
-  }
-
-  .nav-logo-img {
-    max-width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 13px !important;
-    letter-spacing: 0.14em !important;
   }
 
   .nav-logo-img {
