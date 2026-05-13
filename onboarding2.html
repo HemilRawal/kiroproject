@@ -3204,25 +3204,8 @@
         }
       }
 
-      /* â”€â”€ DOWNLOAD NDA PDF â”€â”€ */
-      /* -- DOWNLOAD NDA PDF -- */
-      function downloadNDA() {
-        if (!allClausesChecked()) {
-          alert("Please acknowledge all clauses before downloading.");
-          return;
-        }
-        if (currentSigMethod === "draw" && !sigHasData) {
-          alert("Please provide your digital signature before downloading.");
-          return;
-        }
-        const sName = document.getElementById("signer-name").value.trim();
-        const sRole = document.getElementById("signer-role").value.trim();
-
-        if (sName.length < 2 || sRole.length < 2) {
-          alert("Please enter your Signer Name and Role to download the NDA.");
-          return;
-        }
-
+      /* ——— GENERATE NDA PDF DOC ——— */
+      function generateNDAPDF(sName, sRole) {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ unit: 'mm', format: 'a4' });
         const pageW = 210;
@@ -3270,32 +3253,32 @@
 
         addSection("1. Definition of Confidential Information", [
           "Confidential Information includes all non-public data, specifically but not limited to:",
-          "\u2022 Pricing Data: Unit prices, bulk discounts, and negotiated quotes.",
-          "\u2022 Operational IP: Proprietary documentation workflows, vendor onboarding checklists, and database logic.",
-          "\u2022 Customer Data: Identities, technical requirements, project deadlines, and procurement histories of buyers introduced via Bharat Modules.",
-          "\u2022 General: Any oral or written data designated as confidential or which should reasonably be treated as such.",
+          "• Pricing Data: Unit prices, bulk discounts, and negotiated quotes.",
+          "• Operational IP: Proprietary documentation workflows, vendor onboarding checklists, and database logic.",
+          "• Customer Data: Identities, technical requirements, project deadlines, and procurement histories of buyers introduced via Bharat Modules.",
+          "• General: Any oral or written data designated as confidential or which should reasonably be treated as such.",
         ]);
 
         addSection("2. Non-Circumvention & Redirect Policy", [
           "To protect the integrity of the platform, the Parties agree to the following:",
-          "\u2022 Disclosure: Customer names are revealed to the OEM only after the order is placed.",
-          "\u2022 Prior Relationship Rule:",
+          "• Disclosure: Customer names are revealed to the OEM only after the order is placed.",
+          "• Prior Relationship Rule:",
           "  A. If an OEM has traded with a Bharat Modules introduced customer more than six (6) months prior to joining the platform, they must redirect all further trades with that customer through the platform.",
           "  B. If an OEM has traded with a Bharat Modules introduced customer in the six (6) months prior to joining the platform, they can continue to trade with those customers.",
-          "\u2022 Verification: OEM must verify prior relationships by sharing relevant email history with Bharat Modules.",
-          "\u2022 Bypass Penalty: If the OEM trades directly with a customer introduced via Bharat Modules, the platform reserves the right to immediately terminate the OEM's access and hold all pending payments as liquidated damages.",
-          "\u2022 Post-Exit: The OEM is free to trade with any party without restriction only after formally exiting the platform.",
+          "• Verification: OEM must verify prior relationships by sharing relevant email history with Bharat Modules.",
+          "• Bypass Penalty: If the OEM trades directly with a customer introduced via Bharat Modules, the platform reserves the right to immediately terminate the OEM's access and hold all pending payments as liquidated damages.",
+          "• Post-Exit: The OEM is free to trade with any party without restriction only after formally exiting the platform.",
         ]);
 
         addSection("3. Use of Information & Data Protection", [
-          "\u2022 Bharat Modules Rights: Bharat Modules shall have access to all data provided by the OEM. This data will be used solely for business operations and will not be disclosed to third parties.",
-          "\u2022 OEM Obligations: All non-public data received from the platform must remain confidential.",
-          "\u2022 Logic Protection: The OEM shall not replicate, reverse-engineer, or share the Managed RFQ or Trust Infrastructure logic used by the platform with any other marketplace or entity.",
+          "• Bharat Modules Rights: Bharat Modules shall have access to all data provided by the OEM. This data will be used solely for business operations and will not be disclosed to third parties.",
+          "• OEM Obligations: All non-public data received from the platform must remain confidential.",
+          "• Logic Protection: The OEM shall not replicate, reverse-engineer, or share the Managed RFQ or Trust Infrastructure logic used by the platform with any other marketplace or entity.",
         ]);
 
         addSection("4. Term & Destruction of Data", [
-          "\u2022 Term: This Agreement is effective from the date of signing and shall remain in effect for a Lifetime term.",
-          "\u2022 Destruction: Upon written request by Bharat Modules, the OEM must immediately destroy all confidential information and provide a proof of destruction.",
+          "• Term: This Agreement is effective from the date of signing and shall remain in effect for a Lifetime term.",
+          "• Destruction: Upon written request by Bharat Modules, the OEM must immediately destroy all confidential information and provide a proof of destruction.",
         ]);
 
         addSection("5. Governing Law & Jurisdiction", [
@@ -3356,10 +3339,43 @@
           doc.setTextColor(0);
         }
 
+        return doc;
+      }
+
+      /* ——— DOWNLOAD NDA PDF ——— */
+      function downloadNDA() {
+        if (document.getElementById('phase5') && document.getElementById('phase5').classList.contains('active')) {
+          const u = JSON.parse(localStorage.getItem('bm_user') || '{}');
+          if (u && u.id && sbClient) {
+            const { data } = sbClient.storage.from('onboarding_docs').getPublicUrl(`nda_${u.id}.pdf`);
+            window.open(data.publicUrl, '_blank');
+          } else {
+            alert('Cannot retrieve M-NDA. Please contact support.');
+          }
+          return;
+        }
+
+        if (!allClausesChecked()) {
+          alert("Please acknowledge all clauses before downloading.");
+          return;
+        }
+        if (currentSigMethod === "draw" && !sigHasData) {
+          alert("Please provide your digital signature before downloading.");
+          return;
+        }
+        const sName = document.getElementById("signer-name").value.trim();
+        const sRole = document.getElementById("signer-role").value.trim();
+
+        if (sName.length < 2 || sRole.length < 2) {
+          alert("Please enter your Signer Name and Role to download the NDA.");
+          return;
+        }
+
+        const doc = generateNDAPDF(sName, sRole);
         doc.save("Bharat_Modules_M-NDCA.pdf");
       }
 
-      /* â”€â”€ PHASE 4 VALIDATION â”€â”€ */
+      /* ——— PHASE 4 VALIDATION ——— */
       function validatePhase3() {
         if (!allClausesChecked()) {
           const notice = document.getElementById("sigGateNotice");
@@ -3535,26 +3551,41 @@
 
             // â”€â”€ Try to upload PDFs (non-blocking â€” won't stop submission if it fails) â”€â”€
             const docUrls = {};
-            if (sbClient && Object.keys(fileObjects).length > 0) {
-              for (const key of Object.keys(fileObjects)) {
-                const file = fileObjects[key];
-                if (!file) continue;
+            if (sbClient) {
+              const u = JSON.parse(localStorage.getItem('bm_user') || '{}');
+              if (u && u.id) {
                 try {
-                  const fileName = `${Date.now()}_${key}_${file.name.replace(/\s+/g, '_')}`;
-                  const { error: uploadError } = await sbClient.storage
+                  const ndaDoc = generateNDAPDF(signerName, signerRole);
+                  const ndaBlob = ndaDoc.output('blob');
+                  await sbClient.storage
                     .from('onboarding_docs')
-                    .upload(fileName, file, { upsert: true });
-
-                  if (!uploadError) {
-                    const { data: urlData } = sbClient.storage
+                    .upload(`nda_${u.id}.pdf`, ndaBlob, { upsert: true });
+                } catch(err) {
+                  console.warn('Failed to upload NDA to storage:', err);
+                }
+              }
+              
+              if (Object.keys(fileObjects).length > 0) {
+                for (const key of Object.keys(fileObjects)) {
+                  const file = fileObjects[key];
+                  if (!file) continue;
+                  try {
+                    const fileName = `${Date.now()}_${key}_${file.name.replace(/\s+/g, '_')}`;
+                    const { error: uploadError } = await sbClient.storage
                       .from('onboarding_docs')
-                      .getPublicUrl(fileName);
-                    docUrls[`${key}_doc_url`] = urlData.publicUrl;
-                  } else {
-                    console.warn(`Storage upload skipped for ${key}:`, uploadError.message);
+                      .upload(fileName, file, { upsert: true });
+
+                    if (!uploadError) {
+                      const { data: urlData } = sbClient.storage
+                        .from('onboarding_docs')
+                        .getPublicUrl(fileName);
+                      docUrls[`${key}_doc_url`] = urlData.publicUrl;
+                    } else {
+                      console.warn(`Storage upload skipped for ${key}:`, uploadError.message);
+                    }
+                  } catch (uploadErr) {
+                    console.warn(`Storage upload error for ${key}:`, uploadErr.message);
                   }
-                } catch (uploadErr) {
-                  console.warn(`Storage upload error for ${key}:`, uploadErr.message);
                 }
               }
             }
