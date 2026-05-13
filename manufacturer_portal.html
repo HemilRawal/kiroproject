@@ -2204,6 +2204,23 @@
       cursor: pointer;
     }
 
+    /* ── MOBILE NAV FIX ── */
+    @media (max-width: 768px) {
+      .nav-logo-img {
+        max-width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 13px !important;
+        letter-spacing: 0.14em !important;
+      }
+
+      .nav-logo-img {
+        height: 36px !important;
+        width: auto;
+      }
+    }
+
     /* ── PASSWORD TOGGLE ── */
     .password-input-wrapper {
       position: relative;

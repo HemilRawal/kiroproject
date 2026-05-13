@@ -52,8 +52,9 @@ nav.topnav {
 }
 
 .nav-logo-img {
-  height: 36px;
+  height: 50px;
   width: auto;
+  cursor: pointer;
   display: block;
 }
 
@@ -258,6 +259,20 @@ nav.search-mode .nav-default {
 
   .nav-search {
     display: none;
+  }
+
+  .nav-logo-img {
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 13px !important;
+    letter-spacing: 0.14em !important;
+  }
+
+  .nav-logo-img {
+    height: 36px !important;
+    width: auto;
   }
 }
 

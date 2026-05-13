@@ -172,9 +172,16 @@
     overflow: hidden;
   }
   .nav-logo-img {
-    height: 32px !important;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 13px !important;
+    letter-spacing: 0.14em !important;
+  }
+  .nav-logo-img {
+    height: 36px !important;
     width: auto !important;
-    max-width: 120px !important;
     object-fit: contain;
   }
 

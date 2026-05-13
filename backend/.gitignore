@@ -4,4 +4,3 @@ node_modules/
 .vscode
 .kiro/*
 .kiro
-config/firebase-service-account.json
