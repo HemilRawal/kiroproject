@@ -1293,11 +1293,13 @@
 
       .metric-value {
         font-family: "Outfit", sans-serif;
-        font-size: 52px;
-        font-weight: 700;
-        color: var(--black);
-        line-height: 1;
-        letter-spacing: -0.02em;
+        font-size: clamp(14px, 1.2vw, 22px);
+        font-weight: 500;
+        color: var(--orange);
+        line-height: 1.4;
+        letter-spacing: 0.03em;
+        text-transform: none;
+        margin-bottom: 2px;
       }
 
       .metric-label {
@@ -2002,7 +2004,7 @@
             >
               <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span>Bharat Verified</span> OEMs only
+            <span>Certified OEM Network</span> OEMs only
           </div>
         </div>
       </div>
@@ -2030,7 +2032,7 @@
                 <rect x="14" y="14" width="7" height="7" />
               </svg>
             </div>
-            <div class="metric-value" data-target="0" data-suffix="">0</div>
+            <div class="metric-value">Revealed Soon!!</div>
             <div class="metric-label">Modules Listed</div>
             <div class="metric-sub">Verified Components</div>
           </div>
@@ -2047,9 +2049,9 @@
                 />
               </svg>
             </div>
-            <div class="metric-value" data-target="0" data-suffix="">0</div>
+            <div class="metric-value">Revealed Soon!!</div>
             <div class="metric-label">Vendors Available</div>
-            <div class="metric-sub">Bharat Verified OEMs</div>
+            <div class="metric-sub">Certified OEM Network</div>
           </div>
           <div class="metric-card" data-observe>
             <div class="metric-icon">
@@ -2064,7 +2066,7 @@
                 />
               </svg>
             </div>
-            <div class="metric-value" data-target="0" data-suffix="">0</div>
+            <div class="metric-value">Revealed Soon!!</div>
             <div class="metric-label">Components Delivered</div>
             <div class="metric-sub">Across India</div>
           </div>
@@ -2254,19 +2256,7 @@
     </div>
 
     <script src="products.js"></script>
-    <script>
-      (function() {
-        const metricLabels = document.querySelectorAll(".metric-label");
-        metricLabels.forEach(label => {
-          if (label.textContent.includes("Modules Listed")) {
-            const valueEl = label.previousElementSibling;
-            if (valueEl && valueEl.classList.contains("metric-value")) {
-              valueEl.setAttribute("data-target", typeof PRODUCTS !== "undefined" ? PRODUCTS.length : 0);
-            }
-          }
-        });
-      })();
-    </script>
+
     <script>
       // ── Inject logos ──
 
